@@ -10,3 +10,9 @@
 ## Overview
 
 Rosettanet is a middleware aiming to provide a simple and efficient way to interact with Starknet from Ethereum based libraries and applications.
+
+## Architecture
+
+Here is a high-level overview of the architecture of Rosettanet:
+
+[![Architecture](docs/architecture.png)](docs/architecture.png)
