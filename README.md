@@ -11,6 +11,20 @@
 
 Rosettanet is a middleware aiming to provide a simple and efficient way to interact with Starknet from Ethereum based libraries and applications.
 
+## Project structure
+
+### Contracts
+
+The contracts are located in the `contracts/` directory. It's a `scarb` project, so you can use the `scarb` CLI to build it.
+
+It uses `Starknet Foundry` for tests.
+
+See the [contracts README](contracts/README.md) for more information.
+
+### RPC Server
+
+See the [RPC README](src/README.md) for more information.
+
 ## Architecture
 
 Here is a high-level overview of the architecture of Rosettanet:
