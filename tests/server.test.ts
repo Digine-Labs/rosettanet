@@ -1,5 +1,3 @@
-describe("RPC Server", () => {
-    it('TODO CHECK RPC PORT', () => {
-        
-    })
+describe('RPC Server', () => {
+  it('TODO CHECK RPC PORT', () => {})
 })
