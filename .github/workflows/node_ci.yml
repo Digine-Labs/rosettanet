@@ -17,5 +17,8 @@ jobs:
       - run: npm ci
       # build the project if necessary
       - run: npm run build --if-present
+      # prettier and lint
+      - run: npm run lint
+      - run: npm run format
       # finally run the tests
       - run: npm run test
