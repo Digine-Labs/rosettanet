@@ -1,1 +1,3 @@
-console.log('Hello Rosetta')
+import { StartListening } from './server'
+
+StartListening()
