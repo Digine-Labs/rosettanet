@@ -1,10 +1,28 @@
-import { RPCResponse } from '../../types/types'
+import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import { callStarknet } from '../../utils/callHelper'
 
-// TODO: This is just for handler impl. We should return chain id from starknet rpc.
-export function getChainIdHandler(): RPCResponse {
+export async function chainIdHandler(
+  request: RPCRequest,
+): Promise<RPCResponse | RPCError> {
+  // TODO: dynamic network from env?
+  const response: RPCResponse | string = await callStarknet('testnet', {
+    jsonrpc: request.jsonrpc,
+    method: 'starknet_chainId',
+    params: [],
+    id: request.id,
+  })
+
+  if (typeof response === 'string') {
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: response,
+    }
+  }
+
   return {
     jsonrpc: '2.0',
     id: 1,
-    result: '0x534e5f4d41494e',
+    result: response.result,
   }
 }
