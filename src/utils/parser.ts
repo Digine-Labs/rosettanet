@@ -7,12 +7,13 @@ export function parseRequest(
   next: NextFunction,
 ) {
   if (
-    req.body.jsonrpc !== undefined &&
-    req.body.method !== undefined &&
-    req.body.params !== undefined
+    req.body.jsonrpc !== undefined ||
+    req.body.method !== undefined ||
+    req.body.params !== undefined ||
+    req.body.id !== undefined
   ) {
-    const { jsonrpc, method, params } = req.body
-    req.rpcRequest = { jsonrpc, method, params }
+    const { jsonrpc, method, params, id } = req.body
+    req.rpcRequest = { jsonrpc, method, params, id }
     next()
     return
   }

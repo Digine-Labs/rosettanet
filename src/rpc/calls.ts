@@ -1,22 +1,22 @@
 import { Router, Response } from 'express'
 import { ParsedRequest, ResponseHandler, RPCError } from '../types/types'
 import { revertWithError } from '../utils/parser'
-import { getChainIdHandler } from './calls/chainId'
+import { chainIdHandler } from './calls/chainId'
 
 const router: Router = Router()
 
 const Methods = new Map<string, ResponseHandler>([])
 Methods.set('eth_chainId', {
   method: 'eth_chainId',
-  handler: getChainIdHandler,
+  handler: chainIdHandler,
 })
 
-router.post('/', function (req: ParsedRequest, res: Response) {
+router.post('/', async function (req: ParsedRequest, res: Response) {
   const request = req.rpcRequest
   if (request?.method && request?.params && Methods.has(request.method)) {
     const handler: ResponseHandler | undefined = Methods.get(request.method)
     if (handler) {
-      const result = handler.handler(request.params)
+      const result = await handler.handler(request)
 
       res.send(result)
       return
@@ -30,8 +30,6 @@ router.post('/', function (req: ParsedRequest, res: Response) {
     revertWithError(res, 405, error)
     return
   }
-
-  res.send('Hello')
 })
 
 export default router

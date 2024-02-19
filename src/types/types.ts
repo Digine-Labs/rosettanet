@@ -8,6 +8,7 @@ export interface RPCRequest {
   jsonrpc: string
   method: string
   params: Array<string | number | boolean>
+  id: number
 }
 
 export interface RPCError {
@@ -24,5 +25,5 @@ export interface RPCResponse {
 
 export interface ResponseHandler {
   method: string
-  handler(params?: Array<string | number | boolean> | undefined): RPCResponse
+  handler(request?: RPCRequest | undefined): Promise<RPCResponse | RPCError>
 }
