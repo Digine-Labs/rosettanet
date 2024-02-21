@@ -31,7 +31,7 @@ export async function callStarknet(
 export async function forwardRequest(
   request: RPCRequest,
   method: string,
-  params: any[]
+  params: Array<string | number | boolean>,
 ): Promise<RPCResponse | RPCError> {
   // TODO: dynamic network from env?
   const network = 'testnet'
