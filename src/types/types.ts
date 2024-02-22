@@ -7,7 +7,7 @@ export interface ParsedRequest extends Request {
 export interface RPCRequest {
   jsonrpc: string
   method: string
-  params: Array<string | number | boolean>
+  params: Array<string | number | boolean | object>
   id: number
 }
 
@@ -20,7 +20,7 @@ export interface RPCError {
 export interface RPCResponse {
   jsonrpc: string
   id: number
-  result: string | number | boolean | Array<string | number | boolean>
+  result: string | number | boolean | Array<string | number | boolean | object>
 }
 
 export interface ResponseHandler {
