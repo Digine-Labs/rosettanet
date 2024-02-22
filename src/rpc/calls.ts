@@ -2,6 +2,7 @@ import { Router, Response } from 'express'
 import { ParsedRequest, ResponseHandler, RPCError } from '../types/types'
 import { revertWithError } from '../utils/parser'
 import { chainIdHandler } from './calls/chainId'
+import { maxPriorityFeePerGasHandler } from './calls/maxPriorityFeePerGas'
 
 const router: Router = Router()
 
@@ -9,6 +10,11 @@ const Methods = new Map<string, ResponseHandler>([])
 Methods.set('eth_chainId', {
   method: 'eth_chainId',
   handler: chainIdHandler,
+})
+
+Methods.set('eth_maxPriorityFeePerGas', {
+  method: 'eth_maxPriorityFeePerGas',
+  handler: maxPriorityFeePerGasHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
