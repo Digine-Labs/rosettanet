@@ -9,9 +9,10 @@ describe('Test block number request testnet', () => {
       params: [],
       id: 1,
     }
-    const result: RPCResponse = <RPCResponse>await blockNumberHandler(request)
+    const response: RPCResponse = <RPCResponse>await blockNumberHandler(request)
 
-    expect(typeof result.result).toBe('number')
-    expect(result.result).toBeGreaterThan(0)
+    expect(typeof response.result).toBe('string')
+    expect(response.result).toMatch(/^0x[0-9a-f]+$/)
+    expect(parseInt(<string>response.result, 16)).toBeGreaterThan(0)
   })
 })

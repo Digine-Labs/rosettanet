@@ -19,9 +19,11 @@ export async function blockNumberHandler(
     }
   }
 
+  const hexBlockNumber = '0x' + response.result.toString(16)
+
   return {
     jsonrpc: '2.0',
     id: 1,
-    result: response.result,
+    result: hexBlockNumber,
   }
 }
