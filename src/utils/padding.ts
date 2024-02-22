@@ -1,11 +1,14 @@
 export function hexPadding(value: string, targetLength: number): string {
+    if (value.length === 0){
+        return "0x" + "0".repeat(targetLength);
+    }
     if (!isHex(value) || value.length > targetLength){
         return value
     }
     if(value.startsWith("0x")){
-        return "0x" + value.padStart(targetLength, "0");
+        return "0x" + value.substring(2).padStart(targetLength, "0");
     }
-    return value.padStart(targetLength, "0");
+    return "0x"+ value.padStart(targetLength, "0");
     
 }
 
