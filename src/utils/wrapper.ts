@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+const CONTRACT_ADDRESS = {
+    "goerli" : "0x0491e3b69bea8f0a8a65e37425d10ebc91f889b7bddc9fcb26886cd0518111b4",
+    "mainnet": ""
+}
 export async function getEthAddressFromSnAddress(
   ethAddress: string,
 ): Promise<string> {

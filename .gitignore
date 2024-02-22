@@ -20,3 +20,5 @@ contracts/scarb.lock
 contracts/target/
 .tool-versions
 contracts/.snfoundry_cache/.prev_tests_failed
+contracts/account
+contracts/keystore
