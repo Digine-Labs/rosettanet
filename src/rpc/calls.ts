@@ -4,6 +4,7 @@ import { revertWithError } from '../utils/parser'
 import { chainIdHandler } from './calls/chainId'
 import { maxPriorityFeePerGasHandler } from './calls/maxPriorityFeePerGas'
 import { blockNumberHandler } from './calls/blockNumber'
+import { getStorageAtHandler } from './calls/getStorageAt'
 
 const router: Router = Router()
 
@@ -21,6 +22,11 @@ Methods.set('eth_maxPriorityFeePerGas', {
 Methods.set('eth_blockNumber', {
   method: 'eth_blockNumber',
   handler: blockNumberHandler,
+})
+
+Methods.set('eth_getStorageAt', {
+  method: 'eth_getStorageAt',
+  handler: getStorageAtHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
