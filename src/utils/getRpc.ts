@@ -1,14 +1,8 @@
 export const mainnetRpc = [
-  'https://free-rpc.nethermind.io/mainnet-juno',
-  'https://starknet-mainnet.public.blastapi.io',
-  'https://rpc.starknet.lava.build',
-  'https://starknet.drpc.org',
+  'https://starknet-mainnet.public.blastapi.io/rpc/v0_6',
 ]
 export const testnetRpc = [
-  'https://free-rpc.nethermind.io/goerli-juno',
-  'https://starknet-testnet.public.blastapi.io',
-  'https://rpc.starknet-testnet.lava.build',
-  'https://starknet-testnet.drpc.org',
+  'https://starknet-testnet.public.blastapi.io/rpc/v0_6',
 ]
 
 export const getRpc = (network?: string): string => {
