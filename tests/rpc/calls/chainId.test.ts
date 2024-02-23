@@ -1,5 +1,6 @@
 import { chainIdHandler } from '../../../src/rpc/calls/chainId'
 import { RPCResponse } from '../../../src/types/types'
+
 describe('Test Chain ID request testnet', () => {
   it('Returns chain ID', async () => {
     const request = {
