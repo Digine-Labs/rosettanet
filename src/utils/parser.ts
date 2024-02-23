@@ -7,11 +7,12 @@ export function parseRequest(
   next: NextFunction,
 ) {
   if (
-    req.body.jsonrpc !== undefined ||
-    req.body.method !== undefined ||
-    req.body.params !== undefined ||
-    req.body.id !== undefined
+    req.body.jsonrpc &&
+    req.body.method &&
+    req.body.params &&
+    req.body.id
   ) {
+    // TODO: Also validate types 
     const { jsonrpc, method, params, id } = req.body
     req.rpcRequest = { jsonrpc, method, params, id }
     next()
@@ -31,10 +32,10 @@ export function revertWithError(
   error: RPCError,
 ) {
   res.status(statusCode).send(
-    JSON.stringify({
+    {
       jsonrpc: '2.0',
       id: 0,
       error,
-    }),
+    },
   )
 }
