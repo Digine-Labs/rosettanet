@@ -27,3 +27,8 @@ export interface ResponseHandler {
   method: string
   handler(request?: RPCRequest | undefined): Promise<RPCResponse | RPCError>
 }
+
+export interface StarknetType {
+  name: string
+  converter(value: string): string | Array<string> | undefined
+}
