@@ -1,6 +1,8 @@
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { hexPadding } from '../../utils/padding'
+import { validateEthAddress } from '../../utils/validations';
+import { getSnAddressFromEthAddress } from '../../utils/wrapper';
 
 const ETH_GET_STORAGE_AT_RESULT_LENGTH = 64;
 
@@ -10,12 +12,32 @@ export async function getStorageAtHandler(
     // TODO: dynamic network from env?
   const network = 'testnet'
   const method = 'starknet_getStorageAt'
-  const response: RPCResponse | string = await callStarknet(network, {
+  
+  if(request.params.length == 0){
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: "params should not be empty",
+    }
+  }
+
+  const ethAddress = request.params[0] as string;
+  if(!validateEthAddress(ethAddress)){
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: "invalid eth address",
+    }
+  }
+  
+  const snAddress = await getSnAddressFromEthAddress(ethAddress);
+  const starknet_params = {
     jsonrpc: request.jsonrpc,
     method: method,
-    params: request.params,
+    params: [snAddress, ...request.params.slice(1)],
     id: request.id,
-  })
+  }
+  const response: RPCResponse | string = await callStarknet(network, starknet_params)
 
   if (typeof response === 'string') {
     return {
