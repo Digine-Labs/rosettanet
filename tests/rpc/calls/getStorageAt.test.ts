@@ -1,6 +1,5 @@
 import { getStorageAtHandler } from '../../../src/rpc/calls/getStorageAt'
 import { RPCResponse } from '../../../src/types/types'
-import { getSnAddressFromEthAddress } from '../../../src/utils/wrapper'
 
 describe('Test get Storage At request testnet', () => {
   it('Returns storage address', async () => {

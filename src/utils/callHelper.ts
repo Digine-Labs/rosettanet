@@ -1,5 +1,5 @@
 import { getRpc } from './getRpc'
-import { RPCRequest, RPCResponse, RPCError } from '../types/types'
+import { RPCRequest, RPCResponse } from '../types/types'
 import axios from 'axios'
 
 export async function callStarknet(
