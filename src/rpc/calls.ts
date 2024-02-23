@@ -3,6 +3,7 @@ import { ParsedRequest, ResponseHandler, RPCError } from '../types/types'
 import { revertWithError } from '../utils/parser'
 import { chainIdHandler } from './calls/chainId'
 import { maxPriorityFeePerGasHandler } from './calls/maxPriorityFeePerGas'
+import { blockNumberHandler } from './calls/blockNumber'
 
 const router: Router = Router()
 
@@ -15,6 +16,11 @@ Methods.set('eth_chainId', {
 Methods.set('eth_maxPriorityFeePerGas', {
   method: 'eth_maxPriorityFeePerGas',
   handler: maxPriorityFeePerGasHandler,
+})
+
+Methods.set('eth_blockNumber', {
+  method: 'eth_blockNumber',
+  handler: blockNumberHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
