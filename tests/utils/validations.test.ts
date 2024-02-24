@@ -1,6 +1,9 @@
 import { validateEthAddress, validateSnAddress } from "../../src/utils/validations"
 
 describe("Test Address validations", ()=>{
+    //
+    //Testcases for ethereum address validations
+    //
     it("return true if the ethereum address is valid", async () => {
        const result= validateEthAddress("0xd3fcc84644ddd6b96f7c741b1562b82f9e004dc7")
        expect(result).toBe(true)
@@ -25,6 +28,9 @@ describe("Test Address validations", ()=>{
         const result=validateEthAddress("0XD3FCC84644DDD6B96F7C741B1562B82F9E004DC7")
         expect(result).toBe(true)
     })
+    //
+    //Testcases fot the starknet address validations
+    //
     it("return true if the starknet address is valid", async () => {
         const result= validateSnAddress("0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7")
         expect(result).toBe(true)
