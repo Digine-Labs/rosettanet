@@ -1,6 +1,4 @@
-import { addHexPrefix, hexPadding, removeHexPrefix } from './padding'
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import { addHexPrefix, removeHexPrefix } from './padding'
 export function validateEthAddress(ethAddress: string): boolean {
   if (!ethAddress) {
     return false
