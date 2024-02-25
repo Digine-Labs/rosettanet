@@ -5,6 +5,7 @@ import { chainIdHandler } from './calls/chainId'
 import { maxPriorityFeePerGasHandler } from './calls/maxPriorityFeePerGas'
 import { blockNumberHandler } from './calls/blockNumber'
 import { getStorageAtHandler } from './calls/getStorageAt'
+import { getTransactionReceiptHandler } from './calls/getTransactionReceipt'
 
 const router: Router = Router()
 
@@ -27,6 +28,11 @@ Methods.set('eth_blockNumber', {
 Methods.set('eth_getStorageAt', {
   method: 'eth_getStorageAt',
   handler: getStorageAtHandler,
+})
+
+Methods.set('eth_getTransactionReceipt', {
+  method: 'eth_getTransactionReceipt',
+  handler: getTransactionReceiptHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
