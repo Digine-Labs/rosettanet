@@ -31,13 +31,29 @@ export async function getTransactionReceiptHandler(
     }
   }
 
+  // TODO: expect that `callStarknet` might return an RPC error response
+  if ((response as unknown as { error: unknown }).error) {
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: 'Starknet RPC error',
+    }
+  }
+
   // TODO: use a schema validation library such as zod or manually(?) check the properties of the result object
   const result = response.result as {
     type: 'INVOKE' | 'L1_HANDLER' | 'DECLARE' | 'DEPLOY' | 'DEPLOY_ACCOUNT'
     transaction_hash: string
-    actual_fee: string
+    actual_fee: {
+      amount: string
+      unit: 'WEI'
+    }
     messages_sent: unknown
-    events: unknown
+    events: {
+      from_address: string
+      keys: string[]
+      data: string[]
+    }[]
     execution_resources: unknown
     execution_result: unknown
     contract_address?: string // only on DEPLOY and DEPLOY_ACCOUNT transactions
@@ -47,24 +63,50 @@ export async function getTransactionReceiptHandler(
     message_hash?: string // only on L1_HANDLER transactions
   }
 
+  // might return an error for pending transactions because `eth_getTransactionReceipt` method doesn't work with pending transactions
   return {
     jsonrpc: '2.0',
     id: 1,
     result: {
       transactionHash: result.transaction_hash,
-      blockHash: result.block_hash ?? '0x0',
+      // TODO: find what to use when block hash doesn't exist for pending transactions
+      blockHash: result.block_hash ?? '0xtodo',
+      // TODO: find what to use when block number doesn't exist for pending transactions
       blockNumber: '0x' + (result.block_number ?? 0).toString(16),
-      logs: [], // TODO: transform `events` to `logs`
+      // TODO: transform `events` to `logs`
+      logs: result.events.map(event => ({
+        transactionHash: result.transaction_hash,
+        // TODO: not sure if `from_address` is `address` equivalent
+        address: event.from_address,
+        // TODO: find what to use when block hash doesn't exist for pending transactions
+        blockHash: result.block_hash ?? '0xtodo',
+        // TODO: find what to use when block number doesn't exist for pending transactions
+        blockNumber: '0x' + (result.block_number ?? 0).toString(16),
+        // TODO: find what to use for data, StarkNet events have multiple datas instead of a single one
+        data: '0xtodo',
+        // TODO: find what to use for log index
+        logIndex: '0xtodo',
+        removed: false,
+        // TODO: find what to use for topics
+        topics: [],
+        // TODO: find a way to get transaction index or hardcode a value
+        transactionIndex: '0xtodo',
+      })),
       contractAddress: result.contract_address ?? null,
-      effectiveGasPrice: '0x2d7003407', // TODO: implement this
-      cumulativeGasUsed: result.actual_fee,
-      from: '0x5067c042e35881843f2b31dfc2db1f4f272ef48c', // TODO: implement this
-      gasUsed: result.actual_fee,
-      logsBloom: '0x0', // hardcoded
-      status: '0x0', // TODO: implement this
-      to: '0x3ee18b2214aff97000d974cf647e7c347e8fa585', // TODO: implement this
-      transactionIndex: '0x4e', // TODO: implement this
-      type: '0x0', // TODO: implement this
+      // TODO: find what to use as effective gas price or hardcode a value
+      effectiveGasPrice: '0xtodo',
+      cumulativeGasUsed: result.actual_fee.amount,
+      // TODO: find a way to get sender address, use null or hardcode a value
+      from: '0xtodo',
+      gasUsed: result.actual_fee.amount,
+      logsBloom: '0x0',
+      status: '0x1',
+      // TODO: find a way to get contract address, use null or hardcode a value
+      to: '0xtodo',
+      // TODO: find a way to get transaction index or hardcode a value
+      transactionIndex: '0xtodo',
+      // TODO: find which one to hardcode 0x0, 0x1 or 0x2
+      type: '0xtodo',
     },
   }
 }
