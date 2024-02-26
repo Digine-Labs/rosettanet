@@ -1,4 +1,21 @@
 {
   "projectName": "rosettanet",
-  "projectOwner": "keep-starknet-strange"
+  "projectOwner": "keep-starknet-strange",
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "ametel01",
+      "name": "Alex Metelli",
+      "avatar_url": "https://avatars.githubusercontent.com/u/91626827?v=4",
+      "profile": "https://github.com/ametel01",
+      "contributions": [
+        "code"
+      ]
+    }
+  ]
 }
