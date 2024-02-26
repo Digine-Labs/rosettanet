@@ -56,6 +56,16 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "JimmyFate",
+      "name": "Jimmy Fate",
+      "avatar_url": "https://avatars.githubusercontent.com/u/158521482?v=4",
+      "profile": "https://github.com/JimmyFate",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ]
 }
