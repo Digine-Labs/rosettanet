@@ -1,4 +1,22 @@
 {
   "projectName": "rosettanet",
-  "projectOwner": "keep-starknet-strange"
+  "projectOwner": "keep-starknet-strange",
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "ermvrs",
+      "name": "Erim",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3417324?v=4",
+      "profile": "https://github.com/ermvrs",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    }
+  ]
 }
