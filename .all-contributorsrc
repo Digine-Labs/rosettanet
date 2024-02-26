@@ -15,11 +15,23 @@
       "profile": "https://github.com/ametel01",
       "contributions": [
         "code"
-    ]}, {
+      ]
+    },
+    {
       "login": "ermvrs",
       "name": "Erim",
       "avatar_url": "https://avatars.githubusercontent.com/u/3417324?v=4",
       "profile": "https://github.com/ermvrs",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "Boreas09",
+      "name": "Bora Atik",
+      "avatar_url": "https://avatars.githubusercontent.com/u/90131638?v=4",
+      "profile": "https://github.com/Boreas09",
       "contributions": [
         "code",
         "test"
