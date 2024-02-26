@@ -3,6 +3,7 @@ import { ParsedRequest, ResponseHandler, RPCError } from '../types/types'
 import { revertWithError } from '../utils/parser'
 import { chainIdHandler } from './calls/chainId'
 import { maxPriorityFeePerGasHandler } from './calls/maxPriorityFeePerGas'
+import { gasPriceHandler } from './calls/gasPrice'
 import { blockNumberHandler } from './calls/blockNumber'
 import { getStorageAtHandler } from './calls/getStorageAt'
 
@@ -17,6 +18,11 @@ Methods.set('eth_chainId', {
 Methods.set('eth_maxPriorityFeePerGas', {
   method: 'eth_maxPriorityFeePerGas',
   handler: maxPriorityFeePerGasHandler,
+})
+
+Methods.set('eth_gasPrice', {
+  method: 'eth_gasPrice',
+  handler: gasPriceHandler,
 })
 
 Methods.set('eth_blockNumber', {
