@@ -42,6 +42,7 @@ Here is a high-level overview of the architecture of Rosettanet:
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ametel01"><img src="https://avatars.githubusercontent.com/u/91626827?v=4?s=100" width="100px;" alt="Alex Metelli"/><br /><sub><b>Alex Metelli</b></sub></a><br /><a href="#code-ametel01" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ermvrs"><img src="https://avatars.githubusercontent.com/u/3417324?v=4?s=100" width="100px;" alt="Erim"/><br /><sub><b>Erim</b></sub></a><br /><a href="#code-ermvrs" title="Code">💻</a> <a href="#test-ermvrs" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Boreas09"><img src="https://avatars.githubusercontent.com/u/90131638?v=4?s=100" width="100px;" alt="Bora Atik"/><br /><sub><b>Bora Atik</b></sub></a><br /><a href="#code-Boreas09" title="Code">💻</a> <a href="#test-Boreas09" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ktarun1419"><img src="https://avatars.githubusercontent.com/u/86646398?v=4?s=100" width="100px;" alt="tarun kaushik"/><br /><sub><b>tarun kaushik</b></sub></a><br /><a href="#code-ktarun1419" title="Code">💻</a> <a href="#test-ktarun1419" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>
