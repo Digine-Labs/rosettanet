@@ -14,4 +14,15 @@ export function Uint256ToU256(
   return [low, high]
 }
 
+export function U256toUint256(value: Array<string>): string {
+  // Convert hex strings to BigInt
+  const low = BigInt(value[0])
+  const high = BigInt(value[1])
+
+  // Shift the high part by 64 bits to the left and add the low part
+  const result = (high << BigInt(64)) + low
+
+  return result.toString()
+}
+
 // TODO: support signed integers
