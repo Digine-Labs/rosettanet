@@ -38,7 +38,7 @@ Methods.set('eth_getStorageAt', {
 
 Methods.set('eth_call', {
   method: 'eth_call',
-  handler: callHandler
+  handler: callHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {

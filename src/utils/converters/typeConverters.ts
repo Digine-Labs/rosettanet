@@ -1,7 +1,6 @@
 export function convertSnToEth() {
-    // TODO: Converts sn type name to eth
-
-    /*
+  // TODO: Converts sn type name to eth
+  /*
         Examples:
 
         u256 => uint256,

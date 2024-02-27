@@ -1,7 +1,7 @@
 import { RPCError, RPCResponse } from '../../types/types'
 
 export async function callHandler(): Promise<RPCResponse | RPCError> {
-    // TODO
+  // TODO
   return {
     jsonrpc: '2.0',
     id: 1,
