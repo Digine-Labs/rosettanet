@@ -1,6 +1,5 @@
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
-import { hexPadding } from '../../utils/padding'
 import { validateEthAddress } from '../../utils/validations'
 import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 import { U256toUint256 } from '../../utils/converters/integer'
