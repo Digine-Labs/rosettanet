@@ -45,6 +45,7 @@ Here is a high-level overview of the architecture of Rosettanet:
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ktarun1419"><img src="https://avatars.githubusercontent.com/u/86646398?v=4?s=100" width="100px;" alt="tarun kaushik"/><br /><sub><b>tarun kaushik</b></sub></a><br /><a href="#code-ktarun1419" title="Code">💻</a> <a href="#test-ktarun1419" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/TropicalDog17"><img src="https://avatars.githubusercontent.com/u/79791913?v=4?s=100" width="100px;" alt="Tuan Tran"/><br /><sub><b>Tuan Tran</b></sub></a><br /><a href="#code-TropicalDog17" title="Code">💻</a> <a href="#test-TropicalDog17" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/JimmyFate"><img src="https://avatars.githubusercontent.com/u/158521482?v=4?s=100" width="100px;" alt="Jimmy Fate"/><br /><sub><b>Jimmy Fate</b></sub></a><br /><a href="#code-JimmyFate" title="Code">💻</a> <a href="#test-JimmyFate" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Akashneelesh"><img src="https://avatars.githubusercontent.com/u/66639153?v=4?s=100" width="100px;" alt="Akashneelesh"/><br /><sub><b>Akashneelesh</b></sub></a><br /><a href="#code-Akashneelesh" title="Code">💻</a> <a href="#test-Akashneelesh" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>
