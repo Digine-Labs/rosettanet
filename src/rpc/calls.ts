@@ -6,6 +6,7 @@ import { maxPriorityFeePerGasHandler } from './calls/maxPriorityFeePerGas'
 import { gasPriceHandler } from './calls/gasPrice'
 import { blockNumberHandler } from './calls/blockNumber'
 import { getStorageAtHandler } from './calls/getStorageAt'
+import { getBalanceHandler } from './calls/getBalance'
 import { callHandler } from './calls/call'
 
 const router: Router = Router()
@@ -39,6 +40,11 @@ Methods.set('eth_getStorageAt', {
 Methods.set('eth_call', {
   method: 'eth_call',
   handler: callHandler,
+})
+
+Methods.set('eth_getBalance', {
+  method: 'eth_getBalance',
+  handler: getBalanceHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {

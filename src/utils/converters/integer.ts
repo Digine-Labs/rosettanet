@@ -14,4 +14,13 @@ export function Uint256ToU256(
   return [low, high]
 }
 
+export function U256toUint256(value: Array<string>): string {
+  const low = BigInt(value[0])
+  const high = BigInt(value[1])
+
+  const result = (high << BigInt(64)) + low
+
+  return '0x' + result.toString(16)
+}
+
 // TODO: support signed integers
