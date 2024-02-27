@@ -14,6 +14,6 @@ describe('Test get Balance request testnet', () => {
     )
 
     expect(typeof starkResult.result).toBe('string')
-    expect(starkResult.result).toBe('4000000000000000')
+    expect(starkResult.result).toBe('0xe35fa931a0000')
   })
 })
