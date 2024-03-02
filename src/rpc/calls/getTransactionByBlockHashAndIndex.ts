@@ -1,5 +1,6 @@
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
+import { validateBlockHash } from '../../utils/validations'
 
 export async function getTransactionsByBlockHashAndIndexHandler(
   request: RPCRequest,
@@ -19,6 +20,15 @@ export async function getTransactionsByBlockHashAndIndexHandler(
   const blockHash = request.params[0] as string;
   const index = parseInt(request.params[1] as string, 16) // Convert index from hex to integer.
 
+  // Validate the block hash
+  if (!validateBlockHash(blockHash)) {
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: 'Invalid block hash',
+    }
+  }
+
   const response: RPCResponse | string = await callStarknet(network, {
     jsonrpc: request.jsonrpc,
     method,
@@ -26,35 +36,19 @@ export async function getTransactionsByBlockHashAndIndexHandler(
     id: request.id,
   })
 
-  if (typeof response === 'string') {
+  if (!response || typeof response === 'string') {
     return {
       code: 7979,
       message: 'Starknet RPC error',
-      data: response,
+      data: response || 'No response from StarkNet',
     }
   }
 
-  // Check if the response contains an error property
-  if ('error' in response) {
+  if (!response.result) {
     return {
       code: 7979,
       message: 'Starknet RPC error',
-      data: 'Starknet RPC error',
-    }
-  }
-  // Check if the block is pending by looking for pending-specific properties
-  const isPendingBlock = (block: any): boolean => {
-    // Check for required pending block properties
-    return 'parent_hash' in block && 'timestamp' in block && 'sequencer_address' in block &&
-          'l1_gas_price' in block && 'starknet_version' in block;
-  };
-
-  if (isPendingBlock(response.result)) {
-    // If it's a pending block, return an error response
-    return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'The block is still pending. Pending blocks cannot be processed.',
+      data: 'Response from StarkNet is missing result property',
     }
   }
 
@@ -101,6 +95,31 @@ export async function getTransactionsByBlockHashAndIndexHandler(
     }
   }
 
+  // Get the transaction recipt of this transaction
+  const transactionReceipt: RPCResponse | string = await callStarknet('testnet', {
+    jsonrpc: request.jsonrpc,
+    method: 'starknet_getTransactionReceipt',
+    params: [transaction.transaction_hash],
+    id: request.id,
+  })
+
+  if (typeof transactionReceipt === 'string') {
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: transactionReceipt,
+    }
+  }
+
+  const receiptRes = response.result as {
+    type: 'INVOKE' | 'L1_HANDLER' | 'DECLARE' | 'DEPLOY' | 'DEPLOY_ACCOUNT'
+    transaction_hash: string
+    actual_fee: {
+      amount: string
+      unit: 'WEI'
+    }
+  }
+
   // Map StarkNet signature components to Ethereum's v, r, s
   const signature = transaction.signature; // Assuming this is an array of FELT values
   let v = '0x1b'; // Placeholder, as StarkNet does not have a direct 'v' equivalent, or use `0x1c` (27 or 28)
@@ -115,8 +134,8 @@ export async function getTransactionsByBlockHashAndIndexHandler(
       blockHash: blockHash,
       blockNumber: '0x' + result.block_number.toString(16),
       from: transaction.sender_address,
-      gas: '0x0', // Placeholder, as StarkNet transactions don't directly map to gas.
-      gasPrice: '0x0', // Placeholder, StarkNet transactions use a different fee model.
+      gas: receiptRes.actual_fee.amount,
+      gasPrice: '0x' + result.l1_gas_price.price_in_wei,
       hash: transaction.transaction_hash,
       input: '0x' + transaction.calldata.join(''), // Concatenate calldata for simplicity.
       nonce: '0x' + parseInt(transaction.nonce).toString(16),
