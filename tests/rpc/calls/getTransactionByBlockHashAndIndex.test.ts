@@ -1,5 +1,5 @@
 import { getTransactionsByBlockHashAndIndexHandler } from '../../../src/rpc/calls/getTransactionByBlockHashAndIndex'
-import { RPCRequest, RPCResponse, RPCError } from '../../../src/types/types'
+import {RPCResponse, RPCError } from '../../../src/types/types'
 
 describe('Test getTransactionsByBlockHashAndIndexHandler', () => {
   it('Returns transaction details for a valid request', async () => {

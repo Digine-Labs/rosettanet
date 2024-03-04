@@ -113,7 +113,7 @@ export async function getTransactionsByBlockHashAndIndexHandler(
     };
     block_hash: string;
     block_number: number;
-    events: any[]; // Consider defining a more specific type for the elements in this array if possible
+    events: string[]; // Consider defining a more specific type for the elements in this array if possible
     execution_resources: {
       memory_holes: number;
       range_check_builtin_applications: number;
@@ -121,7 +121,7 @@ export async function getTransactionsByBlockHashAndIndexHandler(
     };
     execution_status: 'SUCCEEDED' | string; // Adjust as necessary to include other potential status values
     finality_status: 'ACCEPTED_ON_L1' | string; // Adjust as necessary to include other potential finality statuses
-    messages_sent: any[]; // Consider defining a more specific type for the elements in this array if possible
+    messages_sent: string[]; // Consider defining a more specific type for the elements in this array if possible
   }
 
   // Map StarkNet signature components to Ethereum's v, r, s

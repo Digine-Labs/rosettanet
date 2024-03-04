@@ -18,7 +18,6 @@ export async function callStarknet(
         },
       },
     )
-    console.log("For method:", request.method, " Returning data from callStarknet: ", data)
     return data
   } catch (error) {
     if (axios.isAxiosError(error)) {
