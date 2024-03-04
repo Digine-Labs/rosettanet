@@ -16,8 +16,8 @@ describe('Test get Block Count By Hash request testnet ', () => {
       await getBlockTransactionCountByHashHandler(request)
     )
 
-    expect(typeof response.result).toBe('number')
-    expect(response.result).toBe(41) // Verify here: https://testnet.starkscan.co/block/0x0627dadf33aecc02abe2530f1f2b091a24e7a119cc03851be4d559af47f22e93#transactions
+    expect(typeof response.result).toBe('string')
+    expect(response.result).toBe('0x29') // Verify here: https://testnet.starkscan.co/block/0x0627dadf33aecc02abe2530f1f2b091a24e7a119cc03851be4d559af47f22e93#transactions
   })
 
   it('Returns error message if block hash is invalid', async () => {

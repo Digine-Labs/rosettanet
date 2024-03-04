@@ -1,4 +1,3 @@
-
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateBlockHash } from '../../utils/validations'
@@ -24,9 +23,9 @@ export async function getBlockTransactionCountByHashHandler(
   // Validate block hash
   if (!validateBlockHash(blockHash)) {
     return {
-        code: 7979,
-        message: 'Starknet RPC error',
-        data: "Invalid block hash"
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: 'Invalid block hash',
     }
   }
 
@@ -41,13 +40,19 @@ export async function getBlockTransactionCountByHashHandler(
     id: request.id,
   })
 
-  if (typeof response === 'string') {
+  if (
+    typeof response === 'string' ||
+    response === null ||
+    response === undefined
+  ) {
     return {
       code: 7979,
       message: 'Starknet RPC error',
       data: response,
     }
   }
+
+  response.result = '0x' + response.result.toString(16)
 
   return {
     jsonrpc: '2.0',
