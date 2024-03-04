@@ -47,6 +47,9 @@ Here is a high-level overview of the architecture of Rosettanet:
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/JimmyFate"><img src="https://avatars.githubusercontent.com/u/158521482?v=4?s=100" width="100px;" alt="Jimmy Fate"/><br /><sub><b>Jimmy Fate</b></sub></a><br /><a href="#code-JimmyFate" title="Code">💻</a> <a href="#test-JimmyFate" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Akashneelesh"><img src="https://avatars.githubusercontent.com/u/66639153?v=4?s=100" width="100px;" alt="Akashneelesh"/><br /><sub><b>Akashneelesh</b></sub></a><br /><a href="#code-Akashneelesh" title="Code">💻</a> <a href="#test-Akashneelesh" title="Tests">⚠️</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://medium.com/@aryangodara_19887"><img src="https://avatars.githubusercontent.com/u/65490434?v=4?s=100" width="100px;" alt="Aryan Godara"/><br /><sub><b>Aryan Godara</b></sub></a><br /><a href="#code-AryanGodara" title="Code">💻</a> <a href="#test-AryanGodara" title="Tests">⚠️</a></td>
+    </tr>
   </tbody>
 </table>
 
