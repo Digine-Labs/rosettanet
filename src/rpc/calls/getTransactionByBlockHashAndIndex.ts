@@ -122,9 +122,9 @@ export async function getTransactionsByBlockHashAndIndexHandler(
 
   // Map StarkNet signature components to Ethereum's v, r, s
   const signature = transaction.signature; // Assuming this is an array of FELT values
-  let v = '0x1b'; // Placeholder, as StarkNet does not have a direct 'v' equivalent, or use `0x1c` (27 or 28)
-  let r = signature.length > 0 ? signature[0] : '0x0'; // Map the first signature element to 'r'
-  let s = signature.length > 1 ? signature[1] : '0x0'; // Map the second signature element to 's'
+  const v = '0x1b'; // Placeholder, as StarkNet does not have a direct 'v' equivalent, or use `0x1c` (27 or 28)
+  const r = signature.length > 0 ? signature[0] : '0x0'; // Map the first signature element to 'r'
+  const s = signature.length > 1 ? signature[1] : '0x0'; // Map the second signature element to 's'
 
   // Construct the Ethereum-like response, mapping StarkNet transaction details.
   return {
@@ -142,9 +142,9 @@ export async function getTransactionsByBlockHashAndIndexHandler(
       to: '0x', // StarkNet transactions may not always have a direct 'to' field.
       transactionIndex: '0x' + index.toString(16),
       value: '0x0', // StarkNet transactions don't directly map to ETH value transfers.
-      v: v,
-      r: r,
-      s: s,
+      v,
+      r,
+      s,
     },
   }
 }
