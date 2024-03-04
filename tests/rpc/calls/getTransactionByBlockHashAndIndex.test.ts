@@ -1,18 +1,13 @@
 import { getTransactionsByBlockHashAndIndexHandler } from '../../../src/rpc/calls/getTransactionByBlockHashAndIndex'
 import { RPCRequest, RPCResponse, RPCError } from '../../../src/types/types'
 
-// Mock the entire module for callHelper
-jest.mock('../../../src/utils/callHelper', () => ({
-    callStarknet: jest.fn(),
-  }));
-
 describe('Test getTransactionsByBlockHashAndIndexHandler', () => {
   it('Returns transaction details for a valid request', async () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getTransactionByBlockHashAndIndex',
       params: [
-        '0x7bcf1629508b7460d8adc4510ea8bbae12c87db555cff899fc17cf3688e8d4c',
+        '0x01806b8ff9e7ff189a563a07c7d18fbf5e30e4300dd4febb2779f5d56bfeef93',
         '0x02'
       ],
       id: 0,
@@ -22,24 +17,24 @@ describe('Test getTransactionsByBlockHashAndIndexHandler', () => {
     
     // Verify the structure and content of the response
     expect(typeof starkResult.result).toBe('object')
-    expect(starkResult.result).toMatchObject({
-      jsonrpc: '2.0',
+    expect(starkResult).toMatchObject({
       id: request.id,
+      jsonrpc: '2.0',
       result: {
-        blockHash: '0x1fc77fe9b65882b855e70b86e73da81a27690b39f30f2eb8dc01e8b5abd3679',
-        blockNumber: '0xe9f8f',
-        from: '0x1fc77fe9b65882b855e70b86e73da81a27690b39f30f2eb8dc01e8b5abd3679',
-        gas: '0x1643',
-        gasPrice: '0xee6b280',
-        hash: '0x13f9323288edb8bc93ef2fab2a9301351e1ef98af496710244bc9850555dc58',
-        input: '0x',
-        nonce: '0x47',
+        blockHash: '0x01806b8ff9e7ff189a563a07c7d18fbf5e30e4300dd4febb2779f5d56bfeef93',
+        blockNumber: '0xe9fc9',
+        from: '0x7497c28ff075311aee91ccbeca905698a0931077dc0556fafa7577910b4362f',
+        gas: '0x34453e2b238',
+        gasPrice: '0x0x3b9aca07',
+        hash: '0x5da9d4d4ea7aee2c95cebbe5bc99be05ef7ffeec28a979b896ad78fdc90c471',
+        input: '0x0x10x4c1337d55351eac9a0b74f3b8f0d3928e2bb781e5084686a892e66d49d510d0x34c4c150632e67baf44fc50e9a685184d72a822510a26a66f72058b5e7b28920x0',
+        nonce: '0x11d',
         to: '0x', // StarkNet transactions may not always have a direct 'to' field.
-        transactionIndex: '0x00',
+        transactionIndex: '0x2',
         value: '0x0', // StarkNet transactions don't directly map to ETH value transfers.
         v: '0x1b',
-        r: '0x6ce403ad8e4c5b2d6352c50eeff02904ad96fc5cc55a5686b48c7bec5cf89d0',
-        s: '0x2aa305967febd05a0d0a9ab32c7e84a52b082b3784e89eb535ac9ca43c68b82',
+        r: '0x33c21de8050c98f869c30fcf725cb78891c95c2b825d6b776c91d0415ad17ce',
+        s: '0x27fde752541931c319833a359c63d25abcc5b28b7ec54b8d99ec6107c581bc4',
       },
     })
   })

@@ -32,7 +32,7 @@ export async function getTransactionsByBlockHashAndIndexHandler(
   const response: RPCResponse | string = await callStarknet(network, {
     jsonrpc: request.jsonrpc,
     method,
-    params: [blockHash],
+    params: [{ block_hash: blockHash }],
     id: request.id,
   })
 
@@ -44,13 +44,6 @@ export async function getTransactionsByBlockHashAndIndexHandler(
     }
   }
 
-  if (!response.result) {
-    return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Response from StarkNet is missing result property',
-    }
-  }
 
   const result = response.result as {
     block_hash: string;
@@ -111,13 +104,24 @@ export async function getTransactionsByBlockHashAndIndexHandler(
     }
   }
 
-  const receiptRes = response.result as {
-    type: 'INVOKE' | 'L1_HANDLER' | 'DECLARE' | 'DEPLOY' | 'DEPLOY_ACCOUNT'
-    transaction_hash: string
+  const receiptRes = transactionReceipt.result as {
+    type: 'INVOKE' | 'L1_HANDLER' | 'DECLARE' | 'DEPLOY' | 'DEPLOY_ACCOUNT';
+    transaction_hash: string;
     actual_fee: {
-      amount: string
-      unit: 'WEI'
-    }
+      amount: string;
+      unit: 'WEI';
+    };
+    block_hash: string;
+    block_number: number;
+    events: any[]; // Consider defining a more specific type for the elements in this array if possible
+    execution_resources: {
+      memory_holes: number;
+      range_check_builtin_applications: number;
+      steps: number;
+    };
+    execution_status: 'SUCCEEDED' | string; // Adjust as necessary to include other potential status values
+    finality_status: 'ACCEPTED_ON_L1' | string; // Adjust as necessary to include other potential finality statuses
+    messages_sent: any[]; // Consider defining a more specific type for the elements in this array if possible
   }
 
   // Map StarkNet signature components to Ethereum's v, r, s
