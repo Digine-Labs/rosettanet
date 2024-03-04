@@ -9,6 +9,7 @@ import { getStorageAtHandler } from './calls/getStorageAt'
 import { getBalanceHandler } from './calls/getBalance'
 import { callHandler } from './calls/call'
 import { getBlockTransactionCountByHashHandler } from './calls/getBlockTransactionCountByHash'
+import { getTransactionsByBlockHashAndIndexHandler } from './calls/getTransactionByBlockHashAndIndex'
 
 const router: Router = Router()
 
@@ -51,6 +52,11 @@ Methods.set('eth_getBalance', {
 Methods.set('eth_getBlockTransactionCountByHash', {
   method: 'eth_getBlockTransactionCountByHash',
   handler: getBlockTransactionCountByHashHandler,
+})
+
+Methods.set('eth_getTransactionByBlockHashAndIndex', {
+  method: 'eth_getTransactionByBlockHashAndIndex',
+  handler: getTransactionsByBlockHashAndIndexHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
