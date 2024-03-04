@@ -15,7 +15,7 @@ export function parseRequest(
   }
   const error: RPCError = {
     code: 7979,
-    message: 'Bad response format',
+    message: 'Bad request format',
     data: '405 Not Allowed',
   }
   revertWithError(res, 405, error)
