@@ -20,7 +20,7 @@ export interface RPCError {
 export interface RPCResponse {
   jsonrpc: string
   id: number
-  result: string | number | boolean | Array<string | number | boolean | object>
+  result: string | number | boolean | object | Array<string | number | boolean | object>
 }
 
 export interface ResponseHandler {

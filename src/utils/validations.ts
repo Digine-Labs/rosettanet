@@ -24,3 +24,21 @@ export function validateSnAddress(snAddress: string): boolean {
   }
   return true
 }
+
+export function validateBlockHash(blockHash: string): boolean {
+  if (!blockHash) {
+    return false;
+  }
+
+  // Ensure the block hash starts with '0x' and remove leading zeros
+  const normalizedBlockHash: string = addHexPrefix(
+    removeHexPrefix(blockHash).toLowerCase()
+  );
+
+  // StarkNet block hashes should be hex strings of variable length, typically 1 to 64 characters after '0x'
+  if (!normalizedBlockHash.match(/^(0x)?[0-9a-fA-F]{1,64}$/)) {
+    return false;
+  }
+
+  return true;
+}
