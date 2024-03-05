@@ -99,12 +99,12 @@ export async function getTransactionReceiptHandler(
     jsonrpc: '2.0',
     id: 1,
     result: {
-      transactionHash: result1.transaction_hash,
+      transactionHash: transactionHash,
       blockHash: result1.block_hash!,
       blockNumber: '0x' + result1.block_number!.toString(16),
       logs: await Promise.all(
         result1.events.map(async (event, i) => ({
-          transactionHash: result1.transaction_hash,
+          transactionHash: transactionHash,
           address: await getEthAddressFromSnAddress(event.from_address),
           blockHash: result1.block_hash!,
           blockNumber: '0x' + result1.block_number!.toString(16),
