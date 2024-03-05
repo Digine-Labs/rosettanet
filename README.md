@@ -49,6 +49,7 @@ Here is a high-level overview of the architecture of Rosettanet:
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://medium.com/@aryangodara_19887"><img src="https://avatars.githubusercontent.com/u/65490434?v=4?s=100" width="100px;" alt="Aryan Godara"/><br /><sub><b>Aryan Godara</b></sub></a><br /><a href="#code-AryanGodara" title="Code">💻</a> <a href="#test-AryanGodara" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/princeibs"><img src="https://avatars.githubusercontent.com/u/64266194?v=4?s=100" width="100px;" alt="princeibs"/><br /><sub><b>princeibs</b></sub></a><br /><a href="#code-princeibs" title="Code">💻</a> <a href="#test-princeibs" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>
