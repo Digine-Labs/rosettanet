@@ -43,19 +43,14 @@ export function validateBlockHash(blockHash: string): boolean {
   return true;
 }
 
-export function validateBlockNumber(value: string) : boolean {
-  if (value.startsWith('0x')) {
-    value = value.slice(2);
-  }
-  if (value.length === 0) {
+export function validateBlockNumber(value: string | number | boolean | object) : boolean{
+  // Reject if not a number
+  if(typeof value !== 'number'){
     return false;
   }
-
-  const blockNumber = parseInt(value, 10);
-  if (isNaN(blockNumber) || blockNumber < 0) {
+  if(value < 0){
     return false;
   }
-
   return true;
 }
 

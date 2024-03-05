@@ -1,8 +1,8 @@
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
-import { validateBlockHash, validateBlockNumber } from '../../utils/validations'
+import {validateBlockNumber } from '../../utils/validations'
 
-export async function getBlockTransactionCountByHashHandler(
+export async function getBlockTransactionCountByNumberHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
   // TODO: Dynamic network from env?
@@ -18,8 +18,9 @@ export async function getBlockTransactionCountByHashHandler(
     }
   }
 
-  // Validate block number
-  const blockNumber = request.params[0] as string
+  
+  const blockNumber = request.params[0]
+
   if (!validateBlockNumber(blockNumber)) {
     return {
       code: 7979,
@@ -33,7 +34,7 @@ export async function getBlockTransactionCountByHashHandler(
     method,
     params: [
       {
-        block_number: blockNumber,
+        block_number: blockNumber as number,
       },
     ],
     id: request.id,
@@ -51,6 +52,7 @@ export async function getBlockTransactionCountByHashHandler(
     }
   }
 
+  // Convert the result to hex
   response.result = '0x' + response.result.toString(16)
 
   return {

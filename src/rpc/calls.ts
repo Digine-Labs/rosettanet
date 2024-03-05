@@ -10,6 +10,7 @@ import { getBalanceHandler } from './calls/getBalance'
 import { callHandler } from './calls/call'
 import { getBlockTransactionCountByHashHandler } from './calls/getBlockTransactionCountByHash'
 import { getTransactionsByBlockHashAndIndexHandler } from './calls/getTransactionByBlockHashAndIndex'
+import { getBlockTransactionCountByNumberHandler } from './calls/getBlockTransactionCountByNumber'
 
 const router: Router = Router()
 
@@ -57,6 +58,11 @@ Methods.set('eth_getBlockTransactionCountByHash', {
 Methods.set('eth_getTransactionByBlockHashAndIndex', {
   method: 'eth_getTransactionByBlockHashAndIndex',
   handler: getTransactionsByBlockHashAndIndexHandler,
+})
+
+Methods.set('eth_getBlockTransactionCountByNumber', {
+  method: 'eth_getBlockTransactionCountByNumber',
+  handler: getBlockTransactionCountByNumberHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
