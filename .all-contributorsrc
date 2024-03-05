@@ -1,0 +1,91 @@
+{
+  "projectName": "rosettanet",
+  "projectOwner": "keep-starknet-strange",
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "ametel01",
+      "name": "Alex Metelli",
+      "avatar_url": "https://avatars.githubusercontent.com/u/91626827?v=4",
+      "profile": "https://github.com/ametel01",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ermvrs",
+      "name": "Erim",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3417324?v=4",
+      "profile": "https://github.com/ermvrs",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "Boreas09",
+      "name": "Bora Atik",
+      "avatar_url": "https://avatars.githubusercontent.com/u/90131638?v=4",
+      "profile": "https://github.com/Boreas09",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "ktarun1419",
+      "name": "tarun kaushik",
+      "avatar_url": "https://avatars.githubusercontent.com/u/86646398?v=4",
+      "profile": "https://github.com/ktarun1419",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "TropicalDog17",
+      "name": "Tuan Tran",
+      "avatar_url": "https://avatars.githubusercontent.com/u/79791913?v=4",
+      "profile": "https://github.com/TropicalDog17",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "JimmyFate",
+      "name": "Jimmy Fate",
+      "avatar_url": "https://avatars.githubusercontent.com/u/158521482?v=4",
+      "profile": "https://github.com/JimmyFate",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "Akashneelesh",
+      "name": "Akashneelesh",
+      "avatar_url": "https://avatars.githubusercontent.com/u/66639153?v=4",
+      "profile": "https://github.com/Akashneelesh",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "AryanGodara",
+      "name": "Aryan Godara",
+      "avatar_url": "https://avatars.githubusercontent.com/u/65490434?v=4",
+      "profile": "https://medium.com/@aryangodara_19887",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    }
+  ]
+}

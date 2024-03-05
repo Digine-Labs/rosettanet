@@ -30,3 +30,30 @@ See the [RPC README](src/README.md) for more information.
 Here is a high-level overview of the architecture of Rosettanet:
 
 [![Architecture](docs/architecture.png)](docs/architecture.png)
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ametel01"><img src="https://avatars.githubusercontent.com/u/91626827?v=4?s=100" width="100px;" alt="Alex Metelli"/><br /><sub><b>Alex Metelli</b></sub></a><br /><a href="#code-ametel01" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ermvrs"><img src="https://avatars.githubusercontent.com/u/3417324?v=4?s=100" width="100px;" alt="Erim"/><br /><sub><b>Erim</b></sub></a><br /><a href="#code-ermvrs" title="Code">💻</a> <a href="#test-ermvrs" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Boreas09"><img src="https://avatars.githubusercontent.com/u/90131638?v=4?s=100" width="100px;" alt="Bora Atik"/><br /><sub><b>Bora Atik</b></sub></a><br /><a href="#code-Boreas09" title="Code">💻</a> <a href="#test-Boreas09" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ktarun1419"><img src="https://avatars.githubusercontent.com/u/86646398?v=4?s=100" width="100px;" alt="tarun kaushik"/><br /><sub><b>tarun kaushik</b></sub></a><br /><a href="#code-ktarun1419" title="Code">💻</a> <a href="#test-ktarun1419" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/TropicalDog17"><img src="https://avatars.githubusercontent.com/u/79791913?v=4?s=100" width="100px;" alt="Tuan Tran"/><br /><sub><b>Tuan Tran</b></sub></a><br /><a href="#code-TropicalDog17" title="Code">💻</a> <a href="#test-TropicalDog17" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/JimmyFate"><img src="https://avatars.githubusercontent.com/u/158521482?v=4?s=100" width="100px;" alt="Jimmy Fate"/><br /><sub><b>Jimmy Fate</b></sub></a><br /><a href="#code-JimmyFate" title="Code">💻</a> <a href="#test-JimmyFate" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Akashneelesh"><img src="https://avatars.githubusercontent.com/u/66639153?v=4?s=100" width="100px;" alt="Akashneelesh"/><br /><sub><b>Akashneelesh</b></sub></a><br /><a href="#code-Akashneelesh" title="Code">💻</a> <a href="#test-Akashneelesh" title="Tests">⚠️</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://medium.com/@aryangodara_19887"><img src="https://avatars.githubusercontent.com/u/65490434?v=4?s=100" width="100px;" alt="Aryan Godara"/><br /><sub><b>Aryan Godara</b></sub></a><br /><a href="#code-AryanGodara" title="Code">💻</a> <a href="#test-AryanGodara" title="Tests">⚠️</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->

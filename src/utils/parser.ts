@@ -6,13 +6,8 @@ export function parseRequest(
   res: Response,
   next: NextFunction,
 ) {
-  if (
-    req.body.jsonrpc &&
-    req.body.method &&
-    req.body.params &&
-    req.body.id
-  ) {
-    // TODO: Also validate types 
+  if (req.body.jsonrpc && req.body.method && req.body.params && req.body.id) {
+    // TODO: Also validate types
     const { jsonrpc, method, params, id } = req.body
     req.rpcRequest = { jsonrpc, method, params, id }
     next()
@@ -20,7 +15,7 @@ export function parseRequest(
   }
   const error: RPCError = {
     code: 7979,
-    message: 'Bad response format',
+    message: 'Bad request format',
     data: '405 Not Allowed',
   }
   revertWithError(res, 405, error)
@@ -31,11 +26,9 @@ export function revertWithError(
   statusCode: number,
   error: RPCError,
 ) {
-  res.status(statusCode).send(
-    {
-      jsonrpc: '2.0',
-      id: 0,
-      error,
-    },
-  )
+  res.status(statusCode).send({
+    jsonrpc: '2.0',
+    id: 0,
+    error,
+  })
 }
