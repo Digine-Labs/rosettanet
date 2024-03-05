@@ -1,5 +1,6 @@
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
+import { getEthAddressFromSnAddress } from '../../utils/wrapper'
 
 export async function getTransactionReceiptHandler(
   request: RPCRequest,
@@ -90,6 +91,10 @@ export async function getTransactionReceiptHandler(
     result2.transactions[transactionIndex].sender_address ??
     '0x000000000000000000000000000000000000000000000000000000000000000'
 
+  const contractAddress = result1.contract_address
+    ? await getEthAddressFromSnAddress(result1.contract_address)
+    : null
+
   return {
     jsonrpc: '2.0',
     id: 1,
@@ -97,20 +102,22 @@ export async function getTransactionReceiptHandler(
       transactionHash: result1.transaction_hash,
       blockHash: result1.block_hash!,
       blockNumber: '0x' + result1.block_number!.toString(16),
-      logs: result1.events.map((event, i) => ({
-        transactionHash: result1.transaction_hash,
-        address: event.from_address,
-        blockHash: result1.block_hash!,
-        blockNumber: '0x' + result1.block_number!.toString(16),
-        // NOTE: hardcoded value
-        data: '0x0',
-        logIndex: '0x' + i.toString(16),
-        removed: false,
-        // NOTE: hardcoded value
-        topics: [],
-        transactionIndex: '0x' + transactionIndex.toString(16),
-      })),
-      contractAddress: result1.contract_address ?? null,
+      logs: await Promise.all(
+        result1.events.map(async (event, i) => ({
+          transactionHash: result1.transaction_hash,
+          address: await getEthAddressFromSnAddress(event.from_address),
+          blockHash: result1.block_hash!,
+          blockNumber: '0x' + result1.block_number!.toString(16),
+          // NOTE: hardcoded value
+          data: '0x0',
+          logIndex: '0x' + i.toString(16),
+          removed: false,
+          // NOTE: hardcoded value
+          topics: [],
+          transactionIndex: '0x' + transactionIndex.toString(16),
+        })),
+      ),
+      contractAddress: contractAddress,
       effectiveGasPrice: '0x1',
       cumulativeGasUsed: result1.actual_fee.amount,
       from: senderAddress,
@@ -118,7 +125,7 @@ export async function getTransactionReceiptHandler(
       logsBloom: '0x0',
       status: '0x1',
       // NOTE: hardcoded value
-      to: result1.contract_address
+      to: contractAddress
         ? null
         : '0x000000000000000000000000000000000000000000000000000000000000000',
       transactionIndex: '0x' + transactionIndex.toString(16),
