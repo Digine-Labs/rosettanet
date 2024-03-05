@@ -18,7 +18,7 @@ describe('Test get transaction receipt request testnet', () => {
     expect(typeof starkResult.result).toBe('object')
     expect(starkResult.result).toMatchObject({
       transactionHash:
-        '0x54b60a3d157a9b9a7d1734aaaf06db939ff5ae6b9c75e221cf8504f464ec0ef',
+        '0x054b60a3d157a9b9a7d1734aaaf06db939ff5ae6b9c75e221cf8504f464ec0ef',
       blockHash:
         '0x583a703ef5de667b9d19f87d5cc46ac140cc3ac5b3a2991555bd7c45fd58863',
       blockNumber: '0xe95c8',
@@ -33,7 +33,7 @@ describe('Test get transaction receipt request testnet', () => {
           removed: false,
           topics: [],
           transactionHash:
-            '0x54b60a3d157a9b9a7d1734aaaf06db939ff5ae6b9c75e221cf8504f464ec0ef',
+            '0x054b60a3d157a9b9a7d1734aaaf06db939ff5ae6b9c75e221cf8504f464ec0ef',
           transactionIndex: '0x1d',
         },
         {
@@ -46,7 +46,7 @@ describe('Test get transaction receipt request testnet', () => {
           removed: false,
           topics: [],
           transactionHash:
-            '0x54b60a3d157a9b9a7d1734aaaf06db939ff5ae6b9c75e221cf8504f464ec0ef',
+            '0x054b60a3d157a9b9a7d1734aaaf06db939ff5ae6b9c75e221cf8504f464ec0ef',
           transactionIndex: '0x1d',
         },
         {
@@ -59,7 +59,7 @@ describe('Test get transaction receipt request testnet', () => {
           removed: false,
           topics: [],
           transactionHash:
-            '0x54b60a3d157a9b9a7d1734aaaf06db939ff5ae6b9c75e221cf8504f464ec0ef',
+            '0x054b60a3d157a9b9a7d1734aaaf06db939ff5ae6b9c75e221cf8504f464ec0ef',
           transactionIndex: '0x1d',
         },
       ],
