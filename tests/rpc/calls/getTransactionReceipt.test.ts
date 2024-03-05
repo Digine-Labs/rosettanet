@@ -29,13 +29,13 @@ describe('Test get transaction receipt request testnet', () => {
           blockHash:
             '0x583a703ef5de667b9d19f87d5cc46ac140cc3ac5b3a2991555bd7c45fd58863',
           blockNumber: '0xe95c8',
-          data: '0xtodo',
-          logIndex: '0xtodo',
+          data: '0x0',
+          logIndex: '0x0',
           removed: false,
           topics: [],
           transactionHash:
             '0x54b60a3d157a9b9a7d1734aaaf06db939ff5ae6b9c75e221cf8504f464ec0ef',
-          transactionIndex: '0xtodo',
+          transactionIndex: '0x1d',
         },
         {
           address:
@@ -43,13 +43,13 @@ describe('Test get transaction receipt request testnet', () => {
           blockHash:
             '0x583a703ef5de667b9d19f87d5cc46ac140cc3ac5b3a2991555bd7c45fd58863',
           blockNumber: '0xe95c8',
-          data: '0xtodo',
-          logIndex: '0xtodo',
+          data: '0x0',
+          logIndex: '0x1',
           removed: false,
           topics: [],
           transactionHash:
             '0x54b60a3d157a9b9a7d1734aaaf06db939ff5ae6b9c75e221cf8504f464ec0ef',
-          transactionIndex: '0xtodo',
+          transactionIndex: '0x1d',
         },
         {
           address:
@@ -57,26 +57,26 @@ describe('Test get transaction receipt request testnet', () => {
           blockHash:
             '0x583a703ef5de667b9d19f87d5cc46ac140cc3ac5b3a2991555bd7c45fd58863',
           blockNumber: '0xe95c8',
-          data: '0xtodo',
-          logIndex: '0xtodo',
+          data: '0x0',
+          logIndex: '0x2',
           removed: false,
           topics: [],
           transactionHash:
             '0x54b60a3d157a9b9a7d1734aaaf06db939ff5ae6b9c75e221cf8504f464ec0ef',
-          transactionIndex: '0xtodo',
+          transactionIndex: '0x1d',
         },
       ],
       contractAddress:
         '0x52c6085f07d8381577703e656fd10dc1a95cdac6f7e8cf800a216606ffee4c7',
-      effectiveGasPrice: '0xtodo',
+      effectiveGasPrice: '0x1',
       cumulativeGasUsed: '0x30841e33136',
-      from: '0xtodo',
+      from: '0x000000000000000000000000000000000000000000000000000000000000000',
       gasUsed: '0x30841e33136',
       logsBloom: '0x0',
       status: '0x1',
-      to: '0xtodo',
-      transactionIndex: '0xtodo',
-      type: '0xtodo',
+      to: null,
+      transactionIndex: '0x1d',
+      type: '0x2',
     })
   })
 })
