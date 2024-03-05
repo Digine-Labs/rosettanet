@@ -24,8 +24,7 @@ describe('Test get transaction receipt request testnet', () => {
       blockNumber: '0xe95c8',
       logs: [
         {
-          address:
-            '0x52c6085f07d8381577703e656fd10dc1a95cdac6f7e8cf800a216606ffee4c7',
+          address: '0x56fd10dc1a95cdac6f7e8cf800a216606ffee4c7',
           blockHash:
             '0x583a703ef5de667b9d19f87d5cc46ac140cc3ac5b3a2991555bd7c45fd58863',
           blockNumber: '0xe95c8',
@@ -38,8 +37,7 @@ describe('Test get transaction receipt request testnet', () => {
           transactionIndex: '0x1d',
         },
         {
-          address:
-            '0x52c6085f07d8381577703e656fd10dc1a95cdac6f7e8cf800a216606ffee4c7',
+          address: '0x56fd10dc1a95cdac6f7e8cf800a216606ffee4c7',
           blockHash:
             '0x583a703ef5de667b9d19f87d5cc46ac140cc3ac5b3a2991555bd7c45fd58863',
           blockNumber: '0xe95c8',
@@ -52,8 +50,7 @@ describe('Test get transaction receipt request testnet', () => {
           transactionIndex: '0x1d',
         },
         {
-          address:
-            '0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
+          address: '0xd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
           blockHash:
             '0x583a703ef5de667b9d19f87d5cc46ac140cc3ac5b3a2991555bd7c45fd58863',
           blockNumber: '0xe95c8',
@@ -66,8 +63,7 @@ describe('Test get transaction receipt request testnet', () => {
           transactionIndex: '0x1d',
         },
       ],
-      contractAddress:
-        '0x52c6085f07d8381577703e656fd10dc1a95cdac6f7e8cf800a216606ffee4c7',
+      contractAddress: '0x56fd10dc1a95cdac6f7e8cf800a216606ffee4c7',
       effectiveGasPrice: '0x1',
       cumulativeGasUsed: '0x30841e33136',
       from: '0x000000000000000000000000000000000000000000000000000000000000000',
