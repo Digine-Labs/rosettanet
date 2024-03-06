@@ -10,6 +10,7 @@ import { getBalanceHandler } from './calls/getBalance'
 import { callHandler } from './calls/call'
 import { getTransactionsByBlockHashAndIndexHandler } from './calls/getTransactionByBlockHashAndIndex'
 import { getTransactionsByBlockNumberAndIndexHandler } from './calls/getTransactionByBlockNumberAndIndex'
+import { getBlockTransactionCountByHashHandler } from './calls/getBlockTransactionCountByHash'
 
 const router: Router = Router()
 
@@ -47,6 +48,11 @@ Methods.set('eth_call', {
 Methods.set('eth_getBalance', {
   method: 'eth_getBalance',
   handler: getBalanceHandler,
+})
+
+Methods.set('eth_getBlockTransactionCountByHash', {
+  method: 'eth_getBlockTransactionCountByHash',
+  handler: getBlockTransactionCountByHashHandler,
 })
 
 Methods.set('eth_getTransactionByBlockHashAndIndex', {
