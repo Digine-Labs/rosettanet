@@ -31,7 +31,7 @@ export async function getStorageAtHandler(
   }
 
   const snAddress = await getSnAddressFromEthAddress(ethAddress)
-  const snParams = {
+  const starknet_params = {
     jsonrpc: request.jsonrpc,
     method: method,
     params: [snAddress, ...request.params.slice(1)],
@@ -39,7 +39,7 @@ export async function getStorageAtHandler(
   }
   const response: RPCResponse | string = await callStarknet(
     network,
-    snParams,
+    starknet_params,
   )
 
   if (typeof response === 'string') {

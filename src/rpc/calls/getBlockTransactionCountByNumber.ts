@@ -1,6 +1,6 @@
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
-import {validateBlockNumber } from '../../utils/validations'
+import { validateBlockNumber } from '../../utils/validations'
 
 export async function getBlockTransactionCountByNumberHandler(
   request: RPCRequest,
@@ -18,7 +18,6 @@ export async function getBlockTransactionCountByNumberHandler(
     }
   }
 
-  
   const blockNumber = request.params[0]
 
   if (!validateBlockNumber(blockNumber)) {
@@ -40,11 +39,7 @@ export async function getBlockTransactionCountByNumberHandler(
     id: request.id,
   })
 
-  if (
-    typeof response === 'string' ||
-    response === null ||
-    response === undefined
-  ) {
+  if (!response || typeof response === 'string') {
     return {
       code: 7979,
       message: 'Starknet RPC error',
