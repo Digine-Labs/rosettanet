@@ -45,7 +45,7 @@ export function validateBlockHash(blockHash: string): boolean {
 
 export function validateBlockNumber(value: any): boolean {
   if (typeof value === 'number') {
-    return !isNaN(value) && value >= 0
+    return Number.isInteger(value as number) && value >= 0
   }
   return false
 }

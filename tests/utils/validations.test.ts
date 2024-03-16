@@ -77,8 +77,20 @@ describe('Test Address validations', () => {
     const result = validateBlockNumber(123)
     expect(result).toBe(true)
   }),
-  it('return false if block number is a negative number', async () => {
+    it('return false if block number is a negative number', async () => {
       const result = validateBlockNumber(-123)
       expect(result).toBe(false)
     })
+  it('return false if block number is a number string', async () => {
+    const result = validateBlockNumber('123')
+    expect(result).toBe(false)
+  })
+  it('return false if block number is not a number', async () => {
+    const result = validateBlockNumber('abc')
+    expect(result).toBe(false)
+  })
+  it('return false if block number is a decimal number', async () => {
+    const result = validateBlockNumber(123.123)
+    expect(result).toBe(false)
+  })
 })

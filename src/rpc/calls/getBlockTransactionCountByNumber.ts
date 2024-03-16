@@ -46,6 +46,13 @@ export async function getBlockTransactionCountByNumberHandler(
       data: response,
     }
   }
+  if ('error' in response) {
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: response.error as string,
+    }
+  }
 
   // Convert the result to hex
   response.result = '0x' + response.result.toString(16)
