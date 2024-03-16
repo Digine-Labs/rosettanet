@@ -1,5 +1,5 @@
 import { getTransactionsByBlockNumberAndIndexHandler } from '../../../src/rpc/calls/getTransactionByBlockNumberAndIndex'
-import { RPCRequest, RPCResponse } from '../../../src/types/types'
+import { RPCError, RPCRequest, RPCResponse } from '../../../src/types/types'
 
 describe('Test getTransactionByBlockNumberAndIndex', () => {
   it('Returns transaction details for a valid request', async () => {
@@ -54,11 +54,11 @@ describe('Test getTransactionByBlockNumberAndIndex', () => {
     expect(starknetResult).toMatchObject({
       code: 7979,
       message: 'Starknet RPC error',
-      data: 'Empty result body',
+      data: 'Invalid block number',
     })
   })
 
-  it('Returns RPC error ', async () => {
+  it('Returns RPC error when invalid transaction index is used', async () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getTransactionByBlockNumberAndIndex',
@@ -76,6 +76,43 @@ describe('Test getTransactionByBlockNumberAndIndex', () => {
       code: 7979,
       message: 'Starknet RPC error',
       data: 'Transaction not found or index out of bounds',
+    })
+  })
+
+  it('Returns error if parameter list is empty', async () => {
+    const request = {
+      jsonrpc: '2.0',
+      method: 'eth_getTransactionsByBlockNumberAndIndex',
+      params: [],
+      id: 0,
+    }
+    const response: RPCError = <RPCError>(
+      await getTransactionsByBlockNumberAndIndexHandler(request)
+    )
+    expect(response).toMatchObject({
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: 'Two parameters expected',
+    })
+  })
+
+  it('Error if block number is non-existent', async () => {
+    const request = {
+      jsonrpc: '2.0',
+      method: 'eth_getTransactionsByBlockNumberAndIndex',
+      params: [1000000000000, '0x03'],
+      id: 1,
+    }
+    const response: RPCError = <RPCError>(
+      await getTransactionsByBlockNumberAndIndexHandler(request)
+    )
+    expect(response).toMatchObject({
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: Object.create({
+        code: 24,
+        message: 'Block not found',
+      }) as string,
     })
   })
 })

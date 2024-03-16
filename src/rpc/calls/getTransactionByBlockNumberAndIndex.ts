@@ -1,5 +1,6 @@
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
+import { validateBlockNumber } from '../../utils/validations'
 
 export async function getTransactionsByBlockNumberAndIndexHandler(
   request: RPCRequest,
@@ -18,7 +19,14 @@ export async function getTransactionsByBlockNumberAndIndexHandler(
   const blockNumber = request.params[0] as number
   const index = parseInt(request.params[1] as string, 16) // Convert index from hex to integer
 
-  // TODO: Validate block number
+  // Validate block number
+  if (!validateBlockNumber(blockNumber)) {
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: 'Invalid block number',
+    }
+  }
 
   const response: RPCResponse | string = await callStarknet(network, {
     jsonrpc: request.jsonrpc,
