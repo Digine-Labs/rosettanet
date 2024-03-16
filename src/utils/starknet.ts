@@ -13,7 +13,7 @@ export async function getContractsMethods(contractAddress: string) {
   }
 
   // Get functions from abi
-  const funtionItems  = contractAbi.filter((abi) => 'items' in abi).map((abi) => abi.items);
+  const funtionItems = contractAbi.filter((abi) => 'items' in abi).reduce((acc, current) => acc.concat(current.items), []);
   // Return function methods
   return funtionItems;
 }
