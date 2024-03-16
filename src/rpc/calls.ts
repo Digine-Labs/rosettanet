@@ -10,6 +10,7 @@ import { getBalanceHandler } from './calls/getBalance'
 import { callHandler } from './calls/call'
 import { getBlockTransactionCountByHashHandler } from './calls/getBlockTransactionCountByHash'
 import { getTransactionsByBlockHashAndIndexHandler } from './calls/getTransactionByBlockHashAndIndex'
+import { ethSyncingHandler } from './calls/syncing'
 
 const router: Router = Router()
 
@@ -32,6 +33,11 @@ Methods.set('eth_gasPrice', {
 Methods.set('eth_blockNumber', {
   method: 'eth_blockNumber',
   handler: blockNumberHandler,
+})
+
+Methods.set('eth_syncing', {
+  method: 'eth_syncing',
+  handler: ethSyncingHandler,
 })
 
 Methods.set('eth_getStorageAt', {
