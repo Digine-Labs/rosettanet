@@ -17,7 +17,7 @@ export async function getTransactionsByHashHandler(
   }
 
   // Extract the txHash from the request parameters.
-  const txHash = request.params[0] as string;
+  const txHash = request.params[0] as string
 
   // Validate the tx hash
   if (!validateBlockHash(txHash)) {
@@ -30,7 +30,7 @@ export async function getTransactionsByHashHandler(
 
   const response: RPCResponse | string = await callStarknet(network, {
     jsonrpc: request.jsonrpc,
-    method:method,
+    method: method,
     params: [txHash],
     id: request.id,
   })
@@ -44,25 +44,27 @@ export async function getTransactionsByHashHandler(
   }
 
   const result = response.result as {
-  type: 'INVOKE' | 'L1_HANDLER' | 'DECLARE' | 'DEPLOY' | 'DEPLOY_ACCOUNT';
-  transaction_hash: string;
-  max_fee: string;
-  version:string;
-  signature:string[];
-  nonce: string;
-  contract_address: string;
-  entry_point_selector: string;
-  calldata: string[]
-  };
-
+    type: 'INVOKE' | 'L1_HANDLER' | 'DECLARE' | 'DEPLOY' | 'DEPLOY_ACCOUNT'
+    transaction_hash: string
+    max_fee: string
+    version: string
+    signature: string[]
+    nonce: string
+    contract_address: string
+    entry_point_selector: string
+    calldata: string[]
+  }
 
   // Get the transaction recipt of this transaction
-  const transactionReceipt: RPCResponse | string = await callStarknet('mainnet', {
-    jsonrpc: request.jsonrpc,
-    method: 'starknet_getTransactionReceipt',
-    params: [txHash],
-    id: request.id,
-  })
+  const transactionReceipt: RPCResponse | string = await callStarknet(
+    'mainnet',
+    {
+      jsonrpc: request.jsonrpc,
+      method: 'starknet_getTransactionReceipt',
+      params: [txHash],
+      id: request.id,
+    },
+  )
 
   if (typeof transactionReceipt === 'string') {
     return {
@@ -73,30 +75,30 @@ export async function getTransactionsByHashHandler(
   }
 
   const receiptRes = transactionReceipt.result as {
-    type: 'INVOKE' | 'L1_HANDLER' | 'DECLARE' | 'DEPLOY' | 'DEPLOY_ACCOUNT';
-    transaction_hash: string;
+    type: 'INVOKE' | 'L1_HANDLER' | 'DECLARE' | 'DEPLOY' | 'DEPLOY_ACCOUNT'
+    transaction_hash: string
     actual_fee: {
-      amount: string;
-      unit: 'WEI';
-    };
-    block_hash: string;
-    block_number: number;
-    events: string[]; // Consider defining a more specific type for the elements in this array if possible
+      amount: string
+      unit: 'WEI'
+    }
+    block_hash: string
+    block_number: number
+    events: string[] // Consider defining a more specific type for the elements in this array if possible
     execution_resources: {
-      memory_holes: number;
-      range_check_builtin_applications: number;
-      steps: number;
-    };
-    execution_status: 'SUCCEEDED' | string; // Adjust as necessary to include other potential status values
-    finality_status: 'ACCEPTED_ON_L1' | string; // Adjust as necessary to include other potential finality statuses
-    messages_sent: string[]; // Consider defining a more specific type for the elements in this array if possible
+      memory_holes: number
+      range_check_builtin_applications: number
+      steps: number
+    }
+    execution_status: 'SUCCEEDED' | string // Adjust as necessary to include other potential status values
+    finality_status: 'ACCEPTED_ON_L1' | string // Adjust as necessary to include other potential finality statuses
+    messages_sent: string[] // Consider defining a more specific type for the elements in this array if possible
   }
 
   // Map StarkNet signature components to Ethereum's v, r, s
-  const signature = result.signature; // Assuming this is an array of FELT values
-  const v = '0x1b'; // Placeholder, as StarkNet does not have a direct 'v' equivalent, or use `0x1c` (27 or 28)
-  const r = signature.length > 0 ? signature[0] : '0x0'; // Map the first signature element to 'r'
-  const s = signature.length > 1 ? signature[1] : '0x0'; // Map the second signature element to 's'
+  const signature = result.signature // Assuming this is an array of FELT values
+  const v = '0x1b' // Placeholder, as StarkNet does not have a direct 'v' equivalent, or use `0x1c` (27 or 28)
+  const r = signature.length > 0 ? signature[0] : '0x0' // Map the first signature element to 'r'
+  const s = signature.length > 1 ? signature[1] : '0x0' // Map the second signature element to 's'
 
   // Construct the Ethereum-like response, mapping StarkNet transaction details.
   return {
@@ -104,17 +106,17 @@ export async function getTransactionsByHashHandler(
     id: request.id,
     result: {
       hash: txHash,
-      blockHash : '0x' + receiptRes.block_hash,
+      blockHash: '0x' + receiptRes.block_hash,
       blockNumber: receiptRes.block_number,
       from: result.contract_address,
       gas: receiptRes.actual_fee.amount,
       gasPrice: '0xEE6B280',
       input: '0x' + result.calldata.join(''), // Concatenate calldata for simplicity.
-      nonce: "0x0",
+      nonce: '0x0',
       r,
       s,
       to: '0x0', // StarkNet transactions may not always have a direct 'to' field.
-      transactionIndex:"0x0",
+      transactionIndex: '0x0',
       v,
       value: '0x0', // StarkNet transactions don't directly map to ETH value transfers.
     },
