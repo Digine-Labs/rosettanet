@@ -59,6 +59,11 @@ Methods.set('eth_getTransactionByBlockHashAndIndex', {
   handler: getTransactionsByBlockHashAndIndexHandler,
 })
 
+Methods.set('eth_getTransactionCount', {
+  method: 'eth_getTransactionCount',
+  handler: getTransactionCountHandler,
+})
+
 router.post('/', async function (req: ParsedRequest, res: Response) {
   const request = req.rpcRequest
   if (request?.method && request?.params && Methods.has(request.method)) {
