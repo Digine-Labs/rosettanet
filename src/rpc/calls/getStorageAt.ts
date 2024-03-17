@@ -60,3 +60,33 @@ export async function getStorageAtHandler(
     result: response.result,
   }
 }
+
+export async function getStorageAtHandlerSnResponse(
+  request: RPCRequest,
+): Promise<RPCResponse | RPCError> {
+  if (request.params.length == 0) {
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: 'params should not be empty',
+    }
+  }
+  const ethAddress = request.params[0] as string
+  if (!validateEthAddress(ethAddress)) {
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: 'invalid eth address',
+    }
+  }
+  const snAddress = await getSnAddressFromEthAddress(ethAddress)
+  const starknet_params = {
+    jsonrpc: request.jsonrpc,
+    method: 'starknet_getStorageAt',
+    params: [snAddress, ...request.params.slice(1)],
+    id: request.id,
+  }
+  // return callStarknet directly as it is a promise without manipulation to the response
+  const response = await callStarknet('testnet', starknet_params)
+  return response as RPCResponse
+}

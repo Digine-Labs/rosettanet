@@ -1,14 +1,29 @@
 import { Router, Response } from 'express'
 import { ParsedRequest, ResponseHandler, RPCError } from '../types/types'
 import { revertWithError } from '../utils/parser'
-import { chainIdHandler } from './calls/chainId'
-import { maxPriorityFeePerGasHandler } from './calls/maxPriorityFeePerGas'
-import { gasPriceHandler } from './calls/gasPrice'
-import { blockNumberHandler } from './calls/blockNumber'
-import { getStorageAtHandler } from './calls/getStorageAt'
-import { getBalanceHandler } from './calls/getBalance'
-import { callHandler } from './calls/call'
-import { getBlockTransactionCountByHashHandler } from './calls/getBlockTransactionCountByHash'
+import { chainIdHandler, chainIdHandlerSnResponse } from './calls/chainId'
+import {
+  maxPriorityFeePerGasHandler,
+  maxPriorityFeePerGasHandlerSnResponse,
+} from './calls/maxPriorityFeePerGas'
+import { gasPriceHandler, gasPriceHandlerSnResponse } from './calls/gasPrice'
+import {
+  blockNumberHandler,
+  blockNumberHandlerSnResponse,
+} from './calls/blockNumber'
+import {
+  getStorageAtHandler,
+  getStorageAtHandlerSnResponse,
+} from './calls/getStorageAt'
+import {
+  getBalanceHandler,
+  getBalanceHandlerSnResponse,
+} from './calls/getBalance'
+import { callHandler, callHandlerSnResponse } from './calls/call'
+import {
+  getBlockTransactionCountByHashHandler,
+  getBlockTransactionCountByHashSnResponse,
+} from './calls/getBlockTransactionCountByHash'
 import { getTransactionsByBlockHashAndIndexHandler } from './calls/getTransactionByBlockHashAndIndex'
 
 const router: Router = Router()
@@ -19,9 +34,19 @@ Methods.set('eth_chainId', {
   handler: chainIdHandler,
 })
 
+Methods.set('starknet_chainId', {
+  method: 'starknet_chainId',
+  handler: chainIdHandlerSnResponse,
+})
+
 Methods.set('eth_maxPriorityFeePerGas', {
   method: 'eth_maxPriorityFeePerGas',
   handler: maxPriorityFeePerGasHandler,
+})
+
+Methods.set('starknet_maxPriorityFeePerGas', {
+  method: 'starknet_maxPriorityFeePerGas',
+  handler: maxPriorityFeePerGasHandlerSnResponse,
 })
 
 Methods.set('eth_gasPrice', {
@@ -29,9 +54,19 @@ Methods.set('eth_gasPrice', {
   handler: gasPriceHandler,
 })
 
+Methods.set('starknet_gasPrice', {
+  method: 'starknet_gasPrice',
+  handler: gasPriceHandlerSnResponse,
+})
+
 Methods.set('eth_blockNumber', {
   method: 'eth_blockNumber',
   handler: blockNumberHandler,
+})
+
+Methods.set('starknet_blockNumber', {
+  method: 'starknet_blockNumber',
+  handler: blockNumberHandlerSnResponse,
 })
 
 Methods.set('eth_getStorageAt', {
@@ -39,9 +74,19 @@ Methods.set('eth_getStorageAt', {
   handler: getStorageAtHandler,
 })
 
+Methods.set('starknet_getStorageAt', {
+  method: 'starknet_getStorageAt',
+  handler: getStorageAtHandlerSnResponse,
+})
+
 Methods.set('eth_call', {
   method: 'eth_call',
   handler: callHandler,
+})
+
+Methods.set('starknet_call', {
+  method: 'starknet_call',
+  handler: callHandlerSnResponse,
 })
 
 Methods.set('eth_getBalance', {
@@ -49,13 +94,28 @@ Methods.set('eth_getBalance', {
   handler: getBalanceHandler,
 })
 
+Methods.set('starknet_getBalance', {
+  method: 'starknet_getBalance',
+  handler: getBalanceHandlerSnResponse,
+})
+
 Methods.set('eth_getBlockTransactionCountByHash', {
   method: 'eth_getBlockTransactionCountByHash',
   handler: getBlockTransactionCountByHashHandler,
 })
 
+Methods.set('starknet_getBlockTransactionCountByHash', {
+  method: 'starknet_getBlockTransactionCountByHash',
+  handler: getBlockTransactionCountByHashSnResponse,
+})
+
 Methods.set('eth_getTransactionByBlockHashAndIndex', {
   method: 'eth_getTransactionByBlockHashAndIndex',
+  handler: getTransactionsByBlockHashAndIndexHandler,
+})
+
+Methods.set('starknet_getTransactionByBlockHashAndIndex', {
+  method: 'starknet_getTransactionByBlockHashAndIndex',
   handler: getTransactionsByBlockHashAndIndexHandler,
 })
 

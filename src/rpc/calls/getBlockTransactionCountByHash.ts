@@ -60,3 +60,42 @@ export async function getBlockTransactionCountByHashHandler(
     result: response.result,
   }
 }
+
+export async function getBlockTransactionCountByHashSnResponse(
+  request: RPCRequest,
+): Promise<RPCResponse | RPCError> {
+  const network = 'testnet'
+  const method = 'starknet_getBlockTransactionCount'
+
+  // Validate request parameters
+  if (request.params.length == 0) {
+    return {
+      code: 7979,
+      message: 'Starknet RPC Error',
+      data: 'Params should not be empty',
+    }
+  }
+
+  const blockHash = request.params[0] as string
+
+  // Validate block hash
+  if (!validateBlockHash(blockHash)) {
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: 'Invalid block hash',
+    }
+  }
+
+  // do not need to handle the response, just return what callStarknet returns
+  return callStarknet(network, {
+    jsonrpc: request.jsonrpc,
+    method,
+    params: [
+      {
+        block_hash: blockHash,
+      },
+    ],
+    id: request.id,
+  }) as Promise<RPCResponse | RPCError>
+}

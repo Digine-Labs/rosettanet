@@ -26,3 +26,14 @@ export async function chainIdHandler(
     result: response.result,
   }
 }
+
+export async function chainIdHandlerSnResponse(
+  request: RPCRequest,
+): Promise<RPCResponse | RPCError> {
+  return (await callStarknet('testnet', {
+    jsonrpc: request.jsonrpc,
+    method: 'starknet_chainId',
+    params: [],
+    id: request.id,
+  })) as RPCResponse
+}

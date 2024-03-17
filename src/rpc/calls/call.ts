@@ -8,3 +8,12 @@ export async function callHandler(): Promise<RPCResponse | RPCError> {
     result: 'not implemented',
   }
 }
+
+export async function callHandlerSnResponse(): Promise<RPCResponse | RPCError> {
+  // TODO
+  return {
+    jsonrpc: '2.0',
+    id: 1,
+    result: 'not implemented',
+  }
+}

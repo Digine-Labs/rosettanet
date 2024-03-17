@@ -1,4 +1,7 @@
-import { getBlockTransactionCountByHashHandler } from '../../../src/rpc/calls/getBlockTransactionCountByHash'
+import {
+  getBlockTransactionCountByHashHandler,
+  getBlockTransactionCountByHashSnResponse,
+} from '../../../src/rpc/calls/getBlockTransactionCountByHash'
 import { RPCError, RPCResponse } from '../../../src/types/types'
 
 describe('Test get Block Count By Hash request testnet ', () => {
@@ -39,5 +42,25 @@ describe('Test get Block Count By Hash request testnet ', () => {
       message: 'Starknet RPC error',
       data: 'Invalid block hash',
     })
+  })
+})
+
+describe('Test snGetBlockCountByHash request testnet ', () => {
+  it('Returns block transactions count by hash', async () => {
+    const request = {
+      jsonrpc: '2.0',
+      method: 'starknet_getBlockTransactionCountByHash',
+      params: [
+        '0x0627dadf33aecc02abe2530f1f2b091a24e7a119cc03851be4d559af47f22e93',
+      ],
+      id: 0,
+    }
+
+    const response: RPCResponse = <RPCResponse>(
+      await getBlockTransactionCountByHashSnResponse(request)
+    )
+
+    expect(typeof response.result).toBe('number')
+    expect(response.result).toBe(0x29)
   })
 })

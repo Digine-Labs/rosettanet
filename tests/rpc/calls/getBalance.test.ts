@@ -1,4 +1,7 @@
-import { getBalanceHandler } from '../../../src/rpc/calls/getBalance'
+import {
+  getBalanceHandler,
+  getBalanceHandlerSnResponse,
+} from '../../../src/rpc/calls/getBalance'
 import { RPCResponse } from '../../../src/types/types'
 
 describe('Test get Balance request testnet', () => {
@@ -47,5 +50,21 @@ describe('Test get Balance request testnet', () => {
     )
 
     expect(starkResult.result).toBe('0x0')
+  })
+})
+
+describe('Test snGetBalance request testnet', () => {
+  it('Returns Balance for address', async () => {
+    const request = {
+      jsonrpc: '2.0',
+      method: 'eth_getBalance',
+      params: ['0xd3fcc84644ddd6b96f7c741b1562b82f9e004dc7'],
+      id: 1,
+    }
+    const starkResult: RPCResponse = <RPCResponse>(
+      await getBalanceHandlerSnResponse(request)
+    )
+    expect(typeof starkResult.result).toBe('object')
+    expect(starkResult.result).toStrictEqual(['0x1550f7dca70000', '0x0'])
   })
 })

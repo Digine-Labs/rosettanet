@@ -39,7 +39,6 @@ export async function getBalanceHandler(
     method: method,
     params: [
       {
-        // TODO: read network from env
         contract_address: strkTokenAddress,
         entry_point_selector: functionSelector,
         calldata: [snAddress],
@@ -69,4 +68,52 @@ export async function getBalanceHandler(
     id: 1,
     result: response.result,
   }
+}
+
+export async function getBalanceHandlerSnResponse(
+  request: RPCRequest,
+): Promise<RPCResponse | RPCError> {
+  const network = 'testnet'
+  const method = 'starknet_call'
+  const functionSelector =
+    '0x035a73cd311a05d46deda634c5ee045db92f811b4e74bca4437fcb5302b7af33' //balance_of function selector
+  const strkTokenAddress =
+    '0x04718f5a0Fc34cC1AF16A1cdee98fFB20C31f5cD61D6Ab07201858f4287c938D'
+
+  if (request.params.length == 0) {
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: 'params should not be empty',
+    }
+  }
+
+  const ethAddress = request.params[0] as string
+  if (!validateEthAddress(ethAddress)) {
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: 'invalid eth address',
+    }
+  }
+
+  const snAddress = await getSnAddressFromEthAddress(ethAddress)
+
+  const starknet_params = {
+    jsonrpc: request.jsonrpc,
+    method: method,
+    params: [
+      {
+        // TODO: read network from env
+        contract_address: strkTokenAddress,
+        entry_point_selector: functionSelector,
+        calldata: [snAddress],
+      },
+      'latest',
+    ],
+    id: request.id,
+  }
+
+  // do not need to handle the response, just return the callStarknet
+  return (await callStarknet(network, starknet_params)) as RPCResponse
 }

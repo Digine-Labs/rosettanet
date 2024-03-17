@@ -27,3 +27,15 @@ export async function blockNumberHandler(
     result: hexBlockNumber,
   }
 }
+
+export async function blockNumberHandlerSnResponse(
+  request: RPCRequest,
+): Promise<RPCResponse | RPCError> {
+  // no need to handle the data, callStarknet will handle it.
+  return (await callStarknet('testnet', {
+    jsonrpc: request.jsonrpc,
+    method: 'starknet_blockNumber',
+    params: [],
+    id: request.id,
+  })) as RPCResponse
+}
