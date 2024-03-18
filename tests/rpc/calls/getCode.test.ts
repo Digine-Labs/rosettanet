@@ -42,8 +42,11 @@ describe('Test getCodeHandler', () => {
 
     const starknetRes: RPCResponse = <RPCResponse>await getCodeHandler(request)
 
-    expect(typeof starknetRes.result).toBeNull
-    expect(starknetRes.result).toBeNull
+    expect(starknetRes).toMatchObject({
+      jsonrpc: '2.0',
+      id: 0,
+      result: undefined,
+    })
   })
 
   it('Returns error message for invalid eth address', async () => {
@@ -56,7 +59,6 @@ describe('Test getCodeHandler', () => {
 
     const starknetRes: RPCResponse = <RPCResponse>await getCodeHandler(request)
 
-    expect(typeof starknetRes).toBe('object')
     expect(starknetRes).toMatchObject({
       code: 7979,
       message: 'Starknet RPC error',

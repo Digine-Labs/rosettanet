@@ -1,14 +1,12 @@
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateEthAddress } from '../../utils/validations'
-import {
-  getSnAddressFromEthAddress,
-} from '../../utils/wrapper'
+import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 
 export async function getCodeHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  if (request.params.length == 0) {
+  if (request.params.length != 2) {
     return {
       code: 7979,
       message: 'Starknet RPC error',
