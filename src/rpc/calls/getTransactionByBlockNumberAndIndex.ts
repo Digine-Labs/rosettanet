@@ -28,10 +28,12 @@ export async function getTransactionsByBlockNumberAndIndexHandler(
     }
   }
 
+  const params = typeof blockNumber === "string" ? [blockNumber] : [{block_number: blockNumber}]
+
   const response: RPCResponse | string = await callStarknet(network, {
     jsonrpc: request.jsonrpc,
     method: 'starknet_getBlockWithTxs',
-    params: [{ block_number: blockNumber }],
+    params,
     id: request.id,
   })
 
@@ -138,8 +140,8 @@ export async function getTransactionsByBlockNumberAndIndexHandler(
   // Map StarkNet signature components to Ethereum's v, r, s
   const signature = transaction.signature // Assuming this is an array of FELT values
   const v = '0x1b' // Placeholder, as StarkNet does not have a direct 'v' equivalent, or use `0x1c` (27 or 28)
-  const r = signature.length > 0 ? signature[0] : '0x0' // Map the first signature element to 'r'
-  const s = signature.length > 1 ? signature[1] : '0x0' // Map the second signature element to 's'
+  const r = signature?.length > 0 ? signature[0] : '0x0' // Map the first signature element to 'r'
+  const s = signature?.length > 1 ? signature[1] : '0x0' // Map the second signature element to 's'
 
   // Construct the Ethereum-like response, mapping StarkNet transaction details.
   return {
@@ -152,7 +154,7 @@ export async function getTransactionsByBlockNumberAndIndexHandler(
       gas: receipt.actual_fee.amount,
       gasPrice: '0x' + result.l1_gas_price.price_in_wei,
       hash: transaction.transaction_hash,
-      input: '0x' + transaction.calldata.join(''), // Concatenate calldata for simplicity.
+      input: '0x' + transaction?.calldata?.join(''), // Concatenate calldata for simplicity.
       nonce: '0x' + parseInt(transaction.nonce).toString(16),
       to: '0x', // StarkNet transactions may not always have a direct 'to' field.
       transactionIndex: '0x' + index.toString(16),
