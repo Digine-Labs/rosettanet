@@ -18,7 +18,7 @@ export async function getBlockTransactionCountByNumberHandler(
     }
   }
 
-  const blockNumber = request.params[0]
+  const blockNumber = request.params[0] as number
 
   if (!validateBlockNumber(blockNumber)) {
     return {
