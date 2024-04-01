@@ -96,7 +96,7 @@ describe('Test getTransactionByBlockNumberAndIndex', () => {
     })
   })
 
-  it('Error if block number is non-existent', async () => {
+  it('Returns error if block number is non-existent', async () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getTransactionsByBlockNumberAndIndex',
