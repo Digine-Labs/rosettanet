@@ -14,7 +14,7 @@ describe('Test get Balance request testnet', () => {
     )
 
     expect(typeof starkResult.result).toBe('string')
-    expect(starkResult.result).toBe('0xe35fa931a0000')
+    expect(starkResult.result).toBe('0x1550f7dca70000')
   })
 
   it('Returns invalid eth address', async () => {
