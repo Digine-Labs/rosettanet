@@ -8,7 +8,7 @@ export async function getContractsMethods(contractAddress: string) {
     const compressedContract = await provider.getClassAt(contractAddress);
     contractAbi = compressedContract.abi;
   } catch (e) {
-    console.error(e);
+    // console.error(e);
     return [];
   }
 
