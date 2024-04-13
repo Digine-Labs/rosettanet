@@ -1,5 +1,4 @@
 import {
-  validateBlockNumber,
   validateEthAddress,
   validateSnAddress,
   validateBlockNumber,
