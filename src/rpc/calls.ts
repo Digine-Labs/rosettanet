@@ -55,7 +55,7 @@ Methods.set('eth_getBalance', {
 
 Methods.set('eth_getBlockByHash', {
   method: 'eth_getBlockByHash',
-  handler: getBlockByHashHandler
+  handler: getBlockByHashHandler,
 })
 
 Methods.set('eth_getBlockTransactionCountByHash', {
@@ -71,6 +71,7 @@ Methods.set('eth_getTransactionByBlockHashAndIndex', {
 Methods.set('eth_getCode', {
   method: 'eth_getCode',
   handler: getCodeHandler,
+})
 
 Methods.set('eth_getBlockTransactionCountByNumber', {
   method: 'eth_getBlockTransactionCountByNumber',
