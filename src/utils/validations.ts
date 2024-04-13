@@ -42,3 +42,7 @@ export function validateBlockHash(blockHash: string): boolean {
 
   return true
 }
+
+export function validateBlockNumber(value: number): boolean {
+  return Number.isInteger(value) && value >= 0
+}
