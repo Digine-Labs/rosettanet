@@ -2,6 +2,7 @@ import {
   validateBlockNumber,
   validateEthAddress,
   validateSnAddress,
+  validateBlockNumber,
 } from '../../src/utils/validations'
 
 describe('Test Address validations', () => {
@@ -71,6 +72,18 @@ describe('Test Address validations', () => {
   })
   it('retuns false if the empty string is passed instead of starknet address', async () => {
     const result = validateSnAddress('')
+    expect(result).toBe(false)
+  })
+  it('return true if block number is a valid number', async () => {
+    const result = validateBlockNumber(123)
+    expect(result).toBe(true)
+  }),
+    it('return false if block number is a negative number', async () => {
+      const result = validateBlockNumber(-123)
+      expect(result).toBe(false)
+    })
+  it('return false if block number is a decimal number', async () => {
+    const result = validateBlockNumber(123.123)
     expect(result).toBe(false)
   })
 })
