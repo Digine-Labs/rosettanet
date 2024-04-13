@@ -1,5 +1,5 @@
 import { getTransactionsByBlockNumberAndIndexHandler } from '../../../src/rpc/calls/getTransactionByBlockNumberAndIndex'
-import { RPCError, RPCRequest, RPCResponse } from '../../../src/types/types'
+import { RPCError, RPCResponse } from '../../../src/types/types'
 
 describe('Test getTransactionByBlockNumberAndIndex', () => {
   it('Returns transaction details for a valid request', async () => {

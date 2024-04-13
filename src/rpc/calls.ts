@@ -71,6 +71,7 @@ Methods.set('eth_getTransactionByBlockHashAndIndex', {
 Methods.set('eth_getTransactionByBlockNumberAndIndex', {
   method: 'eth_getTransactionByBlockNumberAndIndex',
   handler: getTransactionsByBlockNumberAndIndexHandler,
+})
 
 Methods.set('eth_getBlockTransactionCountByNumber', {
   method: 'eth_getBlockTransactionCountByNumber',
