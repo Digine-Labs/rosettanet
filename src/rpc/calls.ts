@@ -11,6 +11,7 @@ import { getBlockByHashHandler } from './calls/getBlockByHash'
 import { callHandler } from './calls/call'
 import { getBlockTransactionCountByHashHandler } from './calls/getBlockTransactionCountByHash'
 import { getTransactionsByBlockHashAndIndexHandler } from './calls/getTransactionByBlockHashAndIndex'
+import { getBlockTransactionCountByNumberHandler } from './calls/getBlockTransactionCountByNumber'
 import { getTransactionReceiptHandler } from './calls/getTransactionReceipt'
 
 const router: Router = Router()
@@ -64,6 +65,12 @@ Methods.set('eth_getBlockTransactionCountByHash', {
 Methods.set('eth_getTransactionByBlockHashAndIndex', {
   method: 'eth_getTransactionByBlockHashAndIndex',
   handler: getTransactionsByBlockHashAndIndexHandler,
+})
+
+
+Methods.set('eth_getBlockTransactionCountByNumber', {
+  method: 'eth_getBlockTransactionCountByNumber',
+  handler: getBlockTransactionCountByNumberHandler,
 })
 
 Methods.set('eth_getTransactionReceipt', {
