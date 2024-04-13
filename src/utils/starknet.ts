@@ -1,5 +1,21 @@
-export async function getContractsMethods() {
-  // TODO: Should get sn contract abi and returns all entrypoints as method name, input types and outputs
+import { RpcProvider, constants } from 'starknet';
+
+export async function getContractsMethods(contractAddress: string) {
+  const provider = new RpcProvider({ nodeUrl: constants.NetworkName.SN_MAIN });
+
+  let contractAbi;
+  try{
+    const compressedContract = await provider.getClassAt(contractAddress);
+    contractAbi = compressedContract.abi;
+  } catch (e) {
+    // console.error(e);
+    return [];
+  }
+
+  // Get functions from abi
+  const funtionItems = contractAbi.filter((abi) => 'items' in abi).reduce((acc, current) => acc.concat(current.items), []);
+  // Return function methods
+  return funtionItems;
 }
 
 export function generateEntrypointsSelector() {
