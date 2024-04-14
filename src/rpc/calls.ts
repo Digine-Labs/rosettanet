@@ -9,8 +9,9 @@ import { getStorageAtHandler } from './calls/getStorageAt'
 import { getBalanceHandler } from './calls/getBalance'
 import { getBlockByHashHandler } from './calls/getBlockByHash'
 import { callHandler } from './calls/call'
-import { getBlockTransactionCountByHashHandler } from './calls/getBlockTransactionCountByHash'
 import { getTransactionsByBlockHashAndIndexHandler } from './calls/getTransactionByBlockHashAndIndex'
+import { getTransactionsByBlockNumberAndIndexHandler } from './calls/getTransactionByBlockNumberAndIndex'
+import { getBlockTransactionCountByHashHandler } from './calls/getBlockTransactionCountByHash'
 import { getCodeHandler } from './calls/getCode'
 import { getBlockTransactionCountByNumberHandler } from './calls/getBlockTransactionCountByNumber'
 import { getTransactionReceiptHandler } from './calls/getTransactionReceipt'
@@ -66,6 +67,11 @@ Methods.set('eth_getBlockTransactionCountByHash', {
 Methods.set('eth_getTransactionByBlockHashAndIndex', {
   method: 'eth_getTransactionByBlockHashAndIndex',
   handler: getTransactionsByBlockHashAndIndexHandler,
+})
+
+Methods.set('eth_getTransactionByBlockNumberAndIndex', {
+  method: 'eth_getTransactionByBlockNumberAndIndex',
+  handler: getTransactionsByBlockNumberAndIndexHandler,
 })
 
 Methods.set('eth_getCode', {

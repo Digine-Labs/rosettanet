@@ -86,3 +86,41 @@ describe('Test Address validations', () => {
     expect(result).toBe(false)
   })
 })
+
+describe('Validate block number', () => {
+  it('should return true if block number is a valid number', () => {
+    const result = validateBlockNumber(999)
+
+    expect(result).toBe(true)
+  })
+
+  it("should return true if block number is the string 'latest'", () => {
+    const result = validateBlockNumber('latest')
+
+    expect(result).toBe(true)
+  })
+
+  it("should return true if block number is the string 'pending'", () => {
+    const result = validateBlockNumber('pending')
+
+    expect(result).toBe(true)
+  })
+
+  it("should return false if block number is less than 0", () => {
+    const result = validateBlockNumber(-1)
+
+    expect(result).toBe(false)
+  })
+
+  it("should return false if block number is neither a string nor number", () => {
+    const result = validateBlockNumber(true)
+
+    expect(result).toBe(false)
+  })
+
+  it("should return false if block number is a string other than 'latest' and 'pending'", () => {
+    const result = validateBlockNumber('finalized')
+
+    expect(result).toBe(false)
+  })
+})

@@ -43,6 +43,11 @@ export function validateBlockHash(blockHash: string): boolean {
   return true
 }
 
-export function validateBlockNumber(value: number): boolean {
-  return Number.isInteger(value) && value >= 0
+export function validateBlockNumber(value: string | number | boolean): boolean {
+  if (typeof value === 'number') {
+    return Number.isInteger(value as number) && value >= 0
+  } else if (typeof value === 'string') {
+    return value === "latest" || value === "pending"
+  }
+  return false
 }
