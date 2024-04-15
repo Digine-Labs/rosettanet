@@ -15,6 +15,7 @@ import { getBlockTransactionCountByHashHandler } from './calls/getBlockTransacti
 import { getCodeHandler } from './calls/getCode'
 import { getBlockTransactionCountByNumberHandler } from './calls/getBlockTransactionCountByNumber'
 import { getTransactionReceiptHandler } from './calls/getTransactionReceipt'
+import { feeHistoryHandler } from './calls/feeHistory'
 
 const router: Router = Router()
 
@@ -87,6 +88,11 @@ Methods.set('eth_getBlockTransactionCountByNumber', {
 Methods.set('eth_getTransactionReceipt', {
   method: 'eth_getTransactionReceipt',
   handler: getTransactionReceiptHandler,
+})
+
+Methods.set('eth_feeHistory', {
+  method: 'eth_feeHistory',
+  handler: feeHistoryHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
