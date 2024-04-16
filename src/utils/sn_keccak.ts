@@ -1,7 +1,7 @@
 import { keccak256 } from 'js-sha3'
 import { BigNumber } from 'bignumber.js'
 
-export function snKeccack(str: string): string {
+export function snKeccak(str: string): string {
   let hash = keccak256(str)
 
   // Convert hexadecimal hash to binary

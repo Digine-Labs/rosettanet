@@ -6,7 +6,7 @@ import {
   SierraEntryPointsByType,
   EntryPointsByType,
 } from 'starknet'
-import { snKeccack } from '../../src/utils/sn_keccak'
+import { snKeccak } from '../../src/utils/sn_keccak'
 export async function getContractsMethods(
   nodeUrl: constants.NetworkName,
   contractAddress: string,
@@ -39,7 +39,7 @@ export async function generateEntrypointsSelector(
   functionItems: FunctionAbi[],
 ) {
   // get last 250 bit of keccak256 of function name
-  const entrypoints = functionItems.map(item => snKeccack(item.name))
+  const entrypoints = functionItems.map(item => snKeccak(item.name))
 
   return entrypoints
 }
