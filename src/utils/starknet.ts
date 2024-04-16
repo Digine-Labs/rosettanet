@@ -22,14 +22,26 @@ export async function getContractsMethods(
     return []
   }
 
-  // Get functions from abi
-  const funtionItems = contractAbi.filter((abi) => 'items' in abi).reduce((acc, current) => acc.concat(current.items), []);
-  // Return function methods
-  return funtionItems;
+  const functionItems = contractAbi
+    .filter(
+      item =>
+        'inputs' in item &&
+        'outputs' in item &&
+        'name' in item &&
+        typeof item.type !== 'undefined',
+    )
+    .map(item => item as FunctionAbi)
+
+  return functionItems
 }
 
-export function generateEntrypointsSelector() {
-  // TODO: Should calculate eth selectors of entrypoints.
+export async function generateEntrypointsSelector(
+  functionItems: FunctionAbi[],
+) {
+  // get last 250 bit of keccak256 of function name
+  const entrypoints = functionItems.map(item => snKeccack(item.name))
+
+  return entrypoints
 }
 
 export async function getContractsCustomStructs() {
