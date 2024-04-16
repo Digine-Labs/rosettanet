@@ -1,15 +1,25 @@
-import { RpcProvider, constants } from 'starknet';
+import {
+  RpcProvider,
+  constants,
+  Abi,
+  FunctionAbi,
+  SierraEntryPointsByType,
+  EntryPointsByType,
+} from 'starknet'
+import { snKeccack } from '../../src/utils/sn_keccak'
+export async function getContractsMethods(
+  nodeUrl: constants.NetworkName,
+  contractAddress: string,
+) {
+  const provider = new RpcProvider({ nodeUrl: nodeUrl })
 
-export async function getContractsMethods(contractAddress: string) {
-  const provider = new RpcProvider({ nodeUrl: constants.NetworkName.SN_MAIN });
-
-  let contractAbi;
-  try{
-    const compressedContract = await provider.getClassAt(contractAddress);
-    contractAbi = compressedContract.abi;
+  let contractAbi: Abi = []
+  try {
+    const compressedContract = await provider.getClassAt(contractAddress)
+    contractAbi = compressedContract.abi
   } catch (e) {
     // console.error(e);
-    return [];
+    return []
   }
 
   // Get functions from abi
