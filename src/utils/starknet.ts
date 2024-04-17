@@ -3,8 +3,6 @@ import {
   constants,
   Abi,
   FunctionAbi,
-  SierraEntryPointsByType,
-  EntryPointsByType,
 } from 'starknet'
 import { snKeccak } from '../../src/utils/sn_keccak'
 export async function getContractsMethods(
