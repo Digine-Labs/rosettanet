@@ -12,6 +12,7 @@ import { callHandler } from './calls/call'
 import { getBlockTransactionCountByHashHandler } from './calls/getBlockTransactionCountByHash'
 import { getTransactionsByBlockHashAndIndexHandler } from './calls/getTransactionByBlockHashAndIndex'
 import { getTransactionReceiptHandler } from './calls/getTransactionReceipt'
+import { getTransactionCountHandler } from './calls/getTransactionCount'
 
 const router: Router = Router()
 
@@ -69,10 +70,12 @@ Methods.set('eth_getTransactionByBlockHashAndIndex', {
 Methods.set('eth_getTransactionReceipt', {
   method: 'eth_getTransactionReceipt',
   handler: getTransactionReceiptHandler,
+})
 
 Methods.set('eth_getTransactionCount', {
   method: 'eth_getTransactionCount',
   handler: getTransactionCountHandler,
+})
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
   const request = req.rpcRequest
