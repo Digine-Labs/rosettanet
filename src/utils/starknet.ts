@@ -1,25 +1,45 @@
-import { RpcProvider, constants } from 'starknet';
+import {
+  RpcProvider,
+  constants,
+  Abi,
+  FunctionAbi,
+} from 'starknet'
+import { snKeccak } from '../../src/utils/sn_keccak'
+export async function getContractsMethods(
+  nodeUrl: constants.NetworkName,
+  contractAddress: string,
+) {
+  const provider = new RpcProvider({ nodeUrl: nodeUrl })
 
-export async function getContractsMethods(contractAddress: string) {
-  const provider = new RpcProvider({ nodeUrl: constants.NetworkName.SN_MAIN });
-
-  let contractAbi;
-  try{
-    const compressedContract = await provider.getClassAt(contractAddress);
-    contractAbi = compressedContract.abi;
+  let contractAbi: Abi = []
+  try {
+    const compressedContract = await provider.getClassAt(contractAddress)
+    contractAbi = compressedContract.abi
   } catch (e) {
     // console.error(e);
-    return [];
+    return []
   }
 
-  // Get functions from abi
-  const funtionItems = contractAbi.filter((abi) => 'items' in abi).reduce((acc, current) => acc.concat(current.items), []);
-  // Return function methods
-  return funtionItems;
+  const functionItems = contractAbi
+    .filter(
+      item =>
+        'inputs' in item &&
+        'outputs' in item &&
+        'name' in item &&
+        typeof item.type !== 'undefined',
+    )
+    .map(item => item as FunctionAbi)
+
+  return functionItems
 }
 
-export function generateEntrypointsSelector() {
-  // TODO: Should calculate eth selectors of entrypoints.
+export async function generateEntrypointsSelector(
+  functionItems: FunctionAbi[],
+) {
+  // get last 250 bit of keccak256 of function name
+  const entrypoints = functionItems.map(item => snKeccak(item.name))
+
+  return entrypoints
 }
 
 export async function getContractsCustomStructs() {
