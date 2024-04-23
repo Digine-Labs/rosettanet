@@ -1,10 +1,7 @@
-import {
-  RpcProvider,
-  constants,
-  Abi,
-  FunctionAbi,
-} from 'starknet'
+import { RpcProvider, constants, Abi, FunctionAbi, StructAbi } from 'starknet'
 import { snKeccak } from '../../src/utils/sn_keccak'
+import { validateSnAddress } from './validations'
+
 export async function getContractsMethods(
   nodeUrl: constants.NetworkName,
   contractAddress: string,
@@ -42,7 +39,34 @@ export async function generateEntrypointsSelector(
   return entrypoints
 }
 
-export async function getContractsCustomStructs() {
-  // TODO: Should return contracts custom structs.
-  // Will be used to calculate entrypoint selectors later.
+export async function getContractsCustomStructs(
+  snAddress: string,
+  nodeUrl: constants.NetworkName | any,
+) {
+  if (!validateSnAddress(snAddress)) {
+    return 'Invalid Starknet addreess'
+  }
+
+  const provider = new RpcProvider({ nodeUrl })
+
+  let contractAbi: Abi = []
+  try {
+    const compressedContract = await provider.getClassAt(snAddress)
+    contractAbi = compressedContract.abi
+  } catch (e) {
+    console.error(e)
+    return []
+  }
+
+  const customStructs = contractAbi
+    .filter(
+      item =>
+        typeof item.type !== 'undefined' &&
+        item.type === 'struct' &&
+        'name' in item &&
+        'members' in item,
+    )
+    .map(item => item as StructAbi)
+
+  return customStructs
 }
