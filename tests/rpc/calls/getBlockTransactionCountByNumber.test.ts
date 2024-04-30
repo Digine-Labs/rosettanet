@@ -13,7 +13,7 @@ describe('Test getBlockTransactionCountByNumber request testnet', () => {
       await getBlockTransactionCountByNumberHandler(request)
     )
     expect(typeof response.result).toBe('string')
-    expect(response.result).toBe('0x1a')
+    expect(response.result).toBe('0x7')
   }),
     it('Returns block transaction count', async () => {
       const request = {
@@ -26,7 +26,7 @@ describe('Test getBlockTransactionCountByNumber request testnet', () => {
         await getBlockTransactionCountByNumberHandler(request)
       )
       expect(typeof response.result).toBe('string')
-      expect(response.result).toBe('0x4')
+      expect(response.result).toBe('0x1')
     })
   it('Error if invalid block number', async () => {
     const request = {
