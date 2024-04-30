@@ -34,8 +34,6 @@ export async function getCodeHandler(
     id: request.id,
   })
 
-  console.log(response)
-
   if (typeof response === 'string' || !response) {
     return {
       code: 7979,
