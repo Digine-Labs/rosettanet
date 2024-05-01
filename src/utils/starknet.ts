@@ -1,9 +1,4 @@
-import {
-  RpcProvider,
-  constants,
-  Abi,
-  FunctionAbi,
-} from 'starknet'
+import { RpcProvider, constants, Abi, FunctionAbi } from 'starknet'
 import { snKeccak } from '../../src/utils/sn_keccak'
 export async function getContractsMethods(
   nodeUrl: constants.NetworkName,

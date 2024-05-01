@@ -56,15 +56,12 @@ export async function getTransactionsByHashHandler(
   }
 
   // Get the transaction recipt of this transaction
-  const transactionReceipt: RPCResponse | string = await callStarknet(
-    network,
-    {
-      jsonrpc: request.jsonrpc,
-      method: 'starknet_getTransactionReceipt',
-      params: [txHash],
-      id: request.id,
-    },
-  )
+  const transactionReceipt: RPCResponse | string = await callStarknet(network, {
+    jsonrpc: request.jsonrpc,
+    method: 'starknet_getTransactionReceipt',
+    params: [txHash],
+    id: request.id,
+  })
 
   if (typeof transactionReceipt === 'string') {
     return {
