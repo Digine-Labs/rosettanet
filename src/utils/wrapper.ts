@@ -2,7 +2,7 @@ import { callStarknet } from './callHelper'
 import { RPCRequest, RPCResponse } from '../types/types'
 
 const CONTRACT_ADDRESS = {
-  goerli: '0x0491e3b69bea8f0a8a65e37425d10ebc91f889b7bddc9fcb26886cd0518111b4',
+  sepolia: '0x693289c1208cb7d9d82df0746f924ad25f2cb2e3ccfee6520a8210770742891',
   mainnet: '',
 }
 
@@ -25,7 +25,7 @@ export async function getEthAddressFromSnAddress(
     // TODO: read network from env
     params: [
       {
-        contract_address: CONTRACT_ADDRESS.goerli,
+        contract_address: CONTRACT_ADDRESS.sepolia,
         entry_point_selector: SELECTORS.get_eth_address_from_sn_address,
         calldata: [snAddress],
       },
@@ -55,7 +55,7 @@ export async function getSnAddressFromEthAddress(
     params: [
       {
         // TODO: read network from env
-        contract_address: CONTRACT_ADDRESS.goerli,
+        contract_address: CONTRACT_ADDRESS.sepolia,
         entry_point_selector: SELECTORS.get_sn_address_from_eth_address,
         calldata: [ethAddress],
       },

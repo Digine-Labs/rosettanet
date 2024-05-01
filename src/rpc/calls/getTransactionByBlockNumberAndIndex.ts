@@ -28,7 +28,10 @@ export async function getTransactionsByBlockNumberAndIndexHandler(
     }
   }
 
-  const params = typeof blockNumber === "string" ? [blockNumber] : [{block_number: blockNumber}]
+  const params =
+    typeof blockNumber === 'string'
+      ? [blockNumber]
+      : [{ block_number: blockNumber }]
 
   const response: RPCResponse | string = await callStarknet(network, {
     jsonrpc: request.jsonrpc,
@@ -112,10 +115,9 @@ export async function getTransactionsByBlockNumberAndIndexHandler(
     return {
       code: 7979,
       message: 'Starknet RPC error',
-      data: transactionRes || "No response from Starknet",
+      data: transactionRes || 'No response from Starknet',
     }
   }
-
 
   const receipt = transactionRes.result as {
     type: 'INVOKE' | 'L1_HANDLER' | 'DECLARE' | 'DEPLOY' | 'DEPLOY_ACCOUNT'

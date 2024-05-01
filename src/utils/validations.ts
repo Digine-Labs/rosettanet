@@ -47,7 +47,7 @@ export function validateBlockNumber(value: string | number | boolean): boolean {
   if (typeof value === 'number') {
     return Number.isInteger(value as number) && value >= 0
   } else if (typeof value === 'string') {
-    return value === "latest" || value === "pending"
+    return value === 'latest' || value === 'pending'
   }
   return false
 }
