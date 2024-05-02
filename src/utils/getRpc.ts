@@ -2,7 +2,7 @@ export const mainnetRpc = [
   'https://starknet-mainnet.public.blastapi.io/rpc/v0_6',
 ]
 export const testnetRpc = [
-  'https://starknet-testnet.public.blastapi.io/rpc/v0_6',
+  'https://starknet-sepolia.public.blastapi.io/rpc/v0_6',
 ]
 
 export const getRpc = (network?: string): string => {

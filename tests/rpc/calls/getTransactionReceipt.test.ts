@@ -7,7 +7,7 @@ describe('Test get transaction receipt request testnet', () => {
       jsonrpc: '2.0',
       method: 'eth_getTransactionReceipt',
       params: [
-        '0x054b60a3d157a9b9a7d1734aaaf06db939ff5ae6b9c75e221cf8504f464ec0ef',
+        '0x070423420b62999ead8d2be3c220f89e9c9d4816419c153a50108c26ebc94660',
       ],
       id: 1,
     }
@@ -18,63 +18,50 @@ describe('Test get transaction receipt request testnet', () => {
     expect(typeof starkResult.result).toBe('object')
     expect(starkResult.result).toMatchObject({
       transactionHash:
-        '0x054b60a3d157a9b9a7d1734aaaf06db939ff5ae6b9c75e221cf8504f464ec0ef',
+        '0x070423420b62999ead8d2be3c220f89e9c9d4816419c153a50108c26ebc94660',
       blockHash:
-        '0x583a703ef5de667b9d19f87d5cc46ac140cc3ac5b3a2991555bd7c45fd58863',
-      blockNumber: '0xe95c8',
+        '0x46eb1670bf90c96da4ad0a905d66408c29d56dcdaeb939da5755adc0e2c5956',
+      blockNumber: '0xf700',
       logs: [
         {
-          address: '0x56fd10dc1a95cdac6f7e8cf800a216606ffee4c7',
+          transactionHash:
+            '0x070423420b62999ead8d2be3c220f89e9c9d4816419c153a50108c26ebc94660',
+          address: '0x0',
           blockHash:
-            '0x583a703ef5de667b9d19f87d5cc46ac140cc3ac5b3a2991555bd7c45fd58863',
-          blockNumber: '0xe95c8',
+            '0x46eb1670bf90c96da4ad0a905d66408c29d56dcdaeb939da5755adc0e2c5956',
+          blockNumber: '0xf700',
           data: '0x0',
           logIndex: '0x0',
           removed: false,
           topics: [],
-          transactionHash:
-            '0x054b60a3d157a9b9a7d1734aaaf06db939ff5ae6b9c75e221cf8504f464ec0ef',
-          transactionIndex: '0x1d',
+          transactionIndex: '0x31',
         },
         {
-          address: '0x56fd10dc1a95cdac6f7e8cf800a216606ffee4c7',
+          transactionHash:
+            '0x070423420b62999ead8d2be3c220f89e9c9d4816419c153a50108c26ebc94660',
+          address: '0xd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
           blockHash:
-            '0x583a703ef5de667b9d19f87d5cc46ac140cc3ac5b3a2991555bd7c45fd58863',
-          blockNumber: '0xe95c8',
+            '0x46eb1670bf90c96da4ad0a905d66408c29d56dcdaeb939da5755adc0e2c5956',
+          blockNumber: '0xf700',
           data: '0x0',
           logIndex: '0x1',
           removed: false,
           topics: [],
-          transactionHash:
-            '0x054b60a3d157a9b9a7d1734aaaf06db939ff5ae6b9c75e221cf8504f464ec0ef',
-          transactionIndex: '0x1d',
-        },
-        {
-          address: '0xd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
-          blockHash:
-            '0x583a703ef5de667b9d19f87d5cc46ac140cc3ac5b3a2991555bd7c45fd58863',
-          blockNumber: '0xe95c8',
-          data: '0x0',
-          logIndex: '0x2',
-          removed: false,
-          topics: [],
-          transactionHash:
-            '0x054b60a3d157a9b9a7d1734aaaf06db939ff5ae6b9c75e221cf8504f464ec0ef',
-          transactionIndex: '0x1d',
+          transactionIndex: '0x31',
         },
       ],
-      contractAddress: '0x56fd10dc1a95cdac6f7e8cf800a216606ffee4c7',
+      contractAddress: null,
       effectiveGasPrice: '0x1',
-      cumulativeGasUsed: '0x30841e33136',
-      from: '0x000000000000000000000000000000000000000000000000000000000000000',
-      gasUsed: '0x30841e33136',
+      cumulativeGasUsed: '0x117c80fa301e',
+      from: '0x6deeaf66dcd2568addabe32084ab6b5298f85c01f3685c68c29b71631fdc5ba',
+      gasUsed: '0x117c80fa301e',
       logsBloom: '0x0',
       status: '0x1',
-      to: null,
-      transactionIndex: '0x1d',
+      to: '0x000000000000000000000000000000000000000000000000000000000000000',
+      transactionIndex: '0x31',
       type: '0x2',
     })
-  })
+  }, 10000)
 
   it('Returns an error for non-existent transactions', async () => {
     const request = {

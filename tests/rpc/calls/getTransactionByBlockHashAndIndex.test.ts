@@ -7,7 +7,7 @@ describe('Test getTransactionsByBlockHashAndIndexHandler', () => {
       jsonrpc: '2.0',
       method: 'eth_getTransactionByBlockHashAndIndex',
       params: [
-        '0x01806b8ff9e7ff189a563a07c7d18fbf5e30e4300dd4febb2779f5d56bfeef93',
+        '0x07410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
         '0x02',
       ],
       id: 0,
@@ -20,25 +20,25 @@ describe('Test getTransactionsByBlockHashAndIndexHandler', () => {
     // Verify the structure and content of the response
     expect(typeof starkResult.result).toBe('object')
     expect(starkResult).toMatchObject({
-      id: request.id,
       jsonrpc: '2.0',
+      id: 0,
       result: {
         blockHash:
-          '0x01806b8ff9e7ff189a563a07c7d18fbf5e30e4300dd4febb2779f5d56bfeef93',
-        blockNumber: '0xe9fc9',
-        from: '0x7497c28ff075311aee91ccbeca905698a0931077dc0556fafa7577910b4362f',
-        gas: '0x34453e2b238',
-        gasPrice: '0x0x3b9aca07',
-        hash: '0x5da9d4d4ea7aee2c95cebbe5bc99be05ef7ffeec28a979b896ad78fdc90c471',
+          '0x07410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: '0xf5dd',
+        from: '0x37a10f2808c05f4a328bdac9a9344358547ae4676ebddc005e24ff887b188fd',
+        gas: '0x1e95cb93af16',
+        gasPrice: '0x0xb67a2431',
+        hash: '0x7ad3e1c6ac233cfbf039c7996aa23d911c2f7506966b228ed0123f755534bb4',
         input:
-          '0x0x10x4c1337d55351eac9a0b74f3b8f0d3928e2bb781e5084686a892e66d49d510d0x34c4c150632e67baf44fc50e9a685184d72a822510a26a66f72058b5e7b28920x0',
-        nonce: '0x11d',
-        to: '0x', // StarkNet transactions may not always have a direct 'to' field.
+          '0x0x10x36031daa264c24520b11d93af622c848b2499b66b41d611bac95e13cfca131a0x3d0bcca55c118f88a08e0fcc06f43906c0c174feb52ebc83f0fa28a1f59ed670x5c0xd0x00x663076db0x464f55524c4541460x464f55524c4541460x5c7794999060x4254432f5553440x00x00x663076db0x464f55524c4541460x464f55524c4541460x49f06318fa0x4554482f5553440x00x00x663076db0x464f55524c4541460x464f55524c4541460x5c4f7c3a88d0x574254432f5553440x00x00x663076db0x464f55524c4541460x464f55524c4541460x5f56dcf0x574254432f4254430x00x00x663076db0x464f55524c4541460x464f55524c4541460x565dc089b1c0x4254432f4555520x00x00x663076db0x464f55524c4541460x464f55524c4541460x562e4b600a0x5753544554482f5553440x00x00x663076db0x464f55524c4541460x464f55524c4541460x5f401d00x4c5553442f5553440x00x00x663076dc0x464f55524c4541460x464f55524c4541460xf42080x555344432f5553440x00x00x663076dc0x464f55524c4541460x464f55524c4541460x2dd91bf70x554e492f5553440x00x00x663076dc0x464f55524c4541460x464f55524c4541460x5f5095d0x4441492f5553440x00x00x663076dc0x464f55524c4541460x464f55524c4541460xf413d0x555344542f5553440x00x00x663076dc0x464f55524c4541460x464f55524c4541460x74350b50x5354524b2f5553440x00x00x663076dc0x464f55524c4541460x464f55524c4541460x42f824e0x5a454e442f5553440x0',
+        nonce: '0x139ee',
+        to: '0x',
         transactionIndex: '0x2',
-        value: '0x0', // StarkNet transactions don't directly map to ETH value transfers.
+        value: '0x0',
         v: '0x1b',
-        r: '0x33c21de8050c98f869c30fcf725cb78891c95c2b825d6b776c91d0415ad17ce',
-        s: '0x27fde752541931c319833a359c63d25abcc5b28b7ec54b8d99ec6107c581bc4',
+        r: '0x78d955415576b62722313dc8e95dbc1bd244d7ce9faf204eae58160791ab4e4',
+        s: '0xd3dc0551bdbb3df18a452cce9f1bfedb6a6f4b8f70e5eca417a643dbc720f6',
       },
     })
   })
@@ -69,7 +69,7 @@ describe('Test getTransactionsByBlockHashAndIndexHandler', () => {
       jsonrpc: '2.0',
       method: 'eth_getTransactionByBlockHashAndIndex',
       params: [
-        '0x1fc77fe9b65882b855e70b86e73da81a27690b39f30f2eb8dc01e8b5abd3679',
+        '0x07410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
         '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
       ],
       id: 0,

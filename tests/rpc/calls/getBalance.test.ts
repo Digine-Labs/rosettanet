@@ -6,7 +6,7 @@ describe('Test get Balance request testnet', () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
-      params: ['0xd3fcc84644ddd6b96f7c741b1562b82f9e004dc7'],
+      params: ['0x6cda29cfd06bfb143fd5cd04cc2d28b7ab8550c8'],
       id: 1,
     }
     const starkResult: RPCResponse = <RPCResponse>(
@@ -14,7 +14,7 @@ describe('Test get Balance request testnet', () => {
     )
 
     expect(typeof starkResult.result).toBe('string')
-    expect(starkResult.result).toBe('0x1550f7dca70000')
+    expect(starkResult.result).toBe('0x8a948e3174b159c')
   })
 
   it('Returns invalid eth address', async () => {
