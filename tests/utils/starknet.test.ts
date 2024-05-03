@@ -1,17 +1,16 @@
 import {
   getContractsMethods,
   generateEntrypointsSelector,
+  getContractsCustomStructs,
 } from '../../src/utils/starknet'
-import { FunctionAbi, constants } from 'starknet'
+import { FunctionAbi } from 'starknet'
+import { mainnetRpc, testnetRpc } from '../../src/utils/getRpc'
 describe('test get contract methods from starknet contract abi', () => {
   // https://starkscan.co/contract/0x07a6f98c03379b9513ca84cca1373ff452a7462a3b61598f0af5bb27ad7f76d1
   it('should return contract methods', async () => {
     const contractAddress =
       '0x07a6f98c03379b9513ca84cca1373ff452a7462a3b61598f0af5bb27ad7f76d1'
-    const result = await getContractsMethods(
-      constants.NetworkName.SN_MAIN,
-      contractAddress,
-    )
+    const result = await getContractsMethods(mainnetRpc[0], contractAddress)
     expect(result).toHaveLength(12)
   })
 
@@ -53,5 +52,38 @@ describe('test get contract methods from starknet contract abi', () => {
     expect(result).toContain(
       '0x366a98476020cb9ff8cc566d0cdeac414e546d2e7ede445f4e7032a4272c771',
     )
+  })
+})
+
+describe('test getContractsCustomStructs', () => {
+  it('should return custom structs', async () => {
+    const customStructs = await getContractsCustomStructs(
+      '0x05f2aff796caf3f09dda2cb66400d2f27f6e503ba09570f3a2cf23ecaefe1e00',
+      testnetRpc[0],
+    )
+    expect(customStructs).toEqual([
+      {
+        type: 'struct',
+        name: 'core::integer::u256',
+        members: [
+          {
+            name: 'low',
+            type: 'core::integer::u128',
+          },
+          {
+            name: 'high',
+            type: 'core::integer::u128',
+          },
+        ],
+      },
+    ])
+  })
+
+  it('should return empty array for invalid contract address', async () => {
+    const customStructs = await getContractsCustomStructs(
+      '0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ',
+      testnetRpc[0],
+    )
+    expect(customStructs).toEqual('Invalid Starknet addreess')
   })
 })
