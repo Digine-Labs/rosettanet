@@ -3,7 +3,7 @@ import { snKeccak } from '../../src/utils/sn_keccak'
 import { validateSnAddress } from './validations'
 
 export async function getContractsMethods(
-  nodeUrl: constants.NetworkName,
+  nodeUrl: constants.NetworkName | string,
   contractAddress: string,
 ) {
   const provider = new RpcProvider({ nodeUrl: nodeUrl })
@@ -57,7 +57,6 @@ export async function getContractsCustomStructs(
     console.error(e)
     return []
   }
-
   const customStructs = contractAbi
     .filter(
       item =>
