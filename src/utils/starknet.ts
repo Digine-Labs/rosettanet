@@ -41,7 +41,7 @@ export async function generateEntrypointsSelector(
 
 export async function getContractsCustomStructs(
   snAddress: string,
-  nodeUrl: constants.NetworkName | any,
+  nodeUrl: constants.NetworkName | string,
 ) {
   if (!validateSnAddress(snAddress)) {
     return 'Invalid Starknet addreess'
@@ -54,7 +54,7 @@ export async function getContractsCustomStructs(
     const compressedContract = await provider.getClassAt(snAddress)
     contractAbi = compressedContract.abi
   } catch (e) {
-    console.error(e)
+    // console.error(e)
     return []
   }
   const customStructs = contractAbi
