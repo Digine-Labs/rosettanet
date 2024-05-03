@@ -84,6 +84,6 @@ describe('test getContractsCustomStructs', () => {
       '0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ',
       testnetRpc[0],
     )
-    expect(customStructs).toEqual("Invalid Starknet addreess")
+    expect(customStructs).toEqual('Invalid Starknet addreess')
   })
 })
