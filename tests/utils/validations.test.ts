@@ -106,13 +106,13 @@ describe('Validate block number', () => {
     expect(result).toBe(true)
   })
 
-  it("should return false if block number is less than 0", () => {
+  it('should return false if block number is less than 0', () => {
     const result = validateBlockNumber(-1)
 
     expect(result).toBe(false)
   })
 
-  it("should return false if block number is neither a string nor number", () => {
+  it('should return false if block number is neither a string nor number', () => {
     const result = validateBlockNumber(true)
 
     expect(result).toBe(false)

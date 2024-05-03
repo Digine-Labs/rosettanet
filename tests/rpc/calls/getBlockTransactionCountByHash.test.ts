@@ -7,7 +7,7 @@ describe('Test get Block Count By Hash request testnet ', () => {
       jsonrpc: '2.0',
       method: 'eth_getBlockTransactionCountByHash',
       params: [
-        '0x0627dadf33aecc02abe2530f1f2b091a24e7a119cc03851be4d559af47f22e93',
+        '0x07410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
       ],
       id: 0,
     }
@@ -17,7 +17,7 @@ describe('Test get Block Count By Hash request testnet ', () => {
     )
 
     expect(typeof response.result).toBe('string')
-    expect(response.result).toBe('0x29') // Verify here: https://testnet.starkscan.co/block/0x0627dadf33aecc02abe2530f1f2b091a24e7a119cc03851be4d559af47f22e93#transactions
+    expect(response.result).toBe('0x2d') // Verify here: https://testnet.starkscan.co/block/0x0627dadf33aecc02abe2530f1f2b091a24e7a119cc03851be4d559af47f22e93#transactions
   })
 
   it('Returns error message if block hash is invalid', async () => {
