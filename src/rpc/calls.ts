@@ -18,6 +18,7 @@ import { getTransactionReceiptHandler } from './calls/getTransactionReceipt'
 import { feeHistoryHandler } from './calls/feeHistory'
 import { getBlockByNumberHandler } from './calls/getBlockByNumber'
 import { getTransactionsByHashHandler } from './calls/getTransactionByHash'
+import { starknetCallHandler } from './calls/starknetCall'
 
 const router: Router = Router()
 
@@ -101,7 +102,7 @@ Methods.set('eth_getBlockByNumber', {
   method: 'eth_getBlockByNumber',
   handler: getBlockByNumberHandler,
 })
-            
+
 Methods.set('eth_getTransactionByHash', {
   method: 'eth_getTransactionByHash',
   handler: getTransactionsByHashHandler,
@@ -109,6 +110,14 @@ Methods.set('eth_getTransactionByHash', {
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
   const request = req.rpcRequest
+  if (request?.method) {
+    const methodFirstLetters: string = request.method.substring(0, 7)
+    if (methodFirstLetters === 'starknet') {
+      const result = await starknetCallHandler(request)
+      res.send(result)
+      return
+    }
+  }
   if (request?.method && request?.params && Methods.has(request.method)) {
     const handler: ResponseHandler | undefined = Methods.get(request.method)
     if (handler) {
