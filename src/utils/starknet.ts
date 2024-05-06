@@ -6,7 +6,9 @@ export async function getContractsMethods(
   nodeUrl: constants.NetworkName | string,
   contractAddress: string,
 ) {
-  const provider = new RpcProvider({ nodeUrl: 'https://starknet-mainnet.public.blastapi.io/rpc/v0_6' })
+  const provider = new RpcProvider({
+    nodeUrl: 'https://starknet-mainnet.public.blastapi.io/rpc/v0_6',
+  })
 
   let contractAbi: Abi = []
   try {
