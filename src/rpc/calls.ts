@@ -19,6 +19,7 @@ import { feeHistoryHandler } from './calls/feeHistory'
 import { getBlockByNumberHandler } from './calls/getBlockByNumber'
 import { getTransactionsByHashHandler } from './calls/getTransactionByHash'
 import { starknetCallHandler } from './calls/starknetCall'
+import { ethCallHandler } from './calls/ethCall'
 
 const router: Router = Router()
 
@@ -106,6 +107,11 @@ Methods.set('eth_getBlockByNumber', {
 Methods.set('eth_getTransactionByHash', {
   method: 'eth_getTransactionByHash',
   handler: getTransactionsByHashHandler,
+})
+
+Methods.set('eth_call', {
+  method: 'eth_call',
+  handler: ethCallHandler
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
