@@ -111,7 +111,7 @@ Methods.set('eth_getTransactionByHash', {
 
 Methods.set('eth_call', {
   method: 'eth_call',
-  handler: ethCallHandler
+  handler: ethCallHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
