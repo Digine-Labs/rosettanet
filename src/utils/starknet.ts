@@ -28,8 +28,9 @@ export async function getContractsMethods(snAddress: string) {
   const interfaces = contractAbi.filter(item => item.type === 'interface')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const callableFunctionsInterface = interfaces.map(item => item.items)
-  // console.log(callableFunctionsInterface);
-  // console.log(directFunctions)
+  const flattenedCallableFunctionsInterface = callableFunctionsInterface.flat(1)
+  console.log(flattenedCallableFunctionsInterface)
+  console.log(directFunctions)
 
   // TODO: merge callableFunctionsInterface array with array directFunctions
   // final array must look like directFunctions
