@@ -1,4 +1,4 @@
-export function convertSnToEth() {
+export function convertSnToEth(sntype: string): string {
   // TODO: Converts sn type name to eth
   /*
         Examples:
@@ -8,4 +8,6 @@ export function convertSnToEth() {
 
         module::sub_module::custom_struct => (uint256, uint160 ...)
     */
+
+  return sntype
 }

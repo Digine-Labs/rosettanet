@@ -51,4 +51,6 @@ export interface StarknetFunction {
   name: string
   inputs?: Array<StarknetFunctionInput>
   outputs?: Array<StarknetFunctionOutput>
+  type: string
+  state_mutability: string
 }
