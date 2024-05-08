@@ -37,3 +37,18 @@ export interface StarknetType {
   name: string
   converter(value: string): string | Array<string> | undefined
 }
+
+export interface StarknetFunctionInput {
+  name: string
+  type: string
+}
+
+export interface StarknetFunctionOutput {
+  type: string
+}
+
+export interface StarknetFunction {
+  name: string
+  inputs?: Array<StarknetFunctionInput>
+  outputs?: Array<StarknetFunctionOutput>
+}
