@@ -26,9 +26,10 @@ export async function getContractsMethods(snAddress: string) {
         item.state_mutability === 'view'),
   )
   const interfaces = contractAbi.filter(item => item.type === 'interface')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const callableFunctionsInterface = interfaces.map(item => item.items)
-  // console.log(callableFunctionsInterface);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const flattenedCallableFunctionsInterface = callableFunctionsInterface.flat(1)
+  // console.log(flattenedCallableFunctionsInterface)
   // console.log(directFunctions)
 
   // TODO: merge callableFunctionsInterface array with array directFunctions
