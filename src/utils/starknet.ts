@@ -1,11 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { RpcProvider, constants, Abi, FunctionAbi, StructAbi } from 'starknet'
 import { snKeccak } from '../../src/utils/sn_keccak'
 import { validateSnAddress } from './validations'
 import { getRpc } from './getRpc'
+import { StarknetFunctionInput } from '../types/types'
+import { convertSnToEth } from './converters/typeConverters'
 
-export async function getContractsMethods(snAddress: string) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function getContractsMethods(
+  snAddress: string,
+): Promise<Array<any>> {
   if (!validateSnAddress(snAddress)) {
-    return 'Invalid Starknet addreess'
+    return []
   }
   const rpcUrl: string = getRpc('testnet')
   const provider = new RpcProvider({ nodeUrl: rpcUrl })
@@ -15,7 +22,6 @@ export async function getContractsMethods(snAddress: string) {
     const compressedContract = await provider.getClassAt(snAddress)
     contractAbi = compressedContract.abi
   } catch (e) {
-    // console.error(e)
     return []
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -29,11 +35,24 @@ export async function getContractsMethods(snAddress: string) {
   const callableFunctionsInterface = interfaces.map(item => item.items)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const flattenedCallableFunctionsInterface = callableFunctionsInterface.flat(1)
-  // console.log(flattenedCallableFunctionsInterface)
-  // console.log(directFunctions)
 
-  // TODO: merge callableFunctionsInterface array with array directFunctions
-  // final array must look like directFunctions
+  const allEntrypoints = [
+    ...flattenedCallableFunctionsInterface,
+    ...directFunctions,
+  ]
+
+  return allEntrypoints
+}
+
+// pass function name and input object. Types will be converted to eth types in this function
+export function generateEthereumFunctionSignature(
+  name: string,
+  inputs: Array<StarknetFunctionInput>,
+): string {
+  // const functionInputTypes = inputs.map(i => convertSnToEth(i.type))
+
+  //const functionSignatureString = `${name}(${functionInputTypes})`
+  return ''
 }
 
 export async function generateEntrypointsSelector(
