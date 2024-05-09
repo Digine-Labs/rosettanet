@@ -20,6 +20,7 @@ import { getBlockByNumberHandler } from './calls/getBlockByNumber'
 import { getTransactionsByHashHandler } from './calls/getTransactionByHash'
 import { starknetCallHandler } from './calls/starknetCall'
 import { ethCallHandler } from './calls/ethCall'
+import { ethSyncingHandler } from './calls/syncing'
 
 const router: Router = Router()
 
@@ -112,6 +113,11 @@ Methods.set('eth_getTransactionByHash', {
 Methods.set('eth_call', {
   method: 'eth_call',
   handler: ethCallHandler,
+})
+
+Methods.set('eth_syncing', {
+  method: 'eth_syncing',
+  handler: ethSyncingHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
