@@ -5,7 +5,10 @@ import {
   RPCResponse,
   StarknetFunction,
 } from '../../types/types'
-import { getFunctionSelectorFromCalldata } from '../../utils/converters/calldata'
+import {
+  getCalldataByteSize,
+  getFunctionSelectorFromCalldata,
+} from '../../utils/calldata'
 import { matchStarknetFunctionWithEthereumSelector } from '../../utils/match'
 import {
   generateEthereumFunctionSignature,
@@ -148,7 +151,11 @@ export async function ethCallHandler(
     }
   }
 
+  // const starknetFunction: StarknetFunction = starknetCallableMethods.filter(fn => fn.name === targetStarknetFunction.split('(')[0])
+
   // 3) Convert eth calldata into starknet calldata
+
+  const calldataSlotsize = getCalldataByteSize(targetStarknetFunction)
   return {
     jsonrpc: '2.0',
     id: 1,

@@ -54,3 +54,13 @@ export interface StarknetFunction {
   type: string
   state_mutability: string
 }
+
+export interface EthereumSlot {
+  order: number
+  bits: number
+}
+
+export interface EthereumBitSize {
+  slotSize: number
+  bitSize: number
+}
