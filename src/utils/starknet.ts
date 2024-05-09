@@ -4,13 +4,13 @@ import { RpcProvider, constants, Abi, FunctionAbi, StructAbi } from 'starknet'
 import { snKeccak } from '../../src/utils/sn_keccak'
 import { validateSnAddress } from './validations'
 import { getRpc } from './getRpc'
-import { StarknetFunctionInput } from '../types/types'
+import { StarknetFunctionInput, StarknetFunction } from '../types/types'
 import { convertSnToEth } from './converters/typeConverters'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getContractsMethods(
   snAddress: string,
-): Promise<Array<any>> {
+): Promise<Array<StarknetFunction>> {
   if (!validateSnAddress(snAddress)) {
     return []
   }
@@ -47,12 +47,21 @@ export async function getContractsMethods(
 // pass function name and input object. Types will be converted to eth types in this function
 export function generateEthereumFunctionSignature(
   name: string,
-  inputs: Array<StarknetFunctionInput>,
+  inputs?: Array<StarknetFunctionInput>,
 ): string {
+  if (!inputs || inputs.length == 0) {
+    return `${name}()`
+  }
+  const inputTypes = getFunctionInputTypes(inputs)
   // const functionInputTypes = inputs.map(i => convertSnToEth(i.type))
 
   //const functionSignatureString = `${name}(${functionInputTypes})`
-  return ''
+  return `${name}(${inputTypes})`
+}
+
+function getFunctionInputTypes(inputs: Array<StarknetFunctionInput>): string {
+  const inputTypes = inputs.map(input => convertSnToEth(input.type))
+  return inputTypes.toString()
 }
 
 export async function generateEntrypointsSelector(

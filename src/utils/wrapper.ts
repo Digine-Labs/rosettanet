@@ -5,6 +5,8 @@ const CONTRACT_ADDRESS = {
   sepolia: '0x693289c1208cb7d9d82df0746f924ad25f2cb2e3ccfee6520a8210770742891',
   mainnet: '',
 }
+// 0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+// 0xd3fcc84644ddd6b96f7c741b1562b82f9e004dc7 is ETH address on sn
 
 const SELECTORS = {
   get_sn_address_from_eth_address:
