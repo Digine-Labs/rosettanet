@@ -9,6 +9,41 @@ export function getFunctionSelectorFromCalldata(calldata: string): string {
   return calldata.substring(0, 10)
 }
 
+export function convertEthereumCalldataToParameters(
+  fn: string,
+  slots: Array<EthereumSlot>,
+  data: string | undefined,
+) {
+  // TODO tests
+  if (slots.length == 0) {
+    return
+  }
+
+  if (typeof data === 'undefined' || data.length < 11) {
+    return
+  }
+
+  const parameters = fn.split('(')[1].replace(')', '').split(',')
+  if (parameters.length == 0 || parameters[0].length == 0) {
+    return
+  }
+
+  const slotData: Array<string> = []
+
+  const selectorRemovedCalldata = data.slice(10)
+
+  if (selectorRemovedCalldata.length % 64 != 0) {
+    // wrong calldata
+    return
+  }
+
+  const slotCount = selectorRemovedCalldata.length / 64
+
+  for (let i = 0; i < slotCount; i++) {
+    slotData.push(selectorRemovedCalldata.substring(i * 64, 64 * (i + 1)))
+  }
+}
+
 // parameter is array of string or string of eth type
 export function getCalldataByteSize(fn: string): Array<EthereumSlot> {
   const parameters = fn.split('(')[1].replace(')', '').split(',')

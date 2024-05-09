@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
+  EthereumSlot,
   RPCError,
   RPCRequest,
   RPCResponse,
   StarknetFunction,
 } from '../../types/types'
 import {
+  convertEthereumCalldataToParameters,
   getCalldataByteSize,
   getFunctionSelectorFromCalldata,
 } from '../../utils/calldata'
@@ -155,7 +157,15 @@ export async function ethCallHandler(
 
   // 3) Convert eth calldata into starknet calldata
 
-  const calldataSlotsize = getCalldataByteSize(targetStarknetFunction)
+  const calldataSlotsize: Array<EthereumSlot> = getCalldataByteSize(
+    targetStarknetFunction,
+  )
+  convertEthereumCalldataToParameters(
+    targetStarknetFunction,
+    calldataSlotsize,
+    parameters.data,
+  )
+
   return {
     jsonrpc: '2.0',
     id: 1,
