@@ -4,5 +4,5 @@ export function getFunctionSelectorFromCalldata(calldata: string): string {
     return '0x0' // empty calldata
   }
 
-  return calldata.substring(0, 9)
+  return calldata.substring(0, 10)
 }

@@ -1,6 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import {
+  RPCError,
+  RPCRequest,
+  RPCResponse,
+  StarknetFunction,
+} from '../../types/types'
 import { getFunctionSelectorFromCalldata } from '../../utils/converters/calldata'
+import { matchStarknetFunctionWithEthereumSelector } from '../../utils/match'
+import {
+  generateEthereumFunctionSignature,
+  getContractsMethods,
+} from '../../utils/starknet'
 import { validateEthAddress } from '../../utils/validations'
 import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 
@@ -108,7 +118,35 @@ export async function ethCallHandler(
     typeof parameters.data === 'string'
       ? getFunctionSelectorFromCalldata(parameters.data)
       : '0x0'
+
+  if (functionSelector === '0x0') {
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: 'function call zero.',
+    }
+  }
   const starknetTarget: string = await getSnAddressFromEthAddress(parameters.to)
+
+  const starknetCallableMethods: Array<StarknetFunction> =
+    await getContractsMethods(starknetTarget)
+
+  const starknetFunctionsEthereumFormat = starknetCallableMethods.map(fn =>
+    generateEthereumFunctionSignature(fn.name, fn.inputs),
+  )
+
+  const targetStarknetFunction = matchStarknetFunctionWithEthereumSelector(
+    starknetFunctionsEthereumFormat,
+    functionSelector,
+  )
+
+  if (typeof targetStarknetFunction === 'undefined') {
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: 'target function not found',
+    }
+  }
 
   // 3) Convert eth calldata into starknet calldata
   return {
