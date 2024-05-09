@@ -1,6 +1,7 @@
 import {
   getFunctionSelectorFromCalldata,
   getCalldataByteSize,
+  convertEthereumCalldataToParameters,
 } from '../../src/utils/calldata'
 import { EthereumSlot } from '../../src/types/types'
 
@@ -125,5 +126,51 @@ describe('Tests ethereum bitsize calculations', () => {
     const slots: Array<EthereumSlot> = getCalldataByteSize(sample)
 
     expect(slots.length).toBe(0)
+  })
+})
+
+describe('Tests convertEthereumCalldataToParameters', () => {
+  it('convert 0 parameter', () => {
+    const functionName = 'balanceOf()'
+    const slots: Array<EthereumSlot> = getCalldataByteSize(functionName)
+    const data = '0x70a08231'
+
+    const params = convertEthereumCalldataToParameters(
+      functionName,
+      slots,
+      data,
+    )
+    expect(params.length).toBe(0)
+  })
+
+  it('convert 1 parameter', () => {
+    const functionName = 'balanceOf(address)'
+    const slots: Array<EthereumSlot> = getCalldataByteSize(functionName)
+    const data =
+      '0x70a08231000000000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7'
+
+    const params = convertEthereumCalldataToParameters(
+      functionName,
+      slots,
+      data,
+    )
+    expect(params.length).toBe(1)
+    expect(params[0]).toBe('d3fcc84644ddd6b96f7c741b1562b82f9e004dc7')
+  })
+
+  it('convert 2 parameters', () => {
+    const functionName = 'balanceOf(address)'
+    const slots: Array<EthereumSlot> = getCalldataByteSize(functionName)
+    const data =
+      '0x70a08231000000000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7456700000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7'
+
+    const params = convertEthereumCalldataToParameters(
+      functionName,
+      slots,
+      data,
+    )
+    expect(params.length).toBe(2)
+    expect(params[0]).toBe('d3fcc84644ddd6b96f7c741b1562b82f9e004dc7')
+    expect(params[1]).toBe('d3fcc84644ddd6b96f7c741b1562b82f9e004dc7')
   })
 })
