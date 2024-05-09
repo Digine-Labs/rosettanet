@@ -13,19 +13,19 @@ export function convertEthereumCalldataToParameters(
   fn: string,
   slots: Array<EthereumSlot>,
   data: string | undefined,
-) {
+): Array<string> {
   // TODO tests
   if (slots.length == 0) {
-    return
+    return []
   }
 
   if (typeof data === 'undefined' || data.length < 11) {
-    return
+    return []
   }
 
   const parameters = fn.split('(')[1].replace(')', '').split(',')
   if (parameters.length == 0 || parameters[0].length == 0) {
-    return
+    return []
   }
 
   const slotData: Array<string> = []
@@ -34,7 +34,7 @@ export function convertEthereumCalldataToParameters(
 
   if (selectorRemovedCalldata.length % 64 != 0) {
     // wrong calldata
-    return
+    return []
   }
 
   const slotCount = selectorRemovedCalldata.length / 64
@@ -42,6 +42,38 @@ export function convertEthereumCalldataToParameters(
   for (let i = 0; i < slotCount; i++) {
     slotData.push(selectorRemovedCalldata.substring(i * 64, 64 * (i + 1)))
   }
+
+  // slotData includes each eth calldata slots. now pad these according to slotsizes
+  const paddedSlotData: Array<string> = []
+  let i = 0
+  for (const slot of slots) {
+    const bytesToRemoval = (256 - slot.bits) / 8
+    paddedSlotData.push(slotData[i].slice(bytesToRemoval))
+    i++
+  }
+
+  // now we have calldata without zeros. So split according to variable bit sizes
+  const splittedCallData: Array<string> = []
+  let slotIndex = 0
+  let currentReadBits = 0
+  for (const parameter of parameters) {
+    if (parameter.length === 0) {
+      break
+    }
+
+    const bitSize = ethTypeBitLength(parameter)
+    // We can assume padded datas already ordered by getCalldataByteSize function
+    const byteLength = bitSize / 8
+
+    splittedCallData.push(paddedSlotData[slotIndex].slice(byteLength))
+    if (bitSize + currentReadBits > 256) {
+      slotIndex++
+      continue
+    }
+    currentReadBits += bitSize
+  }
+
+  return splittedCallData
 }
 
 // parameter is array of string or string of eth type

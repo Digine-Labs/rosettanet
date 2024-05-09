@@ -160,7 +160,7 @@ export async function ethCallHandler(
   const calldataSlotsize: Array<EthereumSlot> = getCalldataByteSize(
     targetStarknetFunction,
   )
-  convertEthereumCalldataToParameters(
+  const splittedData: Array<string> = convertEthereumCalldataToParameters(
     targetStarknetFunction,
     calldataSlotsize,
     parameters.data,
