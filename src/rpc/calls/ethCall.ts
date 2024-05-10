@@ -196,6 +196,21 @@ export async function ethCallHandler(
 
   // 5) Format response to eth
 
+  const targetStarknetFunctionAsStarknetFunction: StarknetFunction | undefined =
+    starknetCallableMethods.find(
+      x => x.name === targetStarknetFunction.split('(')[0],
+    )
+  // TODO: Maybe we can find better way to get function outputs.
+
+  if (typeof targetStarknetFunctionAsStarknetFunction === 'undefined') {
+    // no way to here executed
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: 'target function not found',
+    }
+  }
+  // console.log(targetStarknetFunctionAsStarknetFunction)
   // TODO: read output data type from abi and convert into eth
 
   // TODO uint256 should be splitted into to
