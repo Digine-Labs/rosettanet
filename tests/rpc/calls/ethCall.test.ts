@@ -3,8 +3,10 @@ import { RPCResponse } from '../../../src/types/types'
 
 describe('Test Eth call request testnet', () => {
   it('Returns balance', async () => {
-    // SN ADDR TO REQUEST BALANCE 0x061D2D0E093B92116632A5068Ce683d051E2Ada4ACddf948bA77ec2Fed9786d6
-    // ETH VERSION 0x8ce683d051e2ada4acddf948ba77ec2fed9786d6
+    // SN ADDR TO REQUEST BALANCE 0x0616E680F81d3b5Bc5CD68000CFfa77DF7A5592Cbb3fE1C65a14a84C195E4DBE
+    // ETH VERSION 0xcffa77df7a5592cbb3fe1c65a14a84c195e4dbe
+
+    // Account constantly has 0.1 eth
     const request = {
       jsonrpc: '2.0',
       method: 'eth_call',
@@ -15,7 +17,7 @@ describe('Test Eth call request testnet', () => {
           gas: '',
           gasPrice: '',
           value: '',
-          data: '0x70a08231000000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7', // balanceOf
+          data: '0x70a082310000000000000000000000000cffa77df7a5592cbb3fe1c65a14a84c195e4dbe', // balanceOf
         },
         'latest',
       ],

@@ -6,8 +6,8 @@ describe('Starknet conversions', () => {
       'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
 
     expect(toStarknetType(UINT256_MAX, 'u256')).toStrictEqual([
-      '340282366920938463463374607431768211455',
-      '340282366920938463463374607431768211455',
+      'ffffffffffffffffffffffffffffffff',
+      'ffffffffffffffffffffffffffffffff',
     ])
   })
 

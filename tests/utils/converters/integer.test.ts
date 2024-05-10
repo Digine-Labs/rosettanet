@@ -6,8 +6,8 @@ describe('Integer conversions', () => {
       'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
 
     expect(Uint256ToU256(UINT256_MAX)).toStrictEqual([
-      '340282366920938463463374607431768211455',
-      '340282366920938463463374607431768211455',
+      'ffffffffffffffffffffffffffffffff',
+      'ffffffffffffffffffffffffffffffff',
     ])
   })
 
@@ -24,7 +24,7 @@ describe('Integer conversions', () => {
 
     expect(Uint256ToU256(UINT256)).toStrictEqual([
       '0',
-      '340282366920938463463374607431768211455',
+      'ffffffffffffffffffffffffffffffff',
     ])
   })
 
@@ -33,7 +33,7 @@ describe('Integer conversions', () => {
       '00000000000000000000000000000000ffffffffffffffffffffffffffffffff'
 
     expect(Uint256ToU256(UINT256_LOW)).toStrictEqual([
-      '340282366920938463463374607431768211455',
+      'ffffffffffffffffffffffffffffffff',
       '0',
     ])
   })
