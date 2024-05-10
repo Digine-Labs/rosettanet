@@ -15,7 +15,7 @@ describe('Test Eth call request testnet', () => {
           gas: '',
           gasPrice: '',
           value: '',
-          data: '0x70a08231000000000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7', // balanceOf
+          data: '0x70a08231000000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7', // balanceOf
         },
         'latest',
       ],
