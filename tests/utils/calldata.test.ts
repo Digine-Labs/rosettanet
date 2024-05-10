@@ -1,6 +1,7 @@
 import {
   getFunctionSelectorFromCalldata,
   getCalldataByteSize,
+  convertEthereumCalldataToParameters,
 } from '../../src/utils/calldata'
 import { EthereumSlot } from '../../src/types/types'
 
@@ -125,5 +126,120 @@ describe('Tests ethereum bitsize calculations', () => {
     const slots: Array<EthereumSlot> = getCalldataByteSize(sample)
 
     expect(slots.length).toBe(0)
+  })
+})
+
+describe('Tests convertEthereumCalldataToParameters', () => {
+  it('convert 0 parameter', () => {
+    const functionName = 'balanceOf()'
+    const slots: Array<EthereumSlot> = getCalldataByteSize(functionName)
+    const data = '0x70a08231'
+
+    const params = convertEthereumCalldataToParameters(
+      functionName,
+      slots,
+      data,
+    )
+    expect(params.length).toBe(0)
+  })
+
+  it('convert 1 parameter', () => {
+    const functionName = 'balanceOf(address)'
+    const slots: Array<EthereumSlot> = getCalldataByteSize(functionName)
+    const data =
+      '0x70a08231000000000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7'
+
+    const params = convertEthereumCalldataToParameters(
+      functionName,
+      slots,
+      data,
+    )
+    expect(params.length).toBe(1)
+    expect(params[0]).toBe('d3fcc84644ddd6b96f7c741b1562b82f9e004dc7')
+  })
+
+  it('convert 2 parameters', () => {
+    const functionName = 'balanceOf(address,uint256)'
+    const slots: Array<EthereumSlot> = getCalldataByteSize(functionName)
+    const data =
+      '0x70a08231000000000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7aaa000000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7'
+
+    const params = convertEthereumCalldataToParameters(
+      functionName,
+      slots,
+      data,
+    )
+    expect(params.length).toBe(2)
+    expect(params[0]).toBe('d3fcc84644ddd6b96f7c741b1562b82f9e004dc7')
+    expect(params[1]).toBe(
+      'aaa000000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
+    )
+  })
+
+  it('convert 2 parameters packed', () => {
+    const functionName = 'balanceOf(uint128,uint128)'
+    const slots: Array<EthereumSlot> = getCalldataByteSize(functionName)
+    const data =
+      '0x70a08231900010000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7'
+
+    const params = convertEthereumCalldataToParameters(
+      functionName,
+      slots,
+      data,
+    )
+    expect(params.length).toBe(2)
+    expect(params[0]).toBe('900010000000000000000000d3fcc846')
+    expect(params[1]).toBe('44ddd6b96f7c741b1562b82f9e004dc7')
+  })
+
+  it('convert 3 parameters packed on second', () => {
+    const functionName = 'balanceOf(address,uint128,uint128)'
+    const slots: Array<EthereumSlot> = getCalldataByteSize(functionName)
+    const data =
+      '0x70a08231000000000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7aaa000000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7'
+
+    const params = convertEthereumCalldataToParameters(
+      functionName,
+      slots,
+      data,
+    )
+    expect(params.length).toBe(3)
+    expect(params[0]).toBe('d3fcc84644ddd6b96f7c741b1562b82f9e004dc7')
+    expect(params[1]).toBe('aaa000000000000000000000d3fcc846')
+    expect(params[2]).toBe('44ddd6b96f7c741b1562b82f9e004dc7')
+  })
+
+  it('convert 2 parameters packed but not full slot', () => {
+    const functionName = 'balanceOf(uint64,uint64)'
+    const slots: Array<EthereumSlot> = getCalldataByteSize(functionName)
+    const data =
+      '0x70a082310000000000000000000000000000000012312312312313239999999999999999'
+
+    const params = convertEthereumCalldataToParameters(
+      functionName,
+      slots,
+      data,
+    )
+    expect(params.length).toBe(2)
+    expect(params[0]).toBe('1231231231231323')
+    expect(params[1]).toBe('9999999999999999')
+  })
+
+  it('convert 4 parameters packed and different', () => {
+    const functionName = 'balanceOf(uint32,address,uint128,uint64)'
+    const slots: Array<EthereumSlot> = getCalldataByteSize(functionName)
+    const data =
+      '0x70a08231000000000000000012312312abcabcabcabcabcabcabcabcabcabcabcabcabca0000000000000000454545454545454545454545454545457878787878787878'
+
+    const params = convertEthereumCalldataToParameters(
+      functionName,
+      slots,
+      data,
+    )
+    expect(params.length).toBe(4)
+    expect(params[0]).toBe('12312312')
+    expect(params[1]).toBe('abcabcabcabcabcabcabcabcabcabcabcabcabca')
+    expect(params[2]).toBe('45454545454545454545454545454545')
+    expect(params[3]).toBe('7878787878787878')
   })
 })
