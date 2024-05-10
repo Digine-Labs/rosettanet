@@ -131,7 +131,7 @@ describe('Tests ethereum bitsize calculations', () => {
 })
 
 describe('Tests convertEthereumCalldataToParameters', () => {
-  it('convert 0 parameter', async() => {
+  it('convert 0 parameter', async () => {
     const functionName = 'balanceOf()'
     const slots: Array<EthereumSlot> = getCalldataByteSize(functionName)
     const data = '0x70a08231'
@@ -144,7 +144,7 @@ describe('Tests convertEthereumCalldataToParameters', () => {
     expect(params.length).toBe(0)
   })
 
-  it('convert 1 parameter', async() => {
+  it('convert 1 parameter', async () => {
     const functionName = 'balanceOf(address)'
     const slots: Array<EthereumSlot> = getCalldataByteSize(functionName)
     const data =
@@ -156,10 +156,12 @@ describe('Tests convertEthereumCalldataToParameters', () => {
       data,
     )
     expect(params.length).toBe(1)
-    expect(params[0]).toBe('49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7') // address received from registry
+    expect(params[0]).toBe(
+      '49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
+    ) // address received from registry
   })
 
-  it('convert 2 parameters', async() => {
+  it('convert 2 parameters', async () => {
     const functionName = 'balanceOf(address,uint256)'
     const slots: Array<EthereumSlot> = getCalldataByteSize(functionName)
     const data =
@@ -171,13 +173,15 @@ describe('Tests convertEthereumCalldataToParameters', () => {
       data,
     )
     expect(params.length).toBe(2)
-    expect(params[0]).toBe('49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7')
+    expect(params[0]).toBe(
+      '49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
+    )
     expect(params[1]).toBe(
       'aaa000000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
     )
   })
 
-  it('convert 2 parameters packed', async() => {
+  it('convert 2 parameters packed', async () => {
     const functionName = 'balanceOf(uint128,uint128)'
     const slots: Array<EthereumSlot> = getCalldataByteSize(functionName)
     const data =
@@ -193,7 +197,7 @@ describe('Tests convertEthereumCalldataToParameters', () => {
     expect(params[1]).toBe('44ddd6b96f7c741b1562b82f9e004dc7')
   })
 
-  it('convert 3 parameters packed on second', async() => {
+  it('convert 3 parameters packed on second', async () => {
     const functionName = 'balanceOf(address,uint128,uint128)'
     const slots: Array<EthereumSlot> = getCalldataByteSize(functionName)
     const data =
@@ -205,7 +209,9 @@ describe('Tests convertEthereumCalldataToParameters', () => {
       data,
     )
     expect(params.length).toBe(3)
-    expect(params[0]).toBe('49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7')
+    expect(params[0]).toBe(
+      '49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
+    )
     expect(params[1]).toBe('aaa000000000000000000000d3fcc846')
     expect(params[2]).toBe('44ddd6b96f7c741b1562b82f9e004dc7')
   })
@@ -247,22 +253,26 @@ describe('Tests convertEthereumCalldataToParameters', () => {
 
 describe('Test uint256 converts', () => {
   it('Converts uint256 to u256 array', async () => {
-    const data: Array<string> = ["900010000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7"]
+    const data: Array<string> = [
+      '900010000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
+    ]
 
-    const u256strings: Array<string> = convertUint256s(data);
+    const u256strings: Array<string> = convertUint256s(data)
 
-    expect(u256strings.length).toBe(2);
-    expect(u256strings[0]).toBe("44ddd6b96f7c741b1562b82f9e004dc7");
-    expect(u256strings[1]).toBe("900010000000000000000000d3fcc846")
+    expect(u256strings.length).toBe(2)
+    expect(u256strings[0]).toBe('44ddd6b96f7c741b1562b82f9e004dc7')
+    expect(u256strings[1]).toBe('900010000000000000000000d3fcc846')
   })
 
   it('Converts uint256 to u256 array with zeros', async () => {
-    const data: Array<string> = ["000010000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7"]
+    const data: Array<string> = [
+      '000010000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
+    ]
 
-    const u256strings: Array<string> = convertUint256s(data);
+    const u256strings: Array<string> = convertUint256s(data)
 
-    expect(u256strings.length).toBe(2);
-    expect(u256strings[0]).toBe("44ddd6b96f7c741b1562b82f9e004dc7");
-    expect(u256strings[1]).toBe("10000000000000000000d3fcc846") // zeroes removed
+    expect(u256strings.length).toBe(2)
+    expect(u256strings[0]).toBe('44ddd6b96f7c741b1562b82f9e004dc7')
+    expect(u256strings[1]).toBe('10000000000000000000d3fcc846') // zeroes removed
   })
 })

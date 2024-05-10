@@ -170,9 +170,9 @@ export async function ethCallHandler(
     parameters.data,
   )
 
-  const split256Bits: Array<string> = convertUint256s(splittedData).map(i => `0x${i}`);
-
-  console.log(split256Bits)
+  const split256Bits: Array<string> = convertUint256s(splittedData).map(
+    i => `0x${i}`,
+  )
 
   // 4) Prepare starknet call params and Call starknet
 
@@ -182,23 +182,18 @@ export async function ethCallHandler(
     {
       calldata: split256Bits,
       contract_address: starknetTarget,
-      entry_point_selector: starknetSelector
-
-    }, 
-    "pending" // update to latest
+      entry_point_selector: starknetSelector,
+    },
+    'pending', // update to latest
   ]
 
-  console.log(starknetCallParams)
-
-  const response = await callStarknet('testnet',{
+  await callStarknet('testnet', {
     jsonrpc: request.jsonrpc,
     method: 'starknet_call',
     params: starknetCallParams,
     id: request.id,
   })
 
-  console.log(response)
-  
   // 5) Format response to eth
 
   // TODO: read output data type from abi and convert into eth

@@ -2,11 +2,9 @@ import BigNumber from 'bignumber.js'
 
 // Eth uint256 to u256
 // value has to be string of length 64 representation in hex. Remove 0x prefix
-export function Uint256ToU256(
-  value: string,
-): string | Array<string> {
+export function Uint256ToU256(value: string): string | Array<string> {
   if (value.length != 64) {
-    return ["0", "0"]
+    return ['0', '0']
   }
 
   const high: string = new BigNumber(value.substring(0, 32), 16).toString(16)
