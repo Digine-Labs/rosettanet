@@ -1,7 +1,7 @@
 import {
   getFunctionSelectorFromCalldata,
   getCalldataByteSize,
-  convertEthereumCalldataToParameters
+  convertEthereumCalldataToParameters,
 } from '../../src/utils/calldata'
 import { EthereumSlot } from '../../src/types/types'
 
@@ -171,7 +171,9 @@ describe('Tests convertEthereumCalldataToParameters', () => {
     )
     expect(params.length).toBe(2)
     expect(params[0]).toBe('d3fcc84644ddd6b96f7c741b1562b82f9e004dc7')
-    expect(params[1]).toBe('aaa000000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7')
+    expect(params[1]).toBe(
+      'aaa000000000000000000000d3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
+    )
   })
 
   it('convert 2 parameters packed', () => {
