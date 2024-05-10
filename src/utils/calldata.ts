@@ -1,4 +1,6 @@
 import { EthereumSlot } from '../types/types'
+import { Uint256ToU256 } from './converters/integer'
+import { getSnAddressFromEthAddress } from './wrapper'
 
 export function getFunctionSelectorFromCalldata(calldata: string): string {
   // 0xa9059cbb
@@ -9,12 +11,25 @@ export function getFunctionSelectorFromCalldata(calldata: string): string {
   return calldata.substring(0, 10)
 }
 
-export function convertEthereumCalldataToParameters(
+export function convertUint256s(data: Array<string>): Array<string> {
+  const split256Bits: Array<string> = []
+
+  for (let i = 0; i < data.length; i++) {
+    if (data[i].length == 64) {
+      split256Bits.push(...Uint256ToU256(data[i]))
+      continue
+    }
+    split256Bits.push(data[i])
+  }
+
+  return split256Bits
+}
+
+export async function convertEthereumCalldataToParameters(
   fn: string,
   slots: Array<EthereumSlot>,
   data: string | undefined,
-): Array<string> {
-  // TODO tests
+): Promise<Array<string>> {
   if (slots.length == 0) {
     return []
   }
@@ -60,8 +75,14 @@ export function convertEthereumCalldataToParameters(
   let slotIndex = 0
   let currentReadBits = 0
   if (parameters.length == 1) {
-    splittedCallData.push(paddedSlotData[0])
-    return splittedCallData
+    if (parameters[0] === 'address') {
+      const snAddress = await getSnAddressFromEthAddress(paddedSlotData[0])
+      splittedCallData.push(snAddress.replace('0x', ''))
+      return splittedCallData
+    } else {
+      splittedCallData.push(paddedSlotData[0])
+      return splittedCallData
+    }
   }
   for (const parameter of parameters) {
     if (parameter.length === 0) {
@@ -85,9 +106,12 @@ export function convertEthereumCalldataToParameters(
     // 32, 64
 
     // const splittedData = paddedSlotData[slotIndex].slice(byteLength);
-
-    splittedCallData.push(parameterValue)
-
+    if (parameter === 'address') {
+      const snAddress = await getSnAddressFromEthAddress(parameterValue)
+      splittedCallData.push(snAddress.replace('0x', ''))
+    } else {
+      splittedCallData.push(parameterValue)
+    }
     currentReadBits += bitSize
   }
 

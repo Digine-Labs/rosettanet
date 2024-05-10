@@ -6,12 +6,16 @@ import {
   RPCResponse,
   StarknetFunction,
 } from '../../types/types'
+import { callStarknet } from '../../utils/callHelper'
 import {
   convertEthereumCalldataToParameters,
+  convertUint256s,
   getCalldataByteSize,
   getFunctionSelectorFromCalldata,
 } from '../../utils/calldata'
+import { Uint256ToU256 } from '../../utils/converters/integer'
 import { matchStarknetFunctionWithEthereumSelector } from '../../utils/match'
+import { snKeccak } from '../../utils/sn_keccak'
 import {
   generateEthereumFunctionSignature,
   getContractsMethods,
@@ -160,11 +164,42 @@ export async function ethCallHandler(
   const calldataSlotsize: Array<EthereumSlot> = getCalldataByteSize(
     targetStarknetFunction,
   )
-  const splittedData: Array<string> = convertEthereumCalldataToParameters(
+  const splittedData: Array<string> = await convertEthereumCalldataToParameters(
     targetStarknetFunction,
     calldataSlotsize,
     parameters.data,
   )
+
+  const split256Bits: Array<string> = convertUint256s(splittedData).map(
+    i => `0x${i}`,
+  )
+
+  // 4) Prepare starknet call params and Call starknet
+
+  const starknetSelector = snKeccak(targetStarknetFunction.split('(')[0])
+
+  const starknetCallParams = [
+    {
+      calldata: split256Bits,
+      contract_address: starknetTarget,
+      entry_point_selector: starknetSelector,
+    },
+    'pending', // update to latest
+  ]
+
+  await callStarknet('testnet', {
+    jsonrpc: request.jsonrpc,
+    method: 'starknet_call',
+    params: starknetCallParams,
+    id: request.id,
+  })
+
+  // 5) Format response to eth
+
+  // TODO: read output data type from abi and convert into eth
+
+  // TODO uint256 should be splitted into to
+  // We can achieve that by counting length o string in returned splittedData, if length 64 then its uint256 so we parse into two
 
   return {
     jsonrpc: '2.0',
