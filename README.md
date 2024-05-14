@@ -9,7 +9,25 @@
 
 ## Overview
 
-Rosettanet is a middleware aiming to provide a simple and efficient way to interact with Starknet from Ethereum based libraries and applications.
+# Rosetta
+
+Rosetta is a middleware software that acts like an Ethereum RPC. It makes requests to the Starknet network while outputting Ethereum RPC outputs. This allows users to interact with Starknet the same as they interact with the EVM-compatible chain. 
+
+**Rosetta**
+- Rosetta is not a Starknet node itself.
+- Rosetta needs a working Starknet node to be connected.
+- Rosetta can handle both Starknet and Ethereum RPC requests.
+
+**What does Rosetta benefit to users?**
+- [x] You can connect and interact protocols in Starknet with your existing EVM wallet (Metamask, Trust wallet, Hardware wallets, etc.)
+- [x] You can use Rosetta on local. There is no sync needed. Simply, users can clone the repo and use their local Rosetta node to connect to Starknet.
+- [x] You can use L1 interactive protocols by just changing the network on your wallet.
+
+**What does Rosetta benefit to devs?**
+- [x] You can use all EVM-compatible libraries. (Ethers, web3js, etc.)
+- [x] If you want to migrate your project from the EVM chain to Starknet, all you need to do is develop your smart contracts with cairo. You just need to care about providing the same ABI in both. You don't need to make any changes on frontend, or backend. Rosetta handles all of these.
+
+**Rosetta aims to give EVM experience to users where they won't ever notify they are using Starknet.**
 
 ## Project structure
 
