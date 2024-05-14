@@ -9,8 +9,6 @@
 
 ## Overview
 
-# Rosetta
-
 Rosetta is a middleware software that acts like an Ethereum RPC. It makes requests to the Starknet network while outputting Ethereum RPC outputs. This allows users to interact with Starknet the same as they interact with the EVM-compatible chain. 
 
 **Rosetta**
