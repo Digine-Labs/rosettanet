@@ -29,6 +29,16 @@ Rosetta is a middleware software that acts like an Ethereum RPC. It makes reques
 
 ## Project structure
 
+**Rosettanet:** Middleware software, core part of Rosetta. It acts like a gateway between Starknet and the user. It formats Ethereum RPC requests to the format that Starknet RPC accepts, and formats Starknet RPC responses into Ethereum RPC response. Written in Typescript. In future it also will be developed with Rust.
+
+**Rosetta Accounts:** Account smart contract library will be written in Cairo. Custom account contracts that are able to verify Ethereum account signatures on Starknet to execute and verify transactions.
+
+**Rosetta Verifier:** Starknet smart contracts that verify signatures with format EIP-1559. Converts EVM calldatas into Starknet calldata. This is the core part to achieve non-trusted setup need.
+
+**Lens:** Permissionless Starknet smart contract that matches Ethereum addresses with Starknet addresses.
+
+*Additional extensions will be developed to provide integrability for existing Starknet protocols.*
+
 ### Contracts
 
 The contracts are located in the `contracts/` directory. It's a `scarb` project, so you can use the `scarb` CLI to build it.
