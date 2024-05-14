@@ -33,7 +33,7 @@ Rosetta is a middleware software that acts like an Ethereum RPC. It makes reques
 
 **Rosetta Accounts:** Account smart contract library will be written in Cairo. Custom account contracts that are able to verify Ethereum account signatures on Starknet to execute and verify transactions.
 
-**Rosetta Verifier:** Starknet smart contracts that verify signatures with format EIP-1559. Converts EVM calldatas into Starknet calldata. This is the core part to achieve non-trusted setup need.
+**Rosetta Verifier:** Starknet smart contracts that verify signatures with format EIP-1559. Converts EVM calldatas into Starknet calldata. This is the core part to achieve non-trusted setup.
 
 **Lens:** Permissionless Starknet smart contract that matches Ethereum addresses with Starknet addresses.
 
