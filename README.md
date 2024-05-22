@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/logos/rosettanet.png" alt="rosettanet" height="300"/>
+  <img src="docs/logos/logo.jpg" alt="rosettanet" height="400"/>
 
   **Ethereum <> Starknet RPC middleware.**
 
