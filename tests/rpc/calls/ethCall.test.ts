@@ -25,6 +25,8 @@ describe('Test Eth call request testnet', () => {
     }
     // TODO: update test variables
     const result: RPCResponse = <RPCResponse>await ethCallHandler(request)
-    expect(typeof result !== 'undefined').toBe(true) // remove this test
+    expect(result.result).toBe(
+      '0x000000000000000000000000000000000000000000000000016345785d8a0000',
+    )
   })
 })

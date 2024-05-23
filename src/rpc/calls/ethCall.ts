@@ -14,6 +14,7 @@ import {
   getFunctionSelectorFromCalldata,
 } from '../../utils/calldata'
 import { Uint256ToU256 } from '../../utils/converters/integer'
+import { formatStarknetResponse } from '../../utils/formatters'
 import { matchStarknetFunctionWithEthereumSelector } from '../../utils/match'
 import { snKeccak } from '../../utils/sn_keccak'
 import {
@@ -187,12 +188,20 @@ export async function ethCallHandler(
     'pending', // update to latest
   ]
 
-  await callStarknet('testnet', {
+  const snResponse: RPCResponse | string = await callStarknet('testnet', {
     jsonrpc: request.jsonrpc,
     method: 'starknet_call',
     params: starknetCallParams,
     id: request.id,
   })
+
+  if (typeof snResponse === 'string') {
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: snResponse,
+    }
+  }
 
   // 5) Format response to eth
 
@@ -210,15 +219,15 @@ export async function ethCallHandler(
       data: 'target function not found',
     }
   }
-  // console.log(targetStarknetFunctionAsStarknetFunction)
-  // TODO: read output data type from abi and convert into eth
 
-  // TODO uint256 should be splitted into to
-  // We can achieve that by counting length o string in returned splittedData, if length 64 then its uint256 so we parse into two
+  const formattedResponse = await formatStarknetResponse(
+    targetStarknetFunctionAsStarknetFunction,
+    snResponse.result,
+  )
 
   return {
     jsonrpc: '2.0',
-    id: 1,
-    result: '0x0',
+    id: request.id,
+    result: formattedResponse,
   }
 }

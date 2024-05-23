@@ -55,6 +55,7 @@ export function getSnSlotCount(sntype: string): number {
       return 1
     case 'core::felt252':
       return 1
+    // TODO: support custom types
     default:
       return 1 // TODO: returns 1 as default
   }
@@ -62,6 +63,7 @@ export function getSnSlotCount(sntype: string): number {
 
 // Returns relevant sn data type bits
 export function getSnValueEthBitsize(type: string): number {
+  // TODO: update new types
   switch (type) {
     case 'bool':
       return 1
