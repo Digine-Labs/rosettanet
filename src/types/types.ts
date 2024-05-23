@@ -64,3 +64,8 @@ export interface EthereumBitSize {
   slotSize: number
   bitSize: number
 }
+
+export interface StarknetValue {
+  value: string
+  bitSize: number
+}
