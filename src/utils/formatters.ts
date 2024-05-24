@@ -79,8 +79,10 @@ export async function formatStarknetResponse(
           bitSize: 256,
           value: packedValues[packedValues.length - 1],
         })
-  
-  const paddedSlots = packedValues.map(val => `${'0'.repeat(64 - val.length)}${val}`)
+
+  const paddedSlots = packedValues.map(
+    val => `${'0'.repeat(64 - val.length)}${val}`,
+  )
   // Convert into one string
 
   const ethereumResponse = paddedSlots.join('')
