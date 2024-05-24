@@ -18,7 +18,7 @@ export async function estimateGasHandler(
   const network = 'mainnet'
   const method = 'starknet_estimateFee'
 
-  const parameters: CallParameterObject = call.params[0] as object
+  const parameters: CallParameterObject = call.params[0] as CallParameterObject
 
   const ethAddress = parameters.from as string
 
