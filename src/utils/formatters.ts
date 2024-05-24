@@ -32,6 +32,7 @@ export async function formatStarknetResponse(
     // Get how many elements we gonna need for this output
     const elementCount = getSnSlotCount(output.type)
     if (elementCount == 1) {
+      // TODO: Convert Starknet contract address to ethereum address
       mergedValues.push({
         value: result[readIndex],
         bitSize: getSnValueEthBitsize(output.type),
@@ -78,10 +79,11 @@ export async function formatStarknetResponse(
           bitSize: 256,
           value: packedValues[packedValues.length - 1],
         })
-
+  
+  const paddedSlots = packedValues.map(val => `${'0'.repeat(64 - val.length)}${val}`)
   // Convert into one string
 
-  const ethereumResponse = packedValues.join('')
+  const ethereumResponse = paddedSlots.join('')
   return `0x${ethereumResponse}`
 }
 
