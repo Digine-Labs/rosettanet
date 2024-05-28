@@ -2,9 +2,20 @@ import { getRpc } from './getRpc'
 import { RPCRequest, RPCResponse } from '../types/types'
 import axios from 'axios'
 
+interface EstimateFeeRequest {
+  jsonrpc: string
+  method: string
+  params: {
+    request: Array<object>
+    block_id: string
+    simulation_flags: Array<string>
+  }
+  id: number
+}
+
 export async function callStarknet(
   network: string,
-  request: RPCRequest,
+  request: RPCRequest | EstimateFeeRequest,
 ): Promise<RPCResponse | string> {
   try {
     const rpcUrl: string = getRpc(network)

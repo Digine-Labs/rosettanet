@@ -8,9 +8,9 @@ describe('test estimated gas', () => {
       method: 'eth_estimateGas',
       params: [
         {
-          from: '0x9cE564c7d09f88E7d8233Cdd3A4d7AC42aBFf3aC',
-          to: '0xd46e8dd67c5d32be8058bb8eb970870f07244567',
-          value: '0x9184e72a',
+          from: '0xd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
+          to: '0xd3CdA913deB6f67967B99D67aCDFa1712C293601',
+          value: '0x186a0',
         },
       ],
       id: 1,
