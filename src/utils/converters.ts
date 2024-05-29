@@ -6,7 +6,7 @@ const STARKNET_CONVERTERS = new Map<string, StarknetType>()
 STARKNET_CONVERTERS.set('u256', {
   name: 'u256',
   converter: Uint256ToU256,
-})
+}) // TODO: DEPRECATE THIS
 
 export function toStarknetType(
   value: string,

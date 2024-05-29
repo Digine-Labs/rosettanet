@@ -33,6 +33,63 @@ export function convertSnToEth(sntype: string): string | Array<string> {
   }
 }
 
+export function getSnSlotCount(sntype: string): number {
+  switch (sntype) {
+    case 'bool':
+      return 1
+    case 'core::integer::u8':
+      return 1
+    case 'core::integer::u16':
+      return 1
+    case 'core::integer::u32':
+      return 1
+    case 'core::integer::usize':
+      return 1
+    case 'core::integer::u64':
+      return 1
+    case 'core::integer::u128':
+      return 1
+    case 'core::integer::u256':
+      return 2 // TODO: !! u256 by default 2 u128 so should fix it with custom struct support. !!
+    case 'core::starknet::contract_address::ContractAddress':
+      return 1
+    case 'core::felt252':
+      return 1
+    // TODO: support custom types
+    default:
+      return 1 // TODO: returns 1 as default
+  }
+}
+
+// Returns relevant sn data type bits
+export function getSnValueEthBitsize(type: string): number {
+  // TODO: update new types
+  switch (type) {
+    case 'bool':
+      return 1
+    case 'core::integer::u8':
+      return 8
+    case 'core::integer::u16':
+      return 16
+    case 'core::integer::u32':
+      return 32
+    case 'core::integer::usize':
+      return 256
+    case 'core::integer::u64':
+      return 64
+    case 'core::integer::u128':
+      return 128
+    case 'core::integer::u256':
+      return 256
+    case 'core::starknet::contract_address::ContractAddress':
+      return 160
+    case 'core::felt252':
+      return 256
+    default:
+      return 256
+  }
+}
+
 function getTypesfromStruct(sntype: string): string | Array<string> {
   // TODO: support custom structs, tuples, arrays
   return sntype

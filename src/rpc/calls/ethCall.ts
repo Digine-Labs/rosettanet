@@ -6,12 +6,17 @@ import {
   RPCResponse,
   StarknetFunction,
 } from '../../types/types'
+import { callStarknet } from '../../utils/callHelper'
 import {
   convertEthereumCalldataToParameters,
+  convertUint256s,
   getCalldataByteSize,
   getFunctionSelectorFromCalldata,
 } from '../../utils/calldata'
+import { Uint256ToU256 } from '../../utils/converters/integer'
+import { formatStarknetResponse } from '../../utils/formatters'
 import { matchStarknetFunctionWithEthereumSelector } from '../../utils/match'
+import { snKeccak } from '../../utils/sn_keccak'
 import {
   generateEthereumFunctionSignature,
   getContractsMethods,
@@ -160,15 +165,69 @@ export async function ethCallHandler(
   const calldataSlotsize: Array<EthereumSlot> = getCalldataByteSize(
     targetStarknetFunction,
   )
-  const splittedData: Array<string> = convertEthereumCalldataToParameters(
+  const splittedData: Array<string> = await convertEthereumCalldataToParameters(
     targetStarknetFunction,
     calldataSlotsize,
     parameters.data,
   )
 
+  const split256Bits: Array<string> = convertUint256s(splittedData).map(
+    i => `0x${i}`,
+  )
+
+  // 4) Prepare starknet call params and Call starknet
+
+  const starknetSelector = snKeccak(targetStarknetFunction.split('(')[0])
+
+  const starknetCallParams = [
+    {
+      calldata: split256Bits,
+      contract_address: starknetTarget,
+      entry_point_selector: starknetSelector,
+    },
+    'pending', // update to latest
+  ]
+
+  const snResponse: RPCResponse | string = await callStarknet('testnet', {
+    jsonrpc: request.jsonrpc,
+    method: 'starknet_call',
+    params: starknetCallParams,
+    id: request.id,
+  })
+
+  if (typeof snResponse === 'string') {
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: snResponse,
+    }
+  }
+
+  // 5) Format response to eth
+
+  const targetStarknetFunctionAsStarknetFunction: StarknetFunction | undefined =
+    starknetCallableMethods.find(
+      x => x.name === targetStarknetFunction.split('(')[0],
+    )
+  // TODO: Maybe we can find better way to get function outputs.
+
+  if (typeof targetStarknetFunctionAsStarknetFunction === 'undefined') {
+    // no way to here executed
+    return {
+      code: 7979,
+      message: 'Starknet RPC error',
+      data: 'target function not found',
+    }
+  }
+
+  const formattedResponse = await formatStarknetResponse(
+    targetStarknetFunctionAsStarknetFunction,
+    snResponse.result,
+  )
+
   return {
     jsonrpc: '2.0',
-    id: 1,
-    result: '0x0',
+    id: request.id,
+    result: formattedResponse,
   }
 }

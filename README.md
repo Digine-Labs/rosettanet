@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/logos/rosettanet.png" alt="rosettanet" height="300"/>
+  <img src="docs/logos/logo.jpg" alt="rosettanet" height="400"/>
 
   **Ethereum <> Starknet RPC middleware.**
 
@@ -9,9 +9,35 @@
 
 ## Overview
 
-Rosettanet is a middleware aiming to provide a simple and efficient way to interact with Starknet from Ethereum based libraries and applications.
+Rosetta is a middleware software that acts like an Ethereum RPC. It makes requests to the Starknet network while outputting Ethereum RPC outputs. This allows users to interact with Starknet the same as they interact with the EVM-compatible chain. 
+
+**Rosetta**
+- Rosetta is not a Starknet node itself.
+- Rosetta needs a working Starknet node to be connected.
+- Rosetta can handle both Starknet and Ethereum RPC requests.
+
+**What does Rosetta benefit to users?**
+- [x] You can connect and interact protocols in Starknet with your existing EVM wallet (Metamask, Trust wallet, Hardware wallets, etc.)
+- [x] You can use Rosetta on local. There is no sync needed. Simply, users can clone the repo and use their local Rosetta node to connect to Starknet.
+- [x] You can use L1 interactive protocols by just changing the network on your wallet.
+
+**What does Rosetta benefit to devs?**
+- [x] You can use all EVM-compatible libraries. (Ethers, web3js, etc.)
+- [x] If you want to migrate your project from the EVM chain to Starknet, all you need to do is develop your smart contracts with cairo. You just need to care about providing the same ABI in both. You don't need to make any changes on frontend, or backend. Rosetta handles all of these.
+
+**Rosetta aims to give EVM experience to users where they won't ever notify they are using Starknet.**
 
 ## Project structure
+
+**Rosettanet:** Middleware software, core part of Rosetta. It acts like a gateway between Starknet and the user. It formats Ethereum RPC requests to the format that Starknet RPC accepts, and formats Starknet RPC responses into Ethereum RPC response. Written in Typescript. In future it also will be developed with Rust.
+
+**Rosetta Accounts:** Account smart contract library will be written in Cairo. Custom account contracts that are able to verify Ethereum account signatures on Starknet to execute and verify transactions.
+
+**Rosetta Verifier:** Starknet smart contracts that verify signatures with format EIP-1559. Converts EVM calldatas into Starknet calldata. This is the core part to achieve non-trusted setup.
+
+**Lens:** Permissionless Starknet smart contract that matches Ethereum addresses with Starknet addresses.
+
+*Additional extensions will be developed to provide integrability for existing Starknet protocols.*
 
 ### Contracts
 
