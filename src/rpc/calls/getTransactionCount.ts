@@ -1,37 +1,37 @@
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
-import { validateBlockHash } from '../../utils/validations'
 import { callStarknet } from '../../utils/callHelper'
+import { validateEthAddress } from '../../utils/validations'
+import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 
 export async function getTransactionCountHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  const network = 'testnet'
-  const method = 'starknet_getBlockWithTxs'
+  const network = 'mainnet'
+  const method = 'starknet_getNonce'
 
-  if (request.params.length != 1) {
+  if (request.params.length == 0) {
     return {
       code: 7979,
       message: 'Starknet RPC error',
-      data: 'two params are expected',
+      data: 'params should not be empty',
     }
   }
 
-  // Extract the blockHash from the request parameters.
-  const blockHash = request.params[0] as string
-
-  // Validate the block hash
-  if (!validateBlockHash(blockHash)) {
+  const ethAddress = request.params[0] as string
+  if (!validateEthAddress(ethAddress)) {
     return {
       code: 7979,
       message: 'Starknet RPC error',
-      data: 'Invalid block hash',
+      data: 'invalid eth address',
     }
   }
+
+  const snAddress = await getSnAddressFromEthAddress(ethAddress)
 
   const response: RPCResponse | string = await callStarknet(network, {
     jsonrpc: request.jsonrpc,
-    method,
-    params: [{ block_hash: blockHash }],
+    method: method,
+    params: ['latest', snAddress],
     id: request.id,
   })
 
@@ -43,47 +43,9 @@ export async function getTransactionCountHandler(
     }
   }
 
-  const result = response.result as {
-    block_hash: string
-    block_number: number
-    l1_gas_price: {
-      price_in_wei: string
-    }
-    new_root: string
-    parent_hash: string
-    sequencer_address: string
-    starknet_version: string
-    status: 'RECEIVED' | 'REJECTED' | 'ACCEPTED_ON_L2' | 'ACCEPTED_ON_L1'
-    timestamp: number
-    transactions: Array<{
-      calldata: string[]
-      max_fee: string
-      nonce: string
-      sender_address: string
-      signature: string[]
-      transaction_hash: string
-      type: 'DECLARE' | 'DEPLOY' | 'DEPLOY_ACCOUNT' | 'INVOKE' | 'L1_HANDLER'
-      version: string
-    }>
-  }
-
-  if (
-    result.status !== 'ACCEPTED_ON_L1' &&
-    result.status !== 'ACCEPTED_ON_L2'
-  ) {
-    // Check if the block is accepted
-    return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'The block is not accepted',
-    }
-  }
-
-  const transactionsLength = (result.transactions || []).length.toString(16)
-
   return {
     jsonrpc: '2.0',
-    id: 1,
-    result: '0x' + transactionsLength,
+    id: request.id,
+    result: response.result,
   }
 }
