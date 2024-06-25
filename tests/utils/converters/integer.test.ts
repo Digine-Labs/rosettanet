@@ -65,12 +65,12 @@ describe('Integer conversions', () => {
   describe('U256toUint256', () => {
     it('Converts sn string max values to uint256', () => {
       const SN_MAX = [
-        '340282366920938463463374607431768211455',
-        '340282366920938463463374607431768211455',
+        'ffffffffffffffffffffffffffffffff',
+        'ffffffffffffffffffffffffffffffff',
       ]
 
       expect(U256toUint256(SN_MAX)).toStrictEqual(
-        '0x10000000000000000fffffffffffffffeffffffffffffffff'
+        '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
       )
     })
 
@@ -78,29 +78,29 @@ describe('Integer conversions', () => {
       const SN_ZERO = ['0', '0']
 
       expect(U256toUint256(SN_ZERO)).toStrictEqual(
-        '0x0'
+        '0x0000000000000000000000000000000000000000000000000000000000000000'
       )
     })
 
     it('Converts sn string high max low zero to uint256', () => {
       const SN_STRINGS = [
+        'ffffffffffffffffffffffffffffffff',
         '0',
-        '340282366920938463463374607431768211455',
       ]
 
       expect(U256toUint256(SN_STRINGS)).toStrictEqual(
-        '0xffffffffffffffffffffffffffffffff0000000000000000'
+        '0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff'
       )
     })
 
     it('Converts sn string low max high zero to uint256', () => {
       const SN_STRINGS = [
-        '340282366920938463463374607431768211455',
         '0',
+        'ffffffffffffffffffffffffffffffff',
       ]
 
       expect(U256toUint256(SN_STRINGS)).toStrictEqual(
-        '0xffffffffffffffffffffffffffffffff'
+        '0xffffffffffffffffffffffffffffffff00000000000000000000000000000000'
       )
     })
 
@@ -108,7 +108,7 @@ describe('Integer conversions', () => {
       const SN_STRINGS = ['1', '1']
 
       expect(U256toUint256(SN_STRINGS)).toStrictEqual(
-        '0x10000000000000001'
+        '0x0000000000000000000000000000000100000000000000000000000000000001'
       )
     })
   })
