@@ -8,9 +8,9 @@ describe('test estimated gas', () => {
       method: 'eth_estimateGas',
       params: [
         {
-          from: '0xd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
-          to: '0xd3CdA913deB6f67967B99D67aCDFa1712C293601',
-          value: '0x186a0',
+          from: '0x4af0da20bece16d2af2bc9f1690b1efc2db7c5b2',
+          to: '0xd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
+          data: '0xa9059cbb0000000000000000000000004af0da20bece16d2af2bc9f1690b1efc2db7c5b200000000000000000000000000000000000000000000000000005af3107a4000',
         },
       ],
       id: 1,
@@ -21,7 +21,13 @@ describe('test estimated gas', () => {
     expect(result).toMatchObject({
       id: 1,
       jsonrpc: '2.0',
-      result: '0x5cec',
+      result: [
+        {
+          gas_consumed: '0x686',
+          gas_price: '0x1778dc527',
+          overall_fee: '0x991e6d41c6a',
+        },
+      ],
     })
-  })
+  }, 20000)
 })

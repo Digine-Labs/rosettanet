@@ -1,7 +1,5 @@
-export const mainnetRpc = [
-  'https://starknet-mainnet.public.blastapi.io/rpc/v0_7',
-]
-export const testnetRpc = ['https://free-rpc.nethermind.io/sepolia-juno']
+export const mainnetRpc = ['https://starknet-mainnet.public.blastapi.io']
+export const testnetRpc = ['https://starknet-sepolia.public.blastapi.io']
 
 export const getRpc = (network?: string): string => {
   //TODO: NETWORK STRING TO TYPE
