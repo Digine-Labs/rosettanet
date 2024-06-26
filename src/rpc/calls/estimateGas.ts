@@ -157,7 +157,7 @@ export async function estimateGasHandler(
     parameters.data,
   )
 
-  const split256Bits: Array<string> = convertUint256s(splittedData).map(
+  const starknetCallData: Array<string> = convertUint256s(splittedData).map(
     i => `0x${i}`,
   )
 
@@ -181,7 +181,7 @@ export async function estimateGasHandler(
             snToAddress,
             starknetSelector,
             hexedSumOfSlotCount,
-            ...split256Bits,
+            ...starknetCallData,
           ],
           nonce: snNonce,
         },
@@ -194,12 +194,6 @@ export async function estimateGasHandler(
 
   //version 3, not every contract is upgraded. It can cause error
 
-  // [
-  //   '0x469b79183bed79b00ff0c084af0da20bece16d2af2bc9f1690b1efc2db7c5b2',
-  //   '0x5af3107a4000',
-  //   '0x0'
-  // ]
-
   // const response: RPCResponse | string = await callStarknet(network, {
   //   jsonrpc: call.jsonrpc,
   //   method: method,
@@ -207,16 +201,13 @@ export async function estimateGasHandler(
   //     request: [
   //       {
   //         type: 'INVOKE',
-  //         sender_address:
-  //           '0x07f373692d32cf8dbd85abfb9137d77eb3b2f680773982392db889a128f07b0a',
+  //         sender_address: snFromAddress,
   //         calldata: [
-  //           '0x1', //hep aynı
-  //           '0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7', //to -- (starkgate eth address: 0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7)
-  //           '0x83afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e', // function selector (starkgate eth transfer method:0x83afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e)
-  //           '0x3', //fonksiyonun aldığı parametre sayısı, parametrelerini string split ile böl kaçtane ise yaz, u256 ise 1 değil 2 adet (typeConverters getSnSlotCount)
-  //           '0x313a889a159cdd42c6604ab183d892a1c2692c48492b138522cc29984c2655d', //data çevir
-  //           '0xaa87bee538000',
-  //           '0x0',
+  //           '0x1',
+  //           snToAddress,
+  //           starknetSelector,
+  //           hexedSumOfSlotCount,
+  //           ...starknetCallData,
   //         ],
   //         version: '0x100000000000000000000000000000003',
   //         signature: ['0x0', '0x0'],
@@ -230,7 +221,7 @@ export async function estimateGasHandler(
   //             max_price_per_unit: '0x0',
   //           },
   //         },
-  //         nonce: '0x29',
+  //         nonce: snNonce,
   //         tip: '0x0',
   //         paymaster_data: [],
   //         nonce_data_availability_mode: 'L1',
@@ -249,6 +240,18 @@ export async function estimateGasHandler(
       code: 7979,
       message: 'Starknet RPC error',
       data: response,
+    }
+  }
+
+  if (
+    response.error &&
+    response.error.message === 'Transaction execution error'
+  ) {
+    return {
+      jsonrpc: '2.0',
+      id: 1,
+      data: 'Transaction Execution Error',
+      result: '0x28ed6103d0000',
     }
   }
 

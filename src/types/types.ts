@@ -18,6 +18,11 @@ export interface RPCError {
 }
 
 export interface RPCResponse {
+  error?: {
+    code?: number
+    message?: string
+    data?: object
+  }
   jsonrpc: string
   id: number
   result:
