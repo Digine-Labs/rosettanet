@@ -22,6 +22,7 @@ import { starknetCallHandler } from './calls/starknetCall'
 import { ethCallHandler } from './calls/ethCall'
 import { ethSyncingHandler } from './calls/syncing'
 import { getTransactionCountHandler } from './calls/getTransactionCount'
+import { accountsHandler } from './calls/accounts'
 
 const router: Router = Router()
 
@@ -124,6 +125,11 @@ Methods.set('eth_syncing', {
 Methods.set('eth_getTransactionCount', {
   method: 'eth_getTransactionCount',
   handler: getTransactionCountHandler,
+})
+
+Methods.set('eth_accounts', {
+  method: 'eth_accounts',
+  handler: accountsHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {

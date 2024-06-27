@@ -1,4 +1,7 @@
-import { Uint256ToU256, U256toUint256 } from '../../../src/utils/converters/integer'
+import {
+  Uint256ToU256,
+  U256toUint256,
+} from '../../../src/utils/converters/integer'
 
 describe('Integer conversions', () => {
   describe('Uint256ToU256', () => {
@@ -47,8 +50,7 @@ describe('Integer conversions', () => {
     })
 
     it('Handles invalid input length', () => {
-      const INVALID_UINT256 =
-        '1234'
+      const INVALID_UINT256 = '1234'
 
       expect(Uint256ToU256(INVALID_UINT256)).toStrictEqual(['0', '0'])
     })
@@ -59,7 +61,7 @@ describe('Integer conversions', () => {
 
       expect(Uint256ToU256(UINT256)).toStrictEqual([
         '1234567890abcdef1234567890abcdef',
-        '1234567890abcdef1234567890abcdef'
+        '1234567890abcdef1234567890abcdef',
       ])
     })
   })
@@ -72,46 +74,36 @@ describe('Integer conversions', () => {
       ]
 
       expect(U256toUint256(SN_MAX)).toStrictEqual(
-        '0x10000000000000000fffffffffffffffeffffffffffffffff'
+        '0x10000000000000000fffffffffffffffeffffffffffffffff',
       )
     })
 
     it('Converts sn string zero to uint256', () => {
       const SN_ZERO = ['0', '0']
 
-      expect(U256toUint256(SN_ZERO)).toStrictEqual(
-        '0x0'
-      )
+      expect(U256toUint256(SN_ZERO)).toStrictEqual('0x0')
     })
 
     it('Converts sn string high max low zero to uint256', () => {
-      const SN_STRINGS = [
-        '0',
-        '340282366920938463463374607431768211455',
-      ]
+      const SN_STRINGS = ['0', '340282366920938463463374607431768211455']
 
       expect(U256toUint256(SN_STRINGS)).toStrictEqual(
-        '0xffffffffffffffffffffffffffffffff0000000000000000'
+        '0xffffffffffffffffffffffffffffffff0000000000000000',
       )
     })
 
     it('Converts sn string low max high zero to uint256', () => {
-      const SN_STRINGS = [
-        '340282366920938463463374607431768211455',
-        '0',
-      ]
+      const SN_STRINGS = ['340282366920938463463374607431768211455', '0']
 
       expect(U256toUint256(SN_STRINGS)).toStrictEqual(
-        '0xffffffffffffffffffffffffffffffff'
+        '0xffffffffffffffffffffffffffffffff',
       )
     })
 
     it('Converts sn string low 1 high 1 to uint256', () => {
       const SN_STRINGS = ['1', '1']
 
-      expect(U256toUint256(SN_STRINGS)).toStrictEqual(
-        '0x10000000000000001'
-      )
+      expect(U256toUint256(SN_STRINGS)).toStrictEqual('0x10000000000000001')
     })
   })
 })
