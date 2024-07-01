@@ -23,6 +23,7 @@ import { ethCallHandler } from './calls/ethCall'
 import { ethSyncingHandler } from './calls/syncing'
 import { getTransactionCountHandler } from './calls/getTransactionCount'
 import { estimateGasHandler } from './calls/estimateGas'
+import { accountsHandler } from './calls/accounts'
 
 const router: Router = Router()
 
@@ -130,6 +131,12 @@ Methods.set('eth_getTransactionCount', {
 Methods.set('eth_estimateGas', {
   method: 'eth_estimateGas',
   handler: estimateGasHandler,
+])
+
+Methods.set('eth_accounts', {
+  method: 'eth_accounts',
+  handler: accountsHandler,
+
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
