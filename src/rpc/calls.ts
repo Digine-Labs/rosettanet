@@ -1,6 +1,5 @@
 import { Router, Response } from 'express'
 import { ParsedRequest, ResponseHandler, RPCError } from '../types/types'
-import { revertWithError } from '../utils/parser'
 import { chainIdHandler } from './calls/chainId'
 import { maxPriorityFeePerGasHandler } from './calls/maxPriorityFeePerGas'
 import { gasPriceHandler } from './calls/gasPrice'
@@ -152,11 +151,15 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
     }
   } else {
     const error: RPCError = {
-      code: 7979,
-      message: 'Method not implemented',
+      code: -32601,
+      message: 'Method not found',
       data: '405 Not Allowed',
     }
-    revertWithError(res, 405, error)
+    res.send({
+      jsonrpc: "2.0",
+      id: req.body.id,
+      error: error
+    })
     return
   }
 })
