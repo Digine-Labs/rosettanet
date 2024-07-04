@@ -162,9 +162,9 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
       data: '405 Not Allowed',
     }
     res.send({
-      jsonrpc: "2.0",
+      jsonrpc: '2.0',
       id: req.body.id,
-      error: error
+      error: error,
     })
     return
   }
