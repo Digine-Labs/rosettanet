@@ -131,12 +131,11 @@ Methods.set('eth_getTransactionCount', {
 Methods.set('eth_estimateGas', {
   method: 'eth_estimateGas',
   handler: estimateGasHandler,
-])
+})
 
 Methods.set('eth_accounts', {
   method: 'eth_accounts',
   handler: accountsHandler,
-
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
