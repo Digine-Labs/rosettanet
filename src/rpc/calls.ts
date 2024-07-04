@@ -159,7 +159,6 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
     const error: RPCError = {
       code: -32601,
       message: 'Method not found',
-      data: '405 Not Allowed',
     }
     res.send({
       jsonrpc: '2.0',
