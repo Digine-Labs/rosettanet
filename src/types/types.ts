@@ -14,7 +14,7 @@ export interface RPCRequest {
 export interface RPCError {
   code: number
   message: string
-  data: string
+  data?: string
 }
 
 export interface RPCResponse {
