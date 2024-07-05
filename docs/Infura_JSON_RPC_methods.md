@@ -963,7 +963,7 @@ curl https://mainnet.infura.io/v3/YOUR-API-KEY \
 }
 ```
 
-## eth_getCode
+## eth_getStorageAt
 
 Returns the value from a storage position at a given address.
 
@@ -1930,7 +1930,7 @@ curl https://mainnet.infura.io/v3/YOUR-API-KEY \
 }
 ```
 
-## eth_getCode
+## eth_newBlockFilter
 
 Creates a filter in the node, to notify when a new block arrives. To check if the state has changed, call eth_getFilterChanges.
 
