@@ -10,6 +10,7 @@
     "start:dev": "npx nodemon",
     "lint": "eslint . --ext .ts",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
+    "test:utils": "jest --watch tests/utils",
     "test": "jest",
     "test:watch": "jest --watch"
   },
@@ -35,6 +36,7 @@
   "dependencies": {
     "axios": "^1.6.7",
     "bignumber.js": "^9.1.2",
+    "ethers": "^6.13.1",
     "express": "^4.18.2",
     "js-sha3": "^0.9.3",
     "starknet": "^5.24.3"
