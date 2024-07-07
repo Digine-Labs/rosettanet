@@ -11,6 +11,6 @@ describe('Test Chain ID request testnet', () => {
     }
     const result: RPCResponse = <RPCResponse>await chainIdHandler(request)
 
-    expect(result.result).toBe('0x534e5f5345504f4c4941')
+    expect(result.result).toBe('0x534e534550')
   })
 })

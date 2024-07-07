@@ -1,5 +1,4 @@
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
-import { callStarknet } from '../../utils/callHelper'
 
 export async function chainIdHandler(
   request: RPCRequest,
@@ -14,6 +13,7 @@ export async function chainIdHandler(
     }
   }
 
+  /*
   const response: RPCResponse | string = await callStarknet('testnet', {
     jsonrpc: request.jsonrpc,
     method: 'starknet_chainId',
@@ -27,11 +27,18 @@ export async function chainIdHandler(
       message: 'Starknet RPC error',
       data: response,
     }
-  }
+  } */
 
+  ///
+  // TODO: Starknet chain id length is too high for metamask and trustwallet.
+  // we use SNSEP for sepolia SNMAN for mainnet
+  // const formattedChainId = response.result === '0x534e5f5345504f4c4941' ? '0x534e534550' : '0x534e4d414e'
+
+  // Return directly SNSEP while developing
+  const chainId = '0x534e534550'
   return {
     jsonrpc: '2.0',
     id: 1,
-    result: response.result,
+    result: chainId,
   }
 }
