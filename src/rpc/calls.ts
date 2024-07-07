@@ -23,6 +23,7 @@ import { ethSyncingHandler } from './calls/syncing'
 import { getTransactionCountHandler } from './calls/getTransactionCount'
 import { estimateGasHandler } from './calls/estimateGas'
 import { accountsHandler } from './calls/accounts'
+import { netVersionHandler } from './calls/netVersion'
 
 const router: Router = Router()
 
@@ -135,6 +136,11 @@ Methods.set('eth_estimateGas', {
 Methods.set('eth_accounts', {
   method: 'eth_accounts',
   handler: accountsHandler,
+})
+
+Methods.set('net_version', {
+  method: 'net_version',
+  handler: netVersionHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
