@@ -1,4 +1,14 @@
 import { createWriteStream } from 'fs'
+import { RPCError, RPCRequest, RPCResponse } from './types/types'
+
+export function isSnifferActive(): boolean {
+  return process.argv.slice(2).indexOf('--sniffer') > -1
+}
+
+export function snifferOutput(request: RPCRequest | string | undefined, response: RPCResponse | RPCError): string {
+  return JSON.stringify({request, response})
+}
+
 export function writeLog(severity: number, text: string) {
   const startArguments = process.argv.slice(2)
   if (startArguments.indexOf('--enable-logs') == -1) {
