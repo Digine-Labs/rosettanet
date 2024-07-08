@@ -150,9 +150,9 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
     const methodFirstLetters: string = request.method.substring(0, 7)
     if (methodFirstLetters === 'starknet') {
       const result = await starknetCallHandler(request)
-      if(isSnifferActive()) {
-        const logMsg = snifferOutput(request, result);
-        writeLog(0, logMsg);
+      if (isSnifferActive()) {
+        const logMsg = snifferOutput(request, result)
+        writeLog(0, logMsg)
       }
       res.send(result)
       return
@@ -162,9 +162,9 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
     const handler: ResponseHandler | undefined = Methods.get(request.method)
     if (handler) {
       const result = await handler.handler(request)
-      if(isSnifferActive()) {
-        const logMsg = snifferOutput(request, result);
-        writeLog(0, logMsg);
+      if (isSnifferActive()) {
+        const logMsg = snifferOutput(request, result)
+        writeLog(0, logMsg)
       }
       res.send(result)
       return
@@ -174,11 +174,11 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
       code: -32601,
       message: 'Method not found',
     }
-    if(isSnifferActive() && typeof request !== 'undefined') {
-      const logMsg = snifferOutput(request,{
+    if (isSnifferActive() && typeof request !== 'undefined') {
+      const logMsg = snifferOutput(request, {
         jsonrpc: '2.0',
         id: req.body.id,
-        result: "Method not found",
+        result: 'Method not found',
       })
       writeLog(1, logMsg)
     }

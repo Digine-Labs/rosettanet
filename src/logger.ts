@@ -5,8 +5,11 @@ export function isSnifferActive(): boolean {
   return process.argv.slice(2).indexOf('--sniffer') > -1
 }
 
-export function snifferOutput(request: RPCRequest | string | undefined, response: RPCResponse | RPCError): string {
-  return JSON.stringify({request, response})
+export function snifferOutput(
+  request: RPCRequest | string | undefined,
+  response: RPCResponse | RPCError,
+): string {
+  return JSON.stringify({ request, response })
 }
 
 export function writeLog(severity: number, text: string) {
