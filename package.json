@@ -12,7 +12,9 @@
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
     "test:utils": "jest --watch tests/utils",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "start:file-logging": "npx nodemon --enable-logs --logging-type file --logging-file logs.md",
+    "start:console-logging": "npx nodemon --enable-logs --logging-type console"
   },
   "keywords": [],
   "author": "",

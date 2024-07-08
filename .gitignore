@@ -22,3 +22,5 @@ contracts/target/
 contracts/.snfoundry_cache/.prev_tests_failed
 contracts/account
 contracts/keystore
+
+logs.md
