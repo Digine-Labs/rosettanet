@@ -1,9 +1,6 @@
-import {
-  EthereumTransaction,
-  StarknetInvokeTransaction,
-} from '../types/transactions.types'
+import { StarknetInvokeTransaction } from '../types/transactions.types'
 
-export function prepareStarknetInvokeTransaction(ethTx: EthereumTransaction) {
+export function prepareStarknetInvokeTransaction(/* ethTx: EthereumTransaction */) {
   const starknetTx: StarknetInvokeTransaction = {
     calldata: [],
     chain_id: 'TODO',
