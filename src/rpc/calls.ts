@@ -7,7 +7,6 @@ import { blockNumberHandler } from './calls/blockNumber'
 import { getStorageAtHandler } from './calls/getStorageAt'
 import { getBalanceHandler } from './calls/getBalance'
 import { getBlockByHashHandler } from './calls/getBlockByHash'
-import { callHandler } from './calls/call'
 import { getTransactionsByBlockHashAndIndexHandler } from './calls/getTransactionByBlockHashAndIndex'
 import { getTransactionsByBlockNumberAndIndexHandler } from './calls/getTransactionByBlockNumberAndIndex'
 import { getBlockTransactionCountByHashHandler } from './calls/getBlockTransactionCountByHash'
@@ -24,7 +23,6 @@ import { getTransactionCountHandler } from './calls/getTransactionCount'
 import { estimateGasHandler } from './calls/estimateGas'
 import { accountsHandler } from './calls/accounts'
 import { netVersionHandler } from './calls/netVersion'
-import { isSnifferActive, snifferOutput, writeLog } from '../logger'
 
 const router: Router = Router()
 
@@ -52,11 +50,6 @@ Methods.set('eth_blockNumber', {
 Methods.set('eth_getStorageAt', {
   method: 'eth_getStorageAt',
   handler: getStorageAtHandler,
-})
-
-Methods.set('eth_call', {
-  method: 'eth_call',
-  handler: callHandler,
 })
 
 Methods.set('eth_getBalance', {
@@ -150,10 +143,6 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
     const methodFirstLetters: string = request.method.substring(0, 7)
     if (methodFirstLetters === 'starknet') {
       const result = await starknetCallHandler(request)
-      if (isSnifferActive()) {
-        const logMsg = snifferOutput(request, result)
-        writeLog(0, logMsg)
-      }
       res.send(result)
       return
     }
@@ -162,10 +151,7 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
     const handler: ResponseHandler | undefined = Methods.get(request.method)
     if (handler) {
       const result = await handler.handler(request)
-      if (isSnifferActive()) {
-        const logMsg = snifferOutput(request, result)
-        writeLog(0, logMsg)
-      }
+
       res.send(result)
       return
     }
@@ -173,14 +159,6 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
     const error: RPCError = {
       code: -32601,
       message: 'Method not found',
-    }
-    if (isSnifferActive() && typeof request !== 'undefined') {
-      const logMsg = snifferOutput(request, {
-        jsonrpc: '2.0',
-        id: req.body.id,
-        result: 'Method not found',
-      })
-      writeLog(1, logMsg)
     }
     res.send({
       jsonrpc: '2.0',

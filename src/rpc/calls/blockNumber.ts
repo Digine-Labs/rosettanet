@@ -1,9 +1,14 @@
-import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import {
+  RPCError,
+  RPCErrorNew,
+  RPCRequest,
+  RPCResponse,
+} from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 
 export async function blockNumberHandler(
   request: RPCRequest,
-): Promise<RPCResponse | RPCError> {
+): Promise<RPCResponse | RPCErrorNew> {
   const response: RPCResponse | string = await callStarknet('testnet', {
     jsonrpc: request.jsonrpc,
     method: 'starknet_blockNumber',
@@ -13,9 +18,12 @@ export async function blockNumberHandler(
 
   if (typeof response === 'string') {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: response,
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32600,
+        message: 'Invalid request, The JSON request is possibly malformed.',
+      },
     }
   }
 

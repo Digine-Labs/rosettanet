@@ -17,6 +17,15 @@ export interface RPCError {
   data?: string
 }
 
+export interface RPCErrorNew {
+  id: number
+  jsonrpc: string
+  error: {
+    code: number
+    message: string
+  }
+}
+
 export interface RPCResponse {
   error?: {
     code?: number
@@ -33,6 +42,7 @@ export interface RPCResponse {
     | Array<string | number | boolean | object>
 }
 
+// TODO: Change RPCError to RPCErrorNew before push or after fixed all rpc calls
 export interface ResponseHandler {
   method: string
   handler(request?: RPCRequest | undefined): Promise<RPCResponse | RPCError>
