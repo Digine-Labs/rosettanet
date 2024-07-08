@@ -2,7 +2,7 @@ import { callStarknet } from './callHelper'
 import { RPCRequest, RPCResponse } from '../types/types'
 
 const CONTRACT_ADDRESS = {
-  sepolia: '0x693289c1208cb7d9d82df0746f924ad25f2cb2e3ccfee6520a8210770742891',
+  sepolia: '0x055f17a002c440e850c7005180ae803c7d2752f554add2ef7f3a740a24fadfa6',
   mainnet: '',
 }
 // 0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
