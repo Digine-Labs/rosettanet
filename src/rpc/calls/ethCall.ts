@@ -62,7 +62,7 @@ export async function ethCallHandler(
   const blockId: string | number = request.params[1]
   // integer block number, or the string "latest", "earliest" or "pending" on eth
   // block_id  -  Expected one of block_number, block_hash, latest, pending. on starknet
-  if (typeof blockId === 'string') {
+  /* if (typeof blockId === 'string') {
     if (blockId !== 'latest' && blockId !== 'pending') {
       // TODO: Support earliest
       return {
@@ -71,7 +71,7 @@ export async function ethCallHandler(
         data: 'only pending and latest block id supported',
       }
     }
-  }
+  } */
 
   if (
     typeof request.params[0] !== 'object' &&
