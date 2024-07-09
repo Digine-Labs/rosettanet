@@ -1,5 +1,5 @@
 import { getTransactionsByHashHandler } from '../../../src/rpc/calls/getTransactionByHash'
-import { RPCResponse, RPCError } from '../../../src/types/types'
+import { RPCResponse, RPCErrorNew } from '../../../src/types/types'
 
 describe('Test getTransactionByHash', () => {
   it('Returns transaction details for a valid request', async () => {
@@ -41,7 +41,7 @@ describe('Test getTransactionByHash', () => {
     })
   })
 
-  it('Returns transaction details for invalid tx hash', async () => {
+  it('Returns error for invalid tx hash', async () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getTransactionByHash',
@@ -51,13 +51,41 @@ describe('Test getTransactionByHash', () => {
       id: 0,
     }
 
-    const starkResult: RPCError = <RPCError>(
+    const starkResult: RPCErrorNew = <RPCErrorNew>(
       await getTransactionsByHashHandler(request)
     )
     expect(starkResult).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid tx hash',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Invalid transaction hash.',
+      },
+    })
+  })
+
+  it('Returns error for invalid parameter length', async () => {
+    const request = {
+      jsonrpc: '2.0',
+      method: 'eth_getTransactionByHash',
+      params: [
+        '0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ',
+        '0x0',
+        '0x0',
+      ],
+      id: 0,
+    }
+
+    const starkResult: RPCErrorNew = <RPCErrorNew>(
+      await getTransactionsByHashHandler(request)
+    )
+    expect(starkResult).toMatchObject({
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter lenght should be 1.',
+      },
     })
   })
 })

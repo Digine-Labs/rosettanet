@@ -1,18 +1,21 @@
-import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import { RPCErrorNew, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateBlockHash } from '../../utils/validations'
 
 export async function getTransactionsByBlockHashAndIndexHandler(
   request: RPCRequest,
-): Promise<RPCResponse | RPCError> {
+): Promise<RPCResponse | RPCErrorNew> {
   const network = 'testnet'
   const method = 'starknet_getBlockWithTxs'
 
   if (request.params.length != 2) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'two params are expected',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter lenght should be 2.',
+      },
     }
   }
 
@@ -23,9 +26,12 @@ export async function getTransactionsByBlockHashAndIndexHandler(
   // Validate the block hash
   if (!validateBlockHash(blockHash)) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid block hash',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Invalid block hash.',
+      },
     }
   }
 
@@ -36,11 +42,18 @@ export async function getTransactionsByBlockHashAndIndexHandler(
     id: request.id,
   })
 
-  if (!response || typeof response === 'string') {
+  if (
+    typeof response == 'string' ||
+    response == null ||
+    response == undefined
+  ) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: response || 'No response from StarkNet',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: response,
+      },
     }
   }
 
@@ -74,9 +87,12 @@ export async function getTransactionsByBlockHashAndIndexHandler(
   ) {
     // Check if the block is accepted
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'The block is not accepted',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32002,
+        message: 'Resource unavailable, Block is not accepted yet.',
+      },
     }
   }
 
@@ -85,9 +101,12 @@ export async function getTransactionsByBlockHashAndIndexHandler(
 
   if (!transaction) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Transaction index out of bounds',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Transaction index out of bounds.',
+      },
     }
   }
 
@@ -102,11 +121,18 @@ export async function getTransactionsByBlockHashAndIndexHandler(
     },
   )
 
-  if (typeof transactionReceipt === 'string') {
+  if (
+    typeof transactionReceipt === 'string' ||
+    transactionReceipt == null ||
+    transactionReceipt == undefined
+  ) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: transactionReceipt,
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: transactionReceipt,
+      },
     }
   }
 

@@ -45,7 +45,7 @@ export interface RPCResponse {
 // TODO: Change RPCError to RPCErrorNew before push or after fixed all rpc calls
 export interface ResponseHandler {
   method: string
-  handler(request?: RPCRequest | undefined): Promise<RPCResponse | RPCError>
+  handler(request?: RPCRequest | undefined): Promise<RPCResponse | RPCErrorNew>
 }
 
 export interface StarknetType {

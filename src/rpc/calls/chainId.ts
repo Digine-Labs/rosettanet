@@ -1,15 +1,18 @@
-import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import { RPCErrorNew, RPCRequest, RPCResponse } from '../../types/types'
 
 export async function chainIdHandler(
   request: RPCRequest,
-): Promise<RPCResponse | RPCError> {
+): Promise<RPCResponse | RPCErrorNew> {
   // TODO: dynamic network from env?
 
   if (request.params.length != 0) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'params are not expected',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter field should be empty.',
+      },
     }
   }
 
@@ -21,12 +24,21 @@ export async function chainIdHandler(
     id: request.id,
   })
 
-  if (typeof response === 'string') {
+  if (
+    typeof response == 'string' ||
+    response == null ||
+    response == undefined
+  ) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: response,
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: response,
+      },
     }
+  }
+
   } */
 
   ///

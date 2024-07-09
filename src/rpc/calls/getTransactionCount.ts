@@ -1,32 +1,51 @@
-import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import { RPCErrorNew, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateEthAddress } from '../../utils/validations'
 import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 
 export async function getTransactionCountHandler(
   request: RPCRequest,
-): Promise<RPCResponse | RPCError> {
+): Promise<RPCResponse | RPCErrorNew> {
   const network = 'mainnet'
   const method = 'starknet_getNonce'
 
   if (request.params.length == 0) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'params should not be empty',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, Parameter should be valid Ethereum Address.',
+      },
     }
   }
 
   const ethAddress = request.params[0] as string
   if (!validateEthAddress(ethAddress)) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'invalid eth address',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, Parameter should be valid Ethereum Address.',
+      },
     }
   }
 
   const snAddress = await getSnAddressFromEthAddress(ethAddress)
+
+  if (snAddress === '0x0') {
+    return {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Ethereum address is not in Lens contract.',
+      },
+    }
+  }
 
   const response: RPCResponse | string = await callStarknet(network, {
     jsonrpc: request.jsonrpc,
@@ -35,11 +54,18 @@ export async function getTransactionCountHandler(
     id: request.id,
   })
 
-  if (!response || typeof response === 'string') {
+  if (
+    typeof response == 'string' ||
+    response == null ||
+    response == undefined
+  ) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: response || 'No response from StarkNet',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: response,
+      },
     }
   }
 

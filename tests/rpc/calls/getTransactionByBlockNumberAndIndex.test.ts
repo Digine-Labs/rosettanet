@@ -1,5 +1,5 @@
 import { getTransactionsByBlockNumberAndIndexHandler } from '../../../src/rpc/calls/getTransactionByBlockNumberAndIndex'
-import { RPCError, RPCResponse } from '../../../src/types/types'
+import { RPCErrorNew, RPCResponse } from '../../../src/types/types'
 
 describe('Test getTransactionByBlockNumberAndIndex', () => {
   it('Returns transaction details for a valid request', async () => {
@@ -52,9 +52,12 @@ describe('Test getTransactionByBlockNumberAndIndex', () => {
     )
 
     expect(starknetResult).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid block number',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Invalid block number.',
+      },
     })
   })
 
@@ -73,9 +76,13 @@ describe('Test getTransactionByBlockNumberAndIndex', () => {
       await getTransactionsByBlockNumberAndIndexHandler(request)
     )
     expect(starknetResult).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Transaction not found or index out of bounds',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, Transaction not found or index out of bounds.',
+      },
     })
   })
 
@@ -86,13 +93,16 @@ describe('Test getTransactionByBlockNumberAndIndex', () => {
       params: [],
       id: 0,
     }
-    const response: RPCError = <RPCError>(
+    const response: RPCErrorNew = <RPCErrorNew>(
       await getTransactionsByBlockNumberAndIndexHandler(request)
     )
     expect(response).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Two parameters expected',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter lenght should be 2.',
+      },
     })
   })
 
@@ -103,16 +113,16 @@ describe('Test getTransactionByBlockNumberAndIndex', () => {
       params: [1000000000000, '0x03'],
       id: 1,
     }
-    const response: RPCError = <RPCError>(
+    const response: RPCErrorNew = <RPCErrorNew>(
       await getTransactionsByBlockNumberAndIndexHandler(request)
     )
     expect(response).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: Object.create({
-        code: 24,
-        message: 'Block not found',
-      }) as string,
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32002,
+        message: 'Resource unavailable, Empty result body.',
+      },
     })
   })
 })

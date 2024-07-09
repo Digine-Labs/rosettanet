@@ -14,9 +14,12 @@ describe('Test getBlockByNumber', () => {
       await getBlockByNumberHandler(request)
     )
     expect(starkResult).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid block number',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Invalid block number.',
+      },
     })
   })
 
@@ -32,9 +35,12 @@ describe('Test getBlockByNumber', () => {
       await getBlockByNumberHandler(request)
     )
     expect(starkResult).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'two params are expected',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter lenght should be 2.',
+      },
     })
   })
 
@@ -50,9 +56,13 @@ describe('Test getBlockByNumber', () => {
       await getBlockByNumberHandler(request)
     )
     expect(starkResult).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid parameter type at index 1. Expected a boolean',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, Invalid parameter[1] type. Expected boolean',
+      },
     })
   })
 

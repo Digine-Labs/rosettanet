@@ -30,7 +30,13 @@ describe('Test getTransactionCount', () => {
 
     expect(starkResult).toEqual(
       expect.objectContaining({
-        data: 'invalid eth address',
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: -32602,
+          message:
+            'Invalid argument, Parameter should be valid Ethereum Address.',
+        },
       }),
     )
   })

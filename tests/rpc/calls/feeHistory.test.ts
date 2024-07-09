@@ -41,16 +41,24 @@ describe('Test feeHistory', () => {
 
     const response1 = <RPCResponse>await feeHistoryHandler(request1)
     expect(response1).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'blockCount out of range. Expected range is between 1 and 1024',
+      jsonrpc: request1.jsonrpc,
+      id: request1.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, blockCount out of range. Expected range is between 1 and 1024.',
+      },
     })
 
     const response2 = <RPCResponse>await feeHistoryHandler(request2)
     expect(response2).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'blockCount out of range. Expected range is between 1 and 1024',
+      jsonrpc: request2.jsonrpc,
+      id: request2.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, blockCount out of range. Expected range is between 1 and 1024.',
+      },
     })
   })
 
@@ -64,9 +72,12 @@ describe('Test feeHistory', () => {
 
     const response1 = <RPCResponse>await feeHistoryHandler(request1)
     expect(response1).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid block number',
+      jsonrpc: request1.jsonrpc,
+      id: request1.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Invalid block number.',
+      },
     })
 
     const request2 = {
@@ -78,9 +89,12 @@ describe('Test feeHistory', () => {
 
     const response2 = <RPCResponse>await feeHistoryHandler(request2)
     expect(response2).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid block number',
+      jsonrpc: request2.jsonrpc,
+      id: request2.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Invalid block number.',
+      },
     })
   })
 })

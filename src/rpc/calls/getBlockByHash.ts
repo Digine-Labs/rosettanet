@@ -1,19 +1,22 @@
-import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import { RPCErrorNew, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateBlockHash } from '../../utils/validations'
 
 export async function getBlockByHashHandler(
   request: RPCRequest,
-): Promise<RPCResponse | RPCError> {
+): Promise<RPCResponse | RPCErrorNew> {
   // Define the network and method
   const network = 'testnet'
 
   // Check params' length
   if (request.params.length != 2) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'two params are expected',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter lenght should be 2.',
+      },
     }
   }
 
@@ -23,9 +26,12 @@ export async function getBlockByHashHandler(
   // Validate the block hash
   if (!validateBlockHash(blockHash)) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid block hash',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Invalid block hash.',
+      },
     }
   }
 
@@ -34,9 +40,13 @@ export async function getBlockByHashHandler(
 
   if (typeof isFullTxObjectRequested != 'boolean') {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid parameter type',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, Invalid parameter[1] type. Expected boolean',
+      },
     }
   }
 
@@ -57,9 +67,12 @@ export async function getBlockByHashHandler(
       response == undefined
     ) {
       return {
-        code: 7979,
-        message: 'Starknet RPC Error',
-        data: response,
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: -32602,
+          message: response,
+        },
       }
     }
 
@@ -94,9 +107,12 @@ export async function getBlockByHashHandler(
     ) {
       // Check if the block is accepted
       return {
-        code: 7979,
-        message: 'Starknet RPC error',
-        data: 'The block is not accepted',
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: -32002,
+          message: 'Resource unavailable, Block is not accepted yet.',
+        },
       }
     }
 
@@ -167,9 +183,12 @@ export async function getBlockByHashHandler(
       response == undefined
     ) {
       return {
-        code: 7979,
-        message: 'Starknet RPC Error',
-        data: response,
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: -32602,
+          message: response,
+        },
       }
     }
 

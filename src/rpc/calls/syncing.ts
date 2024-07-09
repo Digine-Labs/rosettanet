@@ -1,17 +1,20 @@
-import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import { RPCErrorNew, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 
 export async function ethSyncingHandler(
   request: RPCRequest,
-): Promise<RPCResponse | RPCError> {
+): Promise<RPCResponse | RPCErrorNew> {
   const network = 'testnet'
   const method = 'starknet_syncing'
 
   if (request.params.length != 0) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'params are not expected',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter should length 0.',
+      },
     }
   }
 
@@ -22,11 +25,18 @@ export async function ethSyncingHandler(
     id: request.id,
   })
 
-  if (!response || typeof response === 'string') {
+  if (
+    typeof response == 'string' ||
+    response == null ||
+    response == undefined
+  ) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: response || 'No response from StarkNet',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: response,
+      },
     }
   }
 

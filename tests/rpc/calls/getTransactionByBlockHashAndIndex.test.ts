@@ -1,5 +1,5 @@
 import { getTransactionsByBlockHashAndIndexHandler } from '../../../src/rpc/calls/getTransactionByBlockHashAndIndex'
-import { RPCResponse, RPCError } from '../../../src/types/types'
+import { RPCResponse, RPCErrorNew } from '../../../src/types/types'
 
 describe('Test getTransactionsByBlockHashAndIndexHandler', () => {
   it('Returns transaction details for a valid request', async () => {
@@ -54,13 +54,16 @@ describe('Test getTransactionsByBlockHashAndIndexHandler', () => {
       id: 0,
     }
 
-    const starkResult: RPCError = <RPCError>(
+    const starkResult: RPCErrorNew = <RPCErrorNew>(
       await getTransactionsByBlockHashAndIndexHandler(request)
     )
     expect(starkResult).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid block hash',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Invalid block hash.',
+      },
     })
   })
 
@@ -75,13 +78,16 @@ describe('Test getTransactionsByBlockHashAndIndexHandler', () => {
       id: 0,
     }
 
-    const starkResult: RPCError = <RPCError>(
+    const starkResult: RPCErrorNew = <RPCErrorNew>(
       await getTransactionsByBlockHashAndIndexHandler(request)
     )
     expect(starkResult).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Transaction index out of bounds',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Transaction index out of bounds.',
+      },
     })
   })
 })

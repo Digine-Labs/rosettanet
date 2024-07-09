@@ -1,5 +1,5 @@
 import { getBlockTransactionCountByHashHandler } from '../../../src/rpc/calls/getBlockTransactionCountByHash'
-import { RPCError, RPCResponse } from '../../../src/types/types'
+import { RPCErrorNew, RPCResponse } from '../../../src/types/types'
 
 describe('Test get Block Count By Hash request testnet ', () => {
   it('Returns block transactions count by hash', async () => {
@@ -30,14 +30,43 @@ describe('Test get Block Count By Hash request testnet ', () => {
       id: 0,
     }
 
-    const response: RPCError = <RPCError>(
+    const response: RPCErrorNew = <RPCErrorNew>(
       await getBlockTransactionCountByHashHandler(request)
     )
 
     expect(response).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid block hash',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter should be valid block hash.',
+      },
+    })
+  })
+
+  it('Returns error message if parameter length is invalid', async () => {
+    const request = {
+      jsonrpc: '2.0',
+      method: 'eth_getBlockTransactionCountByHash',
+      params: [
+        '0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ',
+        '0x0',
+        '0x0',
+      ],
+      id: 0,
+    }
+
+    const response: RPCErrorNew = <RPCErrorNew>(
+      await getBlockTransactionCountByHashHandler(request)
+    )
+
+    expect(response).toMatchObject({
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter should be valid block hash.',
+      },
     })
   })
 })

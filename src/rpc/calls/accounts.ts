@@ -1,9 +1,4 @@
-import {
-  RPCError,
-  RPCErrorNew,
-  RPCRequest,
-  RPCResponse,
-} from '../../types/types'
+import { RPCErrorNew, RPCRequest, RPCResponse } from '../../types/types'
 
 export async function accountsHandler(
   request: RPCRequest,
