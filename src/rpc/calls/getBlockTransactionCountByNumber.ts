@@ -1,3 +1,4 @@
+import { isHexString } from 'ethers'
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateBlockNumber } from '../../utils/validations'
@@ -21,7 +22,7 @@ export async function getBlockTransactionCountByNumberHandler(
     }
   }
 
-  const blockNumber = request.params[0] as number
+  const blockNumber = request.params[0] as string
 
   if (!validateBlockNumber(blockNumber)) {
     return {
@@ -45,7 +46,7 @@ export async function getBlockTransactionCountByNumberHandler(
     typeof currentLiveBlockNumber !== 'string' &&
     typeof currentLiveBlockNumber.result === 'number'
   ) {
-    if (blockNumber > currentLiveBlockNumber.result) {
+    if (parseInt(blockNumber, 16) > currentLiveBlockNumber.result) {
       return {
         jsonrpc: request.jsonrpc,
         id: request.id,
@@ -57,22 +58,20 @@ export async function getBlockTransactionCountByNumberHandler(
       }
     }
   }
-
+  const params = isHexString(blockNumber)
+    ? [{ block_number: parseInt(blockNumber, 16) }]
+    : [{ block_number: blockNumber }]
   const response: RPCResponse | string = await callStarknet(network, {
     jsonrpc: request.jsonrpc,
     method,
-    params: [
-      {
-        block_number: blockNumber as number,
-      },
-    ],
+    params,
     id: request.id,
   })
 
   if (
     typeof response === 'string' ||
     response === null ||
-    response === undefined
+    typeof response === 'undefined'
   ) {
     return {
       jsonrpc: request.jsonrpc,

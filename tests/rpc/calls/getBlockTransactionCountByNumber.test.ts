@@ -6,7 +6,7 @@ describe('Test getBlockTransactionCountByNumber request testnet', () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getBlockTransactionCountByNumber',
-      params: [0],
+      params: ['0x0'],
       id: 1,
     }
     const response: RPCResponse = <RPCResponse>(
@@ -19,7 +19,7 @@ describe('Test getBlockTransactionCountByNumber request testnet', () => {
       const request = {
         jsonrpc: '2.0',
         method: 'eth_getBlockTransactionCountByNumber',
-        params: [1],
+        params: ['0x1'],
         id: 1,
       }
       const response: RPCResponse = <RPCResponse>(
@@ -32,7 +32,7 @@ describe('Test getBlockTransactionCountByNumber request testnet', () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getBlockTransactionCountByNumber',
-      params: ['0x1'],
+      params: ['0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'],
       id: 1,
     }
     const response: RPCError = <RPCError>(
@@ -43,7 +43,8 @@ describe('Test getBlockTransactionCountByNumber request testnet', () => {
       id: request.id,
       error: {
         code: -32602,
-        message: 'Invalid argument, Parameter should be valid block number.',
+        message:
+          'Invalid argument, Parameter "block_number" can not be higher than current live block number of network.',
       },
     })
   })
@@ -89,7 +90,7 @@ describe('Test getBlockTransactionCountByNumber request testnet', () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getBlockTransactionCountByNumber',
-      params: [1000000000],
+      params: ['0x3B9ACA00'],
       id: 1,
     }
     const response: RPCError = <RPCError>(

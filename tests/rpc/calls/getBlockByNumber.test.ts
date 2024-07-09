@@ -48,7 +48,7 @@ describe('Test getBlockByNumber', () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getBlockByNumber',
-      params: [1024, 'true'],
+      params: ['0x1024', 'true'],
       id: 0,
     }
 
@@ -70,7 +70,7 @@ describe('Test getBlockByNumber', () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getBlockByNumber',
-      params: [1024, true],
+      params: ['0x400', true],
       id: 0,
     }
 
@@ -183,7 +183,7 @@ describe('Test getBlockByNumber', () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getBlockByNumber',
-      params: [1024, false],
+      params: ['0x400', false],
       id: 0,
     }
 

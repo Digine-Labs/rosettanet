@@ -6,7 +6,7 @@ describe('Test getCodeHandler', () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getCode',
-      params: ['0xd3fcc84644ddd6b96f7c741b1562b82f9e004dc7', 63232],
+      params: ['0xd3fcc84644ddd6b96f7c741b1562b82f9e004dc7', '0xF700'],
       id: 0,
     }
 

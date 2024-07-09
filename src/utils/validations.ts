@@ -1,3 +1,4 @@
+import { isHexString } from 'ethers'
 import { addHexPrefix, removeHexPrefix } from './padding'
 export function validateEthAddress(ethAddress: string): boolean {
   if (!ethAddress) {
@@ -45,14 +46,17 @@ export function validateBlockHash(blockHash: string): boolean {
 
 export function validateBlockNumber(value: string | number): boolean {
   if (typeof value === 'number') {
-    return Number.isInteger(value as number) && value >= 0
-  } else if (typeof value === 'string') {
-    if (value === 'latest' || value === 'pending') {
-      return true
-    } else {
-      const hexValue = parseInt(value, 16)
-      return hexValue.toString(16) === value
-    }
+    return false // Only string hex supported on ethereum
   }
-  return false
+  switch (value) {
+    case 'latest':
+      return true
+    case 'pending':
+      return true
+    default:
+      if (isHexString(value)) {
+        return true
+      }
+      return false
+  }
 }

@@ -1,7 +1,7 @@
+import { isHexString } from 'ethers'
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateBlockNumber } from '../../utils/validations'
-
 export async function getBlockByNumberHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
@@ -20,8 +20,8 @@ export async function getBlockByNumberHandler(
     }
   }
 
-  // Get the block hash
-  const blockNumber = request.params[0] as string | number
+  // Get the block number
+  const blockNumber = request.params[0] as string
 
   // Validate the block hash
   if (!validateBlockNumber(blockNumber)) {
@@ -51,10 +51,9 @@ export async function getBlockByNumberHandler(
     }
   }
 
-  const params =
-    typeof blockNumber === 'string'
-      ? [blockNumber]
-      : [{ block_number: blockNumber }]
+  const params = isHexString(blockNumber)
+    ? [{ block_number: parseInt(blockNumber, 16) }]
+    : [{ block_number: blockNumber }]
 
   if (isFullTxObjectRequested == true) {
     const method = 'starknet_getBlockWithTxs'
