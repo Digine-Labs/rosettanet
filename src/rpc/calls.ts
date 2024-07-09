@@ -166,7 +166,7 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
         const logMsg = snifferOutput(request, result)
         // TODO: improve error handling
         // eslint-disable-next-line no-prototype-builtins
-        if(result.hasOwnProperty('code') && result.hasOwnProperty('message')) {
+        if (result.hasOwnProperty('code') && result.hasOwnProperty('message')) {
           writeLog(1, logMsg)
         } else {
           writeLog(0, logMsg)

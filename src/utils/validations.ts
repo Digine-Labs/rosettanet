@@ -1,4 +1,3 @@
-
 import { addHexPrefix, removeHexPrefix } from './padding'
 export function validateEthAddress(ethAddress: string): boolean {
   if (!ethAddress) {
@@ -48,11 +47,11 @@ export function validateBlockNumber(value: string | number): boolean {
   if (typeof value === 'number') {
     return Number.isInteger(value as number) && value >= 0
   } else if (typeof value === 'string') {
-    if(value === 'latest' || value === 'pending') {
-      return true;
+    if (value === 'latest' || value === 'pending') {
+      return true
     } else {
-      const hexValue = parseInt(value, 16);
-      return hexValue.toString(16) === value;
+      const hexValue = parseInt(value, 16)
+      return hexValue.toString(16) === value
     }
   }
   return false

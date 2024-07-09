@@ -20,10 +20,10 @@ export function writeLog(severity: number, text: string) {
   }
 
   // Logs only the severity higher
-  const minLogLevel = getMinimumSeverityLevel();
+  const minLogLevel = getMinimumSeverityLevel()
 
-  if(severity < minLogLevel) {
-    return;
+  if (severity < minLogLevel) {
+    return
   }
 
   let loggingType = 'console'
@@ -91,9 +91,9 @@ function getSeverityString(severity: number) {
 function getMinimumSeverityLevel(): number {
   const minLogIndex = process.argv.slice(2).indexOf('--min-log')
 
-  if(minLogIndex == 0) {
-    return 0;
+  if (minLogIndex == 0) {
+    return 0
   }
 
-  return Number(process.argv.slice(2)[minLogIndex+1]);
+  return Number(process.argv.slice(2)[minLogIndex + 1])
 }
