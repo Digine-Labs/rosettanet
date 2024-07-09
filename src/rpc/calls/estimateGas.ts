@@ -1,9 +1,9 @@
 import {
-  RPCError,
   RPCResponse,
   RPCRequest,
   StarknetFunction,
   EthereumSlot,
+  RPCErrorNew,
 } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateEthAddress } from '../../utils/validations'
@@ -21,7 +21,6 @@ import {
 import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 import { snKeccak } from '../../utils/sn_keccak'
 import { getSnSlotCount } from '../../utils/converters/typeConverters'
-import { writeLog } from '../../logger'
 
 interface ParameterObject {
   from?: string
@@ -34,7 +33,7 @@ interface ParameterObject {
 
 export async function estimateGasHandler(
   call: RPCRequest,
-): Promise<RPCResponse | RPCError> {
+): Promise<RPCResponse | RPCErrorNew> {
   const method = 'starknet_estimateFee'
 
   const parameters: ParameterObject = call.params[0] as ParameterObject
@@ -44,17 +43,25 @@ export async function estimateGasHandler(
 
   if (parameters.from && !validateEthAddress(parameters.from)) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'from field is not valid eth address',
+      jsonrpc: call.jsonrpc,
+      id: call.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, Parameter "from" should be a valid Ethereum Address.',
+      },
     }
   }
 
   if (!validateEthAddress(ethToAddress)) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'to field is not valid eth address',
+      jsonrpc: call.jsonrpc,
+      id: call.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, Parameter "to" should be a valid Ethereum Address.',
+      },
     }
   }
 
@@ -63,17 +70,25 @@ export async function estimateGasHandler(
 
   if (snFromAddress === '0x0') {
     return {
-      code: 7979,
-      message: 'Starknet RPC Error',
-      data: 'from field is not in lens contract',
+      jsonrpc: call.jsonrpc,
+      id: call.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, Parameter "from" is not registered in Lens Contract.',
+      },
     }
   }
 
   if (snToAddress === '0x0') {
     return {
-      code: 7979,
-      message: 'Starknet RPC Error',
-      data: 'to field is not in lens contract',
+      jsonrpc: call.jsonrpc,
+      id: call.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, Parameter "to" is not registered in Lens Contract.',
+      },
     }
   }
 
@@ -93,9 +108,14 @@ export async function estimateGasHandler(
 
     if (typeof getSnNonce === 'string') {
       return {
-        code: 7979,
-        message: 'Starknet RPC error, getNonce',
-        data: getSnNonce,
+        jsonrpc: call.jsonrpc,
+        id: call.id,
+        error: {
+          code: -32602,
+          message:
+            'Invalid argument, Parameter "from" is not returning correct account nonce.' &&
+            getSnNonce,
+        },
       }
     }
 
@@ -130,15 +150,18 @@ export async function estimateGasHandler(
       id: call.id,
     })
 
-    writeLog(0, snFromAddress)
-    writeLog(0, snToAddress)
-    writeLog(0, parameters.value)
-
-    if (typeof response === 'string') {
+    if (
+      typeof response == 'string' ||
+      response == null ||
+      response == undefined
+    ) {
       return {
-        code: 7979,
-        message: 'Starknet RPC error',
-        data: response,
+        jsonrpc: call.jsonrpc,
+        id: call.id,
+        error: {
+          code: -32602,
+          message: response,
+        },
       }
     }
 
@@ -149,7 +172,10 @@ export async function estimateGasHandler(
       return {
         jsonrpc: '2.0',
         id: call.id,
-        data: 'Transaction Execution Error',
+        error: {
+          code: -32003,
+          message: 'Transaction rejected',
+        },
         result: '0x28ed6103d0000',
       }
     }
@@ -169,9 +195,14 @@ export async function estimateGasHandler(
 
     if (typeof getSnNonce === 'string') {
       return {
-        code: 7979,
-        message: 'Starknet RPC error, getNonce',
-        data: getSnNonce,
+        jsonrpc: call.jsonrpc,
+        id: call.id,
+        error: {
+          code: -32602,
+          message:
+            'Invalid argument, Parameter "from" is not returning correct account nonce.' &&
+            getSnNonce,
+        },
       }
     }
 
@@ -192,9 +223,12 @@ export async function estimateGasHandler(
 
     if (functionSelector === '0x0') {
       return {
-        code: 7979,
-        message: 'Starknet RPC error',
-        data: 'function call zero.',
+        jsonrpc: call.jsonrpc,
+        id: call.id,
+        error: {
+          code: -32602,
+          message: 'Invalid argument, Function selector is "0x0"',
+        },
       }
     }
 
@@ -212,9 +246,12 @@ export async function estimateGasHandler(
 
     if (typeof targetStarknetFunction === 'undefined') {
       return {
-        code: 7979,
-        message: 'Starknet RPC error',
-        data: 'target function not found',
+        jsonrpc: call.jsonrpc,
+        id: call.id,
+        error: {
+          code: -32602,
+          message: 'Invalid argument, Target Starknet Function is not found.',
+        },
       }
     }
 
@@ -293,11 +330,18 @@ export async function estimateGasHandler(
       id: call.id,
     })
 
-    if (typeof response === 'string') {
+    if (
+      typeof response == 'string' ||
+      response == null ||
+      response == undefined
+    ) {
       return {
-        code: 7979,
-        message: 'Starknet RPC error',
-        data: response,
+        jsonrpc: call.jsonrpc,
+        id: call.id,
+        error: {
+          code: -32602,
+          message: response,
+        },
       }
     }
 
@@ -308,7 +352,10 @@ export async function estimateGasHandler(
       return {
         jsonrpc: '2.0',
         id: call.id,
-        data: 'Transaction Execution Error',
+        error: {
+          code: -32003,
+          message: 'Transaction rejected',
+        },
         result: '0x28ed6103d0000',
       }
     }

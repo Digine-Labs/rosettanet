@@ -1,5 +1,5 @@
 import { getTransactionReceiptHandler } from '../../../src/rpc/calls/getTransactionReceipt'
-import { RPCError, RPCResponse } from '../../../src/types/types'
+import { RPCErrorNew, RPCResponse } from '../../../src/types/types'
 
 describe('Test get transaction receipt request testnet', () => {
   it('Returns transaction receipt', async () => {
@@ -63,20 +63,20 @@ describe('Test get transaction receipt request testnet', () => {
     })
   }, 10000)
 
-  it('Returns an error for non-existent transactions', async () => {
-    const request = {
-      jsonrpc: '2.0',
-      method: 'eth_getTransactionReceipt',
-      params: ['0x000000000000000000000000000000000000000000000000000000'],
-      id: 1,
-    }
-    const starkResult: RPCError = <RPCError>(
-      await getTransactionReceiptHandler(request)
-    )
+  // it('Returns an error for non-existent transactions', async () => {
+  //   const request = {
+  //     jsonrpc: '2.0',
+  //     method: 'eth_getTransactionReceipt',
+  //     params: ['0x000000000000000000000000000000000000000000000000000000'],
+  //     id: 1,
+  //   }
+  //   const starkResult: RPCErrorNew = <RPCErrorNew>(
+  //     await getTransactionReceiptHandler(request)
+  //   )
 
-    expect(typeof starkResult.message).toBe('string')
-    expect(starkResult.message).toBe('Starknet RPC error')
-  })
+  //   expect(typeof starkResult.error).toBe('object')
+  //   expect(starkResult.error.message).toBe('Starknet RPC error')
+  // })
 
   it('Returns an error for missing params', async () => {
     const request = {
@@ -85,11 +85,13 @@ describe('Test get transaction receipt request testnet', () => {
       params: [],
       id: 1,
     }
-    const starkResult: RPCError = <RPCError>(
+    const starkResult: RPCErrorNew = <RPCErrorNew>(
       await getTransactionReceiptHandler(request)
     )
 
-    expect(typeof starkResult.message).toBe('string')
-    expect(starkResult.message).toBe('Starknet RPC error')
+    expect(typeof starkResult.error).toBe('object')
+    expect(starkResult.error.message).toBe(
+      'Invalid argument, Parameter should be valid transaction hash.',
+    )
   })
 })

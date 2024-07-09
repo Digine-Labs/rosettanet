@@ -1,17 +1,21 @@
-import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import { RPCErrorNew, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { getEthAddressFromSnAddress } from '../../utils/wrapper'
 
 export async function getTransactionReceiptHandler(
   request: RPCRequest,
-): Promise<RPCResponse | RPCError> {
+): Promise<RPCResponse | RPCErrorNew> {
   // TODO: dynamic network from env?
 
   if (request.params.length == 0) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'params should not be empty',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, Parameter should be valid transaction hash.',
+      },
     }
   }
 
@@ -24,20 +28,18 @@ export async function getTransactionReceiptHandler(
     id: request.id,
   })
 
-  if (typeof response1 === 'string') {
+  if (
+    typeof response1 == 'string' ||
+    response1 == null ||
+    response1 == undefined
+  ) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: response1,
-    }
-  }
-
-  // TODO: expect that `callStarknet` might return an RPC error response
-  if ((response1 as unknown as { error: unknown }).error) {
-    return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Starknet RPC error',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: response1,
+      },
     }
   }
 
@@ -49,9 +51,13 @@ export async function getTransactionReceiptHandler(
   const isPendingTransaction = !('finality_status' in result1)
   if (isPendingTransaction) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Starknet RPC error',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, Only finished blocks supported. Pending blocks are not supported.',
+      },
     }
   }
 
@@ -62,20 +68,18 @@ export async function getTransactionReceiptHandler(
     id: request.id,
   })
 
-  if (typeof response2 === 'string') {
+  if (
+    typeof response2 == 'string' ||
+    response2 == null ||
+    response2 == undefined
+  ) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: response2,
-    }
-  }
-
-  // TODO: expect that `callStarknet` might return an RPC error response
-  if ((response2 as unknown as { error: unknown }).error) {
-    return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Starknet RPC error',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: response2,
+      },
     }
   }
 
