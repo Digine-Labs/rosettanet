@@ -45,18 +45,18 @@ export function validateBlockHash(blockHash: string): boolean {
 }
 
 export function validateBlockNumber(value: string | number): boolean {
-  if(typeof value === 'number') {
+  if (typeof value === 'number') {
     return false // Only string hex supported on ethereum
   }
   switch (value) {
-    case "latest":
-        return true
-    case "pending":
-        return true
+    case 'latest':
+      return true
+    case 'pending':
+      return true
     default:
-        if(isHexString(value)) {
-          return true
-        }
-        return false
+      if (isHexString(value)) {
+        return true
+      }
+      return false
   }
 }

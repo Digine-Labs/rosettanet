@@ -38,11 +38,9 @@ export async function getBlockByNumberHandler(
     }
   }
 
-  
-  const params =
-      isHexString(blockNumber)
-      ? [{ block_number: parseInt(blockNumber, 16) }]
-      : [blockNumber]
+  const params = isHexString(blockNumber)
+    ? [{ block_number: parseInt(blockNumber, 16) }]
+    : [blockNumber]
 
   if (isFullTxObjectRequested == true) {
     const method = 'starknet_getBlockWithTxs'
