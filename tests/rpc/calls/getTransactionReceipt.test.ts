@@ -1,5 +1,5 @@
 import { getTransactionReceiptHandler } from '../../../src/rpc/calls/getTransactionReceipt'
-import { RPCErrorNew, RPCResponse } from '../../../src/types/types'
+import { RPCError, RPCResponse } from '../../../src/types/types'
 
 describe('Test get transaction receipt request testnet', () => {
   it('Returns transaction receipt', async () => {
@@ -70,7 +70,7 @@ describe('Test get transaction receipt request testnet', () => {
   //     params: ['0x000000000000000000000000000000000000000000000000000000'],
   //     id: 1,
   //   }
-  //   const starkResult: RPCErrorNew = <RPCErrorNew>(
+  //   const starkResult: RPCError = <RPCError>(
   //     await getTransactionReceiptHandler(request)
   //   )
 
@@ -85,7 +85,7 @@ describe('Test get transaction receipt request testnet', () => {
       params: [],
       id: 1,
     }
-    const starkResult: RPCErrorNew = <RPCErrorNew>(
+    const starkResult: RPCError = <RPCError>(
       await getTransactionReceiptHandler(request)
     )
 

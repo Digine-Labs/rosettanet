@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   EthereumSlot,
-  RPCErrorNew,
+  RPCError,
   RPCRequest,
   RPCResponse,
   StarknetFunction,
@@ -35,7 +35,7 @@ interface CallParameterObject {
 
 export async function ethCallHandler(
   request: RPCRequest,
-): Promise<RPCResponse | RPCErrorNew> {
+): Promise<RPCResponse | RPCError> {
   // TODO response
 
   // 1) First check parameters

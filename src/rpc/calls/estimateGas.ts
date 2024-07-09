@@ -3,7 +3,7 @@ import {
   RPCRequest,
   StarknetFunction,
   EthereumSlot,
-  RPCErrorNew,
+  RPCError,
 } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateEthAddress } from '../../utils/validations'
@@ -33,7 +33,7 @@ interface ParameterObject {
 
 export async function estimateGasHandler(
   call: RPCRequest,
-): Promise<RPCResponse | RPCErrorNew> {
+): Promise<RPCResponse | RPCError> {
   const method = 'starknet_estimateFee'
 
   const parameters: ParameterObject = call.params[0] as ParameterObject

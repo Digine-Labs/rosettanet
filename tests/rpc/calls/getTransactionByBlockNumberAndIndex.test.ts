@@ -1,5 +1,5 @@
 import { getTransactionsByBlockNumberAndIndexHandler } from '../../../src/rpc/calls/getTransactionByBlockNumberAndIndex'
-import { RPCErrorNew, RPCResponse } from '../../../src/types/types'
+import { RPCError, RPCResponse } from '../../../src/types/types'
 
 describe('Test getTransactionByBlockNumberAndIndex', () => {
   it('Returns transaction details for a valid request', async () => {
@@ -93,7 +93,7 @@ describe('Test getTransactionByBlockNumberAndIndex', () => {
       params: [],
       id: 0,
     }
-    const response: RPCErrorNew = <RPCErrorNew>(
+    const response: RPCError = <RPCError>(
       await getTransactionsByBlockNumberAndIndexHandler(request)
     )
     expect(response).toMatchObject({
@@ -113,7 +113,7 @@ describe('Test getTransactionByBlockNumberAndIndex', () => {
       params: [1000000000000, '0x03'],
       id: 1,
     }
-    const response: RPCErrorNew = <RPCErrorNew>(
+    const response: RPCError = <RPCError>(
       await getTransactionsByBlockNumberAndIndexHandler(request)
     )
     expect(response).toMatchObject({

@@ -1,5 +1,5 @@
 import { getBlockTransactionCountByNumberHandler } from '../../../src/rpc/calls/getBlockTransactionCountByNumber'
-import { RPCErrorNew, RPCResponse } from '../../../src/types/types'
+import { RPCError, RPCResponse } from '../../../src/types/types'
 
 describe('Test getBlockTransactionCountByNumber request testnet', () => {
   it('Returns block transaction count', async () => {
@@ -35,7 +35,7 @@ describe('Test getBlockTransactionCountByNumber request testnet', () => {
       params: ['0x1'],
       id: 1,
     }
-    const response: RPCErrorNew = <RPCErrorNew>(
+    const response: RPCError = <RPCError>(
       await getBlockTransactionCountByNumberHandler(request)
     )
     expect(response).toMatchObject({
@@ -54,7 +54,7 @@ describe('Test getBlockTransactionCountByNumber request testnet', () => {
       params: [],
       id: 1,
     }
-    const response: RPCErrorNew = <RPCErrorNew>(
+    const response: RPCError = <RPCError>(
       await getBlockTransactionCountByNumberHandler(request)
     )
     expect(response).toMatchObject({
@@ -73,7 +73,7 @@ describe('Test getBlockTransactionCountByNumber request testnet', () => {
       params: [''],
       id: 1,
     }
-    const response: RPCErrorNew = <RPCErrorNew>(
+    const response: RPCError = <RPCError>(
       await getBlockTransactionCountByNumberHandler(request)
     )
     expect(response).toMatchObject({
@@ -92,7 +92,7 @@ describe('Test getBlockTransactionCountByNumber request testnet', () => {
       params: [1000000000],
       id: 1,
     }
-    const response: RPCErrorNew = <RPCErrorNew>(
+    const response: RPCError = <RPCError>(
       await getBlockTransactionCountByNumberHandler(request)
     )
     expect(response).toMatchObject({

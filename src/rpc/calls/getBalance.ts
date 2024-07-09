@@ -1,4 +1,4 @@
-import { RPCErrorNew, RPCRequest, RPCResponse } from '../../types/types'
+import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateEthAddress } from '../../utils/validations'
 import { getSnAddressFromEthAddress } from '../../utils/wrapper'
@@ -6,7 +6,7 @@ import { U256toUint256 } from '../../utils/converters/integer'
 
 export async function getBalanceHandler(
   request: RPCRequest,
-): Promise<RPCResponse | RPCErrorNew> {
+): Promise<RPCResponse | RPCError> {
   // TODO: dynamic network from env?
   const network = 'testnet'
   const method = 'starknet_call'

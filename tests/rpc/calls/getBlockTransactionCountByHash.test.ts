@@ -1,5 +1,5 @@
 import { getBlockTransactionCountByHashHandler } from '../../../src/rpc/calls/getBlockTransactionCountByHash'
-import { RPCErrorNew, RPCResponse } from '../../../src/types/types'
+import { RPCError, RPCResponse } from '../../../src/types/types'
 
 describe('Test get Block Count By Hash request testnet ', () => {
   it('Returns block transactions count by hash', async () => {
@@ -30,7 +30,7 @@ describe('Test get Block Count By Hash request testnet ', () => {
       id: 0,
     }
 
-    const response: RPCErrorNew = <RPCErrorNew>(
+    const response: RPCError = <RPCError>(
       await getBlockTransactionCountByHashHandler(request)
     )
 
@@ -56,7 +56,7 @@ describe('Test get Block Count By Hash request testnet ', () => {
       id: 0,
     }
 
-    const response: RPCErrorNew = <RPCErrorNew>(
+    const response: RPCError = <RPCError>(
       await getBlockTransactionCountByHashHandler(request)
     )
 

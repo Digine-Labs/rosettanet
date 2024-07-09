@@ -1,4 +1,4 @@
-import { RPCErrorNew, RPCRequest, RPCResponse } from '../../types/types'
+import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import {
   validateEthAddress,
@@ -8,7 +8,7 @@ import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 
 export async function getCodeHandler(
   request: RPCRequest,
-): Promise<RPCResponse | RPCErrorNew> {
+): Promise<RPCResponse | RPCError> {
   if (request.params.length != 2) {
     return {
       jsonrpc: request.jsonrpc,

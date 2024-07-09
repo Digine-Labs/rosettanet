@@ -1,8 +1,8 @@
-import { RPCErrorNew, RPCRequest, RPCResponse } from '../../types/types'
+import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 
 export async function accountsHandler(
   request: RPCRequest,
-): Promise<RPCResponse | RPCErrorNew> {
+): Promise<RPCResponse | RPCError> {
   if (request.params.length != 0) {
     return {
       jsonrpc: request.jsonrpc,

@@ -23,6 +23,7 @@ import { getTransactionCountHandler } from './calls/getTransactionCount'
 import { estimateGasHandler } from './calls/estimateGas'
 import { accountsHandler } from './calls/accounts'
 import { netVersionHandler } from './calls/netVersion'
+import { isSnifferActive, writeLog, snifferOutput } from '../logger'
 
 const router: Router = Router()
 
@@ -166,8 +167,12 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
     }
   } else {
     const error: RPCError = {
-      code: -32601,
-      message: 'Method not found',
+      id: req.body.id,
+      jsonrpc: req.body.jsonrpc,
+      error: {
+        code: -32601,
+        message: 'Method not found',
+      },
     }
     res.send({
       jsonrpc: '2.0',

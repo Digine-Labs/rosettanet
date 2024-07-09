@@ -1,9 +1,9 @@
-import { RPCErrorNew, RPCRequest, RPCResponse } from '../../types/types'
+import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { validateBlockNumber } from '../../utils/validations'
 
 export async function feeHistoryHandler(
   request: RPCRequest,
-): Promise<RPCResponse | RPCErrorNew> {
+): Promise<RPCResponse | RPCError> {
   const blockCount = request.params[0] as number
   const newestBlock = request.params[1] as string | number
 

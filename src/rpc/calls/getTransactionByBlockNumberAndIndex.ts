@@ -1,10 +1,10 @@
-import { RPCErrorNew, RPCRequest, RPCResponse } from '../../types/types'
+import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateBlockNumber } from '../../utils/validations'
 
 export async function getTransactionsByBlockNumberAndIndexHandler(
   request: RPCRequest,
-): Promise<RPCResponse | RPCErrorNew> {
+): Promise<RPCResponse | RPCError> {
   const network = 'testnet'
 
   if (request.params.length != 2) {

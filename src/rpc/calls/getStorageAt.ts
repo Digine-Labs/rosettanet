@@ -1,4 +1,4 @@
-import { RPCErrorNew, RPCRequest, RPCResponse } from '../../types/types'
+import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { hexPadding } from '../../utils/padding'
 import { validateEthAddress } from '../../utils/validations'
@@ -8,7 +8,7 @@ const ETH_GET_STORAGE_AT_RESULT_LENGTH = 64
 
 export async function getStorageAtHandler(
   request: RPCRequest,
-): Promise<RPCResponse | RPCErrorNew> {
+): Promise<RPCResponse | RPCError> {
   // TODO: dynamic network from env?
   const network = 'testnet'
   const method = 'starknet_getStorageAt'

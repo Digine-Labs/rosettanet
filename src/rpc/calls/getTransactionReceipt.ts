@@ -1,10 +1,10 @@
-import { RPCErrorNew, RPCRequest, RPCResponse } from '../../types/types'
+import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { getEthAddressFromSnAddress } from '../../utils/wrapper'
 
 export async function getTransactionReceiptHandler(
   request: RPCRequest,
-): Promise<RPCResponse | RPCErrorNew> {
+): Promise<RPCResponse | RPCError> {
   // TODO: dynamic network from env?
 
   if (request.params.length == 0) {

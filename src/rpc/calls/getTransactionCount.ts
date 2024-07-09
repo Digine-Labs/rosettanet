@@ -1,11 +1,11 @@
-import { RPCErrorNew, RPCRequest, RPCResponse } from '../../types/types'
+import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateEthAddress } from '../../utils/validations'
 import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 
 export async function getTransactionCountHandler(
   request: RPCRequest,
-): Promise<RPCResponse | RPCErrorNew> {
+): Promise<RPCResponse | RPCError> {
   const network = 'mainnet'
   const method = 'starknet_getNonce'
 

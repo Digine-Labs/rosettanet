@@ -1,5 +1,5 @@
 import { getTransactionsByHashHandler } from '../../../src/rpc/calls/getTransactionByHash'
-import { RPCResponse, RPCErrorNew } from '../../../src/types/types'
+import { RPCResponse, RPCError } from '../../../src/types/types'
 
 describe('Test getTransactionByHash', () => {
   it('Returns transaction details for a valid request', async () => {
@@ -51,7 +51,7 @@ describe('Test getTransactionByHash', () => {
       id: 0,
     }
 
-    const starkResult: RPCErrorNew = <RPCErrorNew>(
+    const starkResult: RPCError = <RPCError>(
       await getTransactionsByHashHandler(request)
     )
     expect(starkResult).toMatchObject({
@@ -76,7 +76,7 @@ describe('Test getTransactionByHash', () => {
       id: 0,
     }
 
-    const starkResult: RPCErrorNew = <RPCErrorNew>(
+    const starkResult: RPCError = <RPCError>(
       await getTransactionsByHashHandler(request)
     )
     expect(starkResult).toMatchObject({

@@ -1,5 +1,5 @@
 import { getTransactionsByBlockHashAndIndexHandler } from '../../../src/rpc/calls/getTransactionByBlockHashAndIndex'
-import { RPCResponse, RPCErrorNew } from '../../../src/types/types'
+import { RPCResponse, RPCError } from '../../../src/types/types'
 
 describe('Test getTransactionsByBlockHashAndIndexHandler', () => {
   it('Returns transaction details for a valid request', async () => {
@@ -54,7 +54,7 @@ describe('Test getTransactionsByBlockHashAndIndexHandler', () => {
       id: 0,
     }
 
-    const starkResult: RPCErrorNew = <RPCErrorNew>(
+    const starkResult: RPCError = <RPCError>(
       await getTransactionsByBlockHashAndIndexHandler(request)
     )
     expect(starkResult).toMatchObject({
@@ -78,7 +78,7 @@ describe('Test getTransactionsByBlockHashAndIndexHandler', () => {
       id: 0,
     }
 
-    const starkResult: RPCErrorNew = <RPCErrorNew>(
+    const starkResult: RPCError = <RPCError>(
       await getTransactionsByBlockHashAndIndexHandler(request)
     )
     expect(starkResult).toMatchObject({

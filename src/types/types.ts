@@ -12,12 +12,6 @@ export interface RPCRequest {
 }
 
 export interface RPCError {
-  code: number
-  message: string
-  data?: string
-}
-
-export interface RPCErrorNew {
   id: number
   jsonrpc: string
   error: {
@@ -42,10 +36,9 @@ export interface RPCResponse {
     | Array<string | number | boolean | object>
 }
 
-// TODO: Change RPCError to RPCErrorNew before push or after fixed all rpc calls
 export interface ResponseHandler {
   method: string
-  handler(request?: RPCRequest | undefined): Promise<RPCResponse | RPCErrorNew>
+  handler(request?: RPCRequest | undefined): Promise<RPCResponse | RPCError>
 }
 
 export interface StarknetType {
