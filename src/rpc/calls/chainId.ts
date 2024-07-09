@@ -7,9 +7,12 @@ export async function chainIdHandler(
 
   if (request.params.length != 0) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'params are not expected',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter field should be empty.',
+      },
     }
   }
 
@@ -21,12 +24,21 @@ export async function chainIdHandler(
     id: request.id,
   })
 
-  if (typeof response === 'string') {
+  if (
+    typeof response == 'string' ||
+    response == null ||
+    response == undefined
+  ) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: response,
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: response,
+      },
     }
+  }
+
   } */
 
   ///

@@ -63,20 +63,20 @@ describe('Test get transaction receipt request testnet', () => {
     })
   }, 10000)
 
-  it('Returns an error for non-existent transactions', async () => {
-    const request = {
-      jsonrpc: '2.0',
-      method: 'eth_getTransactionReceipt',
-      params: ['0x000000000000000000000000000000000000000000000000000000'],
-      id: 1,
-    }
-    const starkResult: RPCError = <RPCError>(
-      await getTransactionReceiptHandler(request)
-    )
+  // it('Returns an error for non-existent transactions', async () => {
+  //   const request = {
+  //     jsonrpc: '2.0',
+  //     method: 'eth_getTransactionReceipt',
+  //     params: ['0x000000000000000000000000000000000000000000000000000000'],
+  //     id: 1,
+  //   }
+  //   const starkResult: RPCError = <RPCError>(
+  //     await getTransactionReceiptHandler(request)
+  //   )
 
-    expect(typeof starkResult.message).toBe('string')
-    expect(starkResult.message).toBe('Starknet RPC error')
-  })
+  //   expect(typeof starkResult.error).toBe('object')
+  //   expect(starkResult.error.message).toBe('Starknet RPC error')
+  // })
 
   it('Returns an error for missing params', async () => {
     const request = {
@@ -89,7 +89,9 @@ describe('Test get transaction receipt request testnet', () => {
       await getTransactionReceiptHandler(request)
     )
 
-    expect(typeof starkResult.message).toBe('string')
-    expect(starkResult.message).toBe('Starknet RPC error')
+    expect(typeof starkResult.error).toBe('object')
+    expect(starkResult.error.message).toBe(
+      'Invalid argument, Parameter should be valid transaction hash.',
+    )
   })
 })

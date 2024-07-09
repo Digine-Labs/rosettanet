@@ -1,5 +1,5 @@
 import { Response, NextFunction } from 'express'
-import { RPCError, ParsedRequest } from '../types/types'
+import { ParsedRequest, RPCError } from '../types/types'
 
 export function parseRequest(
   req: ParsedRequest,
@@ -14,10 +14,14 @@ export function parseRequest(
     return
   }
   const error: RPCError = {
-    code: 7979,
-    message: 'Bad request format',
-    data: '405 Not Allowed',
+    jsonrpc: req.body.jsonrpc,
+    id: req.body.id,
+    error: {
+      code: 405,
+      message: 'Bad request format, 405 Not Allowed',
+    },
   }
+
   revertWithError(res, 405, error)
 }
 

@@ -43,9 +43,12 @@ describe('Test getCodeHandler', () => {
     const starknetRes: RPCResponse = <RPCResponse>await getCodeHandler(request)
 
     expect(starknetRes).toMatchObject({
-      jsonrpc: '2.0',
-      id: 0,
-      result: undefined,
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Invalid block number.',
+      },
     })
   })
 
@@ -60,9 +63,13 @@ describe('Test getCodeHandler', () => {
     const starknetRes: RPCResponse = <RPCResponse>await getCodeHandler(request)
 
     expect(starknetRes).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'invalid eth address',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, Parameter[0] should be a valid Ethereum Address.',
+      },
     })
   })
 })

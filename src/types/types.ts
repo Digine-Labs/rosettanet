@@ -12,9 +12,12 @@ export interface RPCRequest {
 }
 
 export interface RPCError {
-  code: number
-  message: string
-  data?: string
+  id: number
+  jsonrpc: string
+  error: {
+    code: number
+    message: string
+  }
 }
 
 export interface RPCResponse {

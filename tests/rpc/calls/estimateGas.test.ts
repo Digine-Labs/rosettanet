@@ -19,6 +19,13 @@ describe('test ethereum transfer function estimated gas', () => {
 
     expect(typeof result).toBe('object')
     expect(typeof result.result).toBe('object')
+    expect(result.result).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          gas_consumed: '0x686',
+        }),
+      ]),
+    )
     // expect(result).toMatchObject({
     //   id: 1,
     //   jsonrpc: '2.0',
@@ -51,9 +58,12 @@ describe('test failure ethereum transferFrom function estimated gas ', () => {
 
     expect(typeof result).toBe('object')
     expect(result).toMatchObject({
-      jsonrpc: '2.0',
-      id: 1,
-      data: 'Transaction Execution Error',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32003,
+        message: 'Transaction rejected',
+      },
       result: '0x28ed6103d0000',
     })
   }, 20000)

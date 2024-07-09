@@ -12,9 +12,12 @@ export async function getBlockTransactionCountByNumberHandler(
   // Validate request parameters
   if (request.params.length == 0) {
     return {
-      code: 7979,
-      message: 'Starknet RPC Error',
-      data: 'Params should not be empty',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter should be valid block number.',
+      },
     }
   }
 
@@ -22,9 +25,36 @@ export async function getBlockTransactionCountByNumberHandler(
 
   if (!validateBlockNumber(blockNumber)) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid block number',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter should be valid block number.',
+      },
+    }
+  }
+
+  const currentLiveBlockNumber = await callStarknet(network, {
+    jsonrpc: request.jsonrpc,
+    method: 'starknet_blockNumber',
+    params: [],
+    id: request.id,
+  })
+
+  if (
+    typeof currentLiveBlockNumber !== 'string' &&
+    typeof currentLiveBlockNumber.result === 'number'
+  ) {
+    if (blockNumber > currentLiveBlockNumber.result) {
+      return {
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: -32602,
+          message:
+            'Invalid argument, Parameter "block_number" can not be higher than current live block number of network.',
+        },
+      }
     }
   }
 
@@ -39,18 +69,18 @@ export async function getBlockTransactionCountByNumberHandler(
     id: request.id,
   })
 
-  if (!response || typeof response === 'string') {
+  if (
+    typeof response === 'string' ||
+    response === null ||
+    response === undefined
+  ) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: response,
-    }
-  }
-  if ('error' in response) {
-    return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: response.error as string,
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: response,
+      },
     }
   }
 

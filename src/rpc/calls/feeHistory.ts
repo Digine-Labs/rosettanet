@@ -9,25 +9,35 @@ export async function feeHistoryHandler(
 
   if (blockCount === undefined || newestBlock === undefined) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'params[0] and params[1] required',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter lenght should be 2.',
+      },
     }
   } // Validate block count
 
   if (blockCount < 1 || blockCount > 1024) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'blockCount out of range. Expected range is between 1 and 1024',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, blockCount out of range. Expected range is between 1 and 1024.',
+      },
     }
   } // Validate block number
 
   if (!validateBlockNumber(newestBlock)) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid block number',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Invalid block number.',
+      },
     }
   }
 

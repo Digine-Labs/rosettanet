@@ -14,7 +14,7 @@ Tests:
 - [x] Finished
 - [ ] Not Finished
 
-**Why (if not finished) :** Not supported in Starknet returning static object. Error codes needs to changed to Infura's.
+**Why (if not finished) :** Not supported in Starknet returning static object.
 
 ## eth_blobBaseFee
 
@@ -46,7 +46,7 @@ Tests:
 - [ ] Finished
 - [x] Not Finished
 
-**Why (if not finished) :** Tests needs improvement. Error codes needs to changed to Infura's.
+**Why (if not finished) :** Tests needs improvement.
 
 ## eth_call
 
@@ -62,7 +62,7 @@ Tests:
 - [ ] Finished
 - [x] Not Finished
 
-**Why (if not finished) :** Basic types done. Need improvement for custom structs. Tests need improvement. Error codes needs to changed to Infura's.
+**Why (if not finished) :** Basic types done. Need improvement for custom structs. Tests need improvement.
 
 ## eth_chainId
 
@@ -78,7 +78,7 @@ Tests:
 - [ ] Finished
 - [x] Not Finished
 
-**Why (if not finished) :** Tests need improvement. Error codes needs to changed to Infura's.
+**Why (if not finished) :** Tests need improvement.
 
 ## eth_createAccessList
 
@@ -110,7 +110,7 @@ Tests:
 - [ ] Finished
 - [x] Not Finished
 
-**Why (if not finished) :** Basic types done. Need improvement for custom structs. Tests need improvement. Error codes needs to changed to Infura's.
+**Why (if not finished) :** Basic types done. Need improvement for custom structs. Tests need improvement.
 
 ## eth_feeHistory
 
@@ -126,7 +126,7 @@ Tests:
 - [ ] Finished
 - [ ] Not Finished
 
-**Why (if not finished) :** Error codes needs to changed to Infura's. Returns static object.
+**Why (if not finished) :** Returns static object.
 
 ## eth_gasPrice
 
@@ -158,7 +158,7 @@ Tests:
 - [ ] Finished
 - [ ] Not Finished
 
-**Why (if not finished) :** Gives only STRK balance. Error codes needs to changed to Infura's. Dynamic network check.
+**Why (if not finished) :** Gives only STRK balance. Dynamic network check.
 
 ## eth_getBlockByHash
 
@@ -174,7 +174,7 @@ Tests:
 - [x] Finished
 - [ ] Not Finished
 
-**Why (if not finished) :** Dynamic network. Error codes needs to changed to Infura's.
+**Why (if not finished) :** Dynamic network.
 
 ## eth_getBlockByNumber
 
@@ -190,7 +190,7 @@ Tests:
 - [x] Finished
 - [ ] Not Finished
 
-**Why (if not finished) :** Dynamic network. Error codes needs to changed to Infura's.
+**Why (if not finished) :** Dynamic network.
 
 ## eth_getBlockReceipts
 
@@ -222,7 +222,7 @@ Tests:
 - [x] Finished
 - [ ] Not Finished
 
-**Why (if not finished) :** Dynamic network. Error codes needs to changed to Infura's.
+**Why (if not finished) :** Dynamic network.
 
 ## eth_getBlockTransactionCountByNumber
 
@@ -238,7 +238,7 @@ Tests:
 - [x] Finished
 - [ ] Not Finished
 
-**Why (if not finished) :** Dynamic network. Error codes needs to changed to Infura's.
+**Why (if not finished) :** Dynamic network.
 
 ## eth_getCode
 
@@ -254,7 +254,7 @@ Tests:
 - [ ] Finished
 - [x] Not Finished
 
-**Why (if not finished) :** Dynamic network. Error codes needs to changed to Infura's. Tests needs improvement.
+**Why (if not finished) :** Dynamic network. Tests needs improvement.
 
 ## eth_getLogs
 
@@ -302,7 +302,7 @@ Tests:
 - [ ] Finished
 - [x] Not Finished
 
-**Why (if not finished) :** Dynamic network. Error codes needs to changed to Infura's. Tests needs improvement.
+**Why (if not finished) :** Dynamic network. Tests needs improvement.
 
 ## eth_getTransactionByBlockHashAndIndex
 
@@ -318,7 +318,7 @@ Tests:
 - [ ] Finished
 - [x] Not Finished
 
-**Why (if not finished) :** Dynamic network. Error codes needs to changed to Infura's. Tests needs improvement.
+**Why (if not finished) :** Dynamic network. Tests needs improvement.
 
 ## eth_getTransactionByBlockNumberAndIndex
 
@@ -334,7 +334,7 @@ Tests:
 - [ ] Finished
 - [x] Not Finished
 
-**Why (if not finished) :** Dynamic network. Error codes needs to changed to Infura's. Tests needs improvement.
+**Why (if not finished) :** Dynamic network. Tests needs improvement.
 
 ## eth_getTransactionByHash
 
@@ -350,7 +350,7 @@ Tests:
 - [ ] Finished
 - [x] Not Finished
 
-**Why (if not finished) :** Dynamic network. Error codes needs to changed to Infura's. Tests needs improvement.
+**Why (if not finished) :** Dynamic network. Tests needs improvement.
 
 ## eth_getTransactionCount
 
@@ -366,7 +366,7 @@ Tests:
 - [ ] Finished
 - [x] Not Finished
 
-**Why (if not finished) :** Dynamic network. Error codes needs to changed to Infura's. Tests needs improvement.
+**Why (if not finished) :** Dynamic network. Tests needs improvement.
 
 ## eth_getTransactionReceipt
 
@@ -382,7 +382,7 @@ Tests:
 - [ ] Finished
 - [x] Not Finished
 
-**Why (if not finished) :** Dynamic network. Error codes needs to changed to Infura's. Tests needs improvement.
+**Why (if not finished) :** Do not takes eth transaction hash with request, takes Starknet transaction hash. Needs improvement. Dynamic network. Tests needs improvement.
 
 ## eth_getUncleByBlockHashAndIndex
 
@@ -494,7 +494,7 @@ Tests:
 - [ ] Finished
 - [ ] Not Finished
 
-**Why (if not finished) :** Not supported in Starknet returning static object. Error codes needs to changed to Infura's.
+**Why (if not finished) :** Not supported in Starknet returning static object.
 
 ## eth_mining
 
@@ -606,7 +606,7 @@ Tests:
 - [ ] Finished
 - [x] Not Finished
 
-**Why (if not finished) :** Dynamic network. Error codes needs to changed to Infura's. Tests needs improvement.
+**Why (if not finished) :** Dynamic network. Tests needs improvement.
 
 ## eth_getFilterChanges
 
@@ -654,7 +654,7 @@ Tests:
 - [ ] Finished
 - [ ] Not Finished
 
-**Why (if not finished) :** Dynamic network. Error codes needs to changed to Infura's. Tests needs improvement.
+**Why (if not finished) :** Dynamic network. Tests needs improvement.
 
 ## eth_newFilter
 

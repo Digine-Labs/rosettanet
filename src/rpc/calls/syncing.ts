@@ -9,9 +9,12 @@ export async function ethSyncingHandler(
 
   if (request.params.length != 0) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'params are not expected',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter should length 0.',
+      },
     }
   }
 
@@ -22,11 +25,18 @@ export async function ethSyncingHandler(
     id: request.id,
   })
 
-  if (!response || typeof response === 'string') {
+  if (
+    typeof response == 'string' ||
+    response == null ||
+    response == undefined
+  ) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: response || 'No response from StarkNet',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: response,
+      },
     }
   }
 
