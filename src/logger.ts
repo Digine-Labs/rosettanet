@@ -50,7 +50,7 @@ export function writeLog(severity: number, text: string) {
   }
 
   let logFormat = 'text'
-  if(startArguments.indexOf('--log-json') > -1) {
+  if (startArguments.indexOf('--log-json') > -1) {
     logFormat = 'json'
   }
 
@@ -65,23 +65,23 @@ function appendLog(
   severity: number,
   text: string,
 ) {
-  const now = new Date();
+  const now = new Date()
 
   let logMessage: string = `${now.toLocaleDateString()} ${now.toTimeString().split(' ')[0]} [${getSeverityString(severity)}] ${text}`
-  if(logFormat === 'json') {
+  if (logFormat === 'json') {
     try {
       logMessage = JSON.stringify({
         date: now.toLocaleDateString(),
         time: now.toTimeString().split(' ')[0],
         severity: getSeverityString(severity),
-        message: JSON.parse(text)
+        message: JSON.parse(text),
       })
     } catch (error) {
       logMessage = JSON.stringify({
         date: now.toLocaleDateString(),
         time: now.toTimeString().split(' ')[0],
         severity: getSeverityString(severity),
-        message:text
+        message: text,
       })
     }
   }
