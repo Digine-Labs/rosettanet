@@ -28,7 +28,7 @@ describe('Test Eth call request testnet', () => {
     expect(result.result).toBe(
       '0x000000000000000000000000000000000000000000000000016345785d8a0000',
     )
-  })
+  }, 50000)
 
   it('Calls non parameter function', async () => {
     const request = {

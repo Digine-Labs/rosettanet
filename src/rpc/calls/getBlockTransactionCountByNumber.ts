@@ -1,7 +1,6 @@
 import { RPCErrorNew, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateBlockNumber } from '../../utils/validations'
-import { blockNumberHandler } from './blockNumber'
 
 export async function getBlockTransactionCountByNumberHandler(
   request: RPCRequest,
