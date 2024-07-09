@@ -49,17 +49,42 @@ export function writeLog(severity: number, text: string) {
     logFile = startArguments[logFileIndex + 1]
   }
 
-  appendLog(loggingType, logFile, severity, text)
+  let logFormat = 'text'
+  if (startArguments.indexOf('--log-json') > -1) {
+    logFormat = 'json'
+  }
+
+  appendLog(loggingType, logFile, logFormat, severity, text)
   return
 }
 
 function appendLog(
   logType: string,
   logFile: string,
+  logFormat: string,
   severity: number,
   text: string,
 ) {
-  const logMessage: string = `[${getSeverityString(severity)}] ${text}`
+  const now = new Date()
+
+  let logMessage: string = `${now.toLocaleDateString()} ${now.toTimeString().split(' ')[0]} [${getSeverityString(severity)}] ${text}`
+  if (logFormat === 'json') {
+    try {
+      logMessage = JSON.stringify({
+        date: now.toLocaleDateString(),
+        time: now.toTimeString().split(' ')[0],
+        severity: getSeverityString(severity),
+        message: JSON.parse(text),
+      })
+    } catch (error) {
+      logMessage = JSON.stringify({
+        date: now.toLocaleDateString(),
+        time: now.toTimeString().split(' ')[0],
+        severity: getSeverityString(severity),
+        message: text,
+      })
+    }
+  }
   if (logType === 'console') {
     // eslint-disable-next-line no-console
     console.log(logMessage)
