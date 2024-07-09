@@ -22,6 +22,7 @@ export async function getBlockByNumberHandler(
 
   // Validate the block hash
   if (!validateBlockNumber(blockNumber)) {
+    // TODO: check validation
     return {
       code: 7979,
       message: 'Starknet RPC error',
