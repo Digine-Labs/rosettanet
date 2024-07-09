@@ -36,6 +36,30 @@ export async function getBlockByNumberHandler(
     }
   }
 
+  const currentLiveBlockNumber = await callStarknet(network, {
+    jsonrpc: request.jsonrpc,
+    method: 'starknet_blockNumber',
+    params: [],
+    id: request.id,
+  })
+
+  if (
+    typeof currentLiveBlockNumber !== 'string' &&
+    typeof currentLiveBlockNumber.result === 'number'
+  ) {
+    if (parseInt(blockNumber, 16) > currentLiveBlockNumber.result) {
+      return {
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: -32602,
+          message:
+            'Invalid argument, Parameter "block_number" can not be higher than current live block number of network.',
+        },
+      }
+    }
+  }
+
   // Get the boolean parameter and check its type
   const isFullTxObjectRequested = request.params[1]
 

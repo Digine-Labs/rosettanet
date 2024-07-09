@@ -35,6 +35,30 @@ export async function getTransactionsByBlockNumberAndIndexHandler(
     }
   }
 
+  const currentLiveBlockNumber = await callStarknet(network, {
+    jsonrpc: request.jsonrpc,
+    method: 'starknet_blockNumber',
+    params: [],
+    id: request.id,
+  })
+
+  if (
+    typeof currentLiveBlockNumber !== 'string' &&
+    typeof currentLiveBlockNumber.result === 'number'
+  ) {
+    if (parseInt(blockNumber, 16) > currentLiveBlockNumber.result) {
+      return {
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: -32602,
+          message:
+            'Invalid argument, Parameter "block_number" can not be higher than current live block number of network.',
+        },
+      }
+    }
+  }
+
   const params = isHexString(blockNumber)
     ? [{ block_number: parseInt(blockNumber, 16) }]
     : [{ block_number: blockNumber }]

@@ -10,6 +10,7 @@ import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 export async function getCodeHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
+  const network = 'testnet'
   if (request.params.length != 2) {
     return {
       jsonrpc: request.jsonrpc,
@@ -47,6 +48,30 @@ export async function getCodeHandler(
     }
   }
 
+  const currentLiveBlockNumber = await callStarknet(network, {
+    jsonrpc: request.jsonrpc,
+    method: 'starknet_blockNumber',
+    params: [],
+    id: request.id,
+  })
+
+  if (
+    typeof currentLiveBlockNumber !== 'string' &&
+    typeof currentLiveBlockNumber.result === 'number'
+  ) {
+    if (parseInt(blockNumber, 16) > currentLiveBlockNumber.result) {
+      return {
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: -32602,
+          message:
+            'Invalid argument, Parameter "block_number" can not be higher than current live block number of network.',
+        },
+      }
+    }
+  }
+
   const snAddress = await getSnAddressFromEthAddress(ethAddress)
 
   if (snAddress === '0x0') {
@@ -62,7 +87,7 @@ export async function getCodeHandler(
   const params = isHexString(blockNumber)
     ? [{ block_number: parseInt(blockNumber, 16) }, snAddress]
     : [{ block_number: blockNumber }, snAddress]
-  const response: RPCResponse | string = await callStarknet('testnet', {
+  const response: RPCResponse | string = await callStarknet(network, {
     jsonrpc: request.jsonrpc,
     method: 'starknet_getClassHashAt',
     params: params,
