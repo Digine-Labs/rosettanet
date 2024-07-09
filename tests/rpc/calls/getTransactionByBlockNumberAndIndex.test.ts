@@ -105,7 +105,7 @@ describe('Test getTransactionByBlockNumberAndIndex', () => {
     })
   })
 
-  it('Returns error if block number is non-existent', async () => {
+  it('Returns error if block number is higher than current live block number of network', async () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getTransactionsByBlockNumberAndIndex',
@@ -119,8 +119,9 @@ describe('Test getTransactionByBlockNumberAndIndex', () => {
       jsonrpc: request.jsonrpc,
       id: request.id,
       error: {
-        code: -32002,
-        message: 'Resource unavailable, Empty result body.',
+        code: -32602,
+        message:
+          'Invalid argument, Parameter "block_number" can not be higher than current live block number of network.',
       },
     })
   })
