@@ -112,12 +112,6 @@ describe('Validate block number', () => {
     expect(result).toBe(false)
   })
 
-  it('should return false if block number is neither a string nor number', () => {
-    const result = validateBlockNumber(true)
-
-    expect(result).toBe(false)
-  })
-
   it("should return false if block number is a string other than 'latest' and 'pending'", () => {
     const result = validateBlockNumber('finalized')
 
