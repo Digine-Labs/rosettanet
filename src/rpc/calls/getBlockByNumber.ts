@@ -1,7 +1,7 @@
+import { isHexString } from 'ethers'
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateBlockNumber } from '../../utils/validations'
-
 export async function getBlockByNumberHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
@@ -11,22 +11,20 @@ export async function getBlockByNumberHandler(
   // Check params' length
   if (request.params.length != 2) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'two params are expected',
+      code: -32000,
+      message: 'Invalid input',
     }
   }
 
-  // Get the block hash
-  const blockNumber = request.params[0] as string | number
+  // Get the block number
+  const blockNumber = request.params[0] as string
 
   // Validate the block hash
   if (!validateBlockNumber(blockNumber)) {
     // TODO: check validation
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid block number',
+      code: -32602,
+      message: 'Invalid argument for block number',
     }
   }
 
@@ -35,16 +33,16 @@ export async function getBlockByNumberHandler(
 
   if (typeof isFullTxObjectRequested != 'boolean') {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid parameter type at index 1. Expected a boolean',
+      code: -32000,
+      message: 'Invalid input',
     }
   }
 
+  
   const params =
-    typeof blockNumber === 'string'
-      ? [blockNumber]
-      : [{ block_number: blockNumber }]
+      isHexString(blockNumber)
+      ? [{ block_number: parseInt(blockNumber, 16) }]
+      : [blockNumber]
 
   if (isFullTxObjectRequested == true) {
     const method = 'starknet_getBlockWithTxs'
