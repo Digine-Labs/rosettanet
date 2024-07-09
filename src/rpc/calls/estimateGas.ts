@@ -35,7 +35,6 @@ interface ParameterObject {
 export async function estimateGasHandler(
   call: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  const network = 'testnet'
   const method = 'starknet_estimateFee'
 
   const parameters: ParameterObject = call.params[0] as ParameterObject
@@ -78,23 +77,6 @@ export async function estimateGasHandler(
     }
   }
 
-  const getSnNonce: RPCResponse | string = await callStarknet(network, {
-    jsonrpc: call.jsonrpc,
-    method: 'starknet_getNonce',
-    params: ['latest', snFromAddress],
-    id: call.id,
-  })
-
-  if (typeof getSnNonce === 'string') {
-    return {
-      code: 7979,
-      message: 'Starknet RPC error, getNonce',
-      data: getSnNonce,
-    }
-  }
-
-  const snNonce = getSnNonce.result
-
   //  1) For calculating only native token transfer fee
 
   if (
@@ -102,7 +84,24 @@ export async function estimateGasHandler(
     parameters.value.length > 0 &&
     parameters.data == '0x'
   ) {
-    const response: RPCResponse | string = await callStarknet(network, {
+    const getSnNonce: RPCResponse | string = await callStarknet('testnet', {
+      jsonrpc: call.jsonrpc,
+      method: 'starknet_getNonce',
+      params: ['latest', snFromAddress],
+      id: call.id,
+    })
+
+    if (typeof getSnNonce === 'string') {
+      return {
+        code: 7979,
+        message: 'Starknet RPC error, getNonce',
+        data: getSnNonce,
+      }
+    }
+
+    const snNonce = getSnNonce.result
+
+    const response: RPCResponse | string = await callStarknet('testnet', {
       jsonrpc: call.jsonrpc,
       method: method,
       params: {
@@ -161,6 +160,23 @@ export async function estimateGasHandler(
       result: response.result,
     }
   } else {
+    const getSnNonce: RPCResponse | string = await callStarknet('mainnet', {
+      jsonrpc: call.jsonrpc,
+      method: 'starknet_getNonce',
+      params: ['latest', snFromAddress],
+      id: call.id,
+    })
+
+    if (typeof getSnNonce === 'string') {
+      return {
+        code: 7979,
+        message: 'Starknet RPC error, getNonce',
+        data: getSnNonce,
+      }
+    }
+
+    const snNonce = getSnNonce.result
+
     //  2) For calculating requests with "data"
     //  Read function selector & match with starknet contract function
     //    1) First get eth function signature
@@ -250,7 +266,7 @@ export async function estimateGasHandler(
 
     //version 1
 
-    const response: RPCResponse | string = await callStarknet(network, {
+    const response: RPCResponse | string = await callStarknet('mainnet', {
       jsonrpc: call.jsonrpc,
       method: method,
       params: {
