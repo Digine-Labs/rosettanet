@@ -29,4 +29,27 @@ describe('Test Eth call request testnet', () => {
       '0x000000000000000000000000000000000000000000000000016345785d8a0000',
     )
   })
+
+  it('Calls non parameter function', async () => {
+    const request = {
+      jsonrpc: '2.0',
+      method: 'eth_call',
+      params: [
+        {
+          from: '',
+          to: '0xd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
+          gas: '',
+          gasPrice: '',
+          value: '',
+          data: '0x313ce567', // decimals
+        },
+        'latest',
+      ],
+      id: 1,
+    }
+    const result: RPCResponse = <RPCResponse>await ethCallHandler(request)
+    expect(result.result).toBe(
+      '0x0000000000000000000000000000000000000000000000000000000000000012',
+    )
+  })
 })

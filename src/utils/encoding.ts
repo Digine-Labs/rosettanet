@@ -4,26 +4,50 @@ import {
   EthereumTransaction,
 } from '../types/transactions.types'
 
+// Legacy -> No type 0x0
+//    (nonce, gasprice, startgas, to, value, data, chainid, 0, 0)
+// EIP2930 -> 0X1
+//    0x01 || rlp([chainId, nonce, gasPrice, gasLimit, to, value, data, accessList, signatureYParity, signatureR, signatureS])
+// EIP1559 -> 0X2
+//    0x02 || rlp([chain_id, nonce, max_priority_fee_per_gas, max_fee_per_gas, gas_limit, destination, amount, data, access_list, signature_y_parity, signature_r, signature_s])
+
 export function decodeSignedRawTransaction(tx: string): EthereumTransaction {
   // 1) Check is tx valid
   // 2) Find transaction type (legacy, eip1559 or any other supported)
   // 3) return object
   const decoded = ethers.Transaction.from(tx)
 
+  if (
+    typeof decoded.nonce !== 'number' ||
+    typeof decoded.chainId === 'undefined' ||
+    typeof decoded.to !== 'string' ||
+    (typeof decoded.gasPrice === 'undefined' &&
+      typeof decoded.maxFeePerGas === 'undefined') ||
+    typeof decoded.gasLimit === 'undefined' ||
+    typeof decoded.value === 'undefined' ||
+    typeof decoded.data !== 'string'
+  ) {
+    throw 'transaction type wrong'
+  }
+
+  // All supported type of transactions must have: (nonce, chainid, to, (gasPrice or max fee per gas), gaslimit?, value, data)
   // First check all properties without signature
-  if (typeof decoded.typeName != 'string' || typeof decoded.hash != 'string') {
-    throw 'Hash or typeName non-exist'
+  if (
+    typeof decoded.typeName !== 'string' ||
+    typeof decoded.hash !== 'string'
+  ) {
+    throw 'hash or typeName non-exist'
   }
 
   if (
-    typeof decoded.from != 'string' ||
-    typeof decoded.fromPublicKey != 'string'
+    typeof decoded.from !== 'string' ||
+    typeof decoded.fromPublicKey !== 'string'
   ) {
     // This means tx is not signed
     throw 'from or fromPublicKey non-exist'
   }
 
-  if (typeof decoded.to != 'string') {
+  if (typeof decoded.to !== 'string') {
     // This means init tx
     throw 'init transaction not supported'
   }
@@ -43,7 +67,7 @@ export function decodeSignedRawTransaction(tx: string): EthereumTransaction {
             The value you need to pass into ecrecover in solidity is (27 + recoveryParam), 
             which is the same as the unspecified network (i.e. chain ID 0). 
             For other chain ID, v is ((35 + 2 * chainID) + recoveryParam).
-            */
+    */
     r: decoded.signature.r,
     s: decoded.signature.s,
     networkV: decoded.signature.networkV?.toString(),
@@ -64,8 +88,6 @@ export function decodeSignedRawTransaction(tx: string): EthereumTransaction {
     signature: signature,
     accessList: decoded.accessList ? decoded.accessList : [], // TODO: is that correct?
   }
-
-  // console.log(transaction)
 
   return transaction
 }

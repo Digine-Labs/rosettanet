@@ -43,11 +43,16 @@ export function validateBlockHash(blockHash: string): boolean {
   return true
 }
 
-export function validateBlockNumber(value: string | number | boolean): boolean {
+export function validateBlockNumber(value: string | number): boolean {
   if (typeof value === 'number') {
     return Number.isInteger(value as number) && value >= 0
   } else if (typeof value === 'string') {
-    return value === 'latest' || value === 'pending'
+    if (value === 'latest' || value === 'pending') {
+      return true
+    } else {
+      const hexValue = parseInt(value, 16)
+      return hexValue.toString(16) === value
+    }
   }
   return false
 }

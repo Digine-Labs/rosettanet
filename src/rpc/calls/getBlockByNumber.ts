@@ -25,6 +25,7 @@ export async function getBlockByNumberHandler(
 
   // Validate the block hash
   if (!validateBlockNumber(blockNumber)) {
+    // TODO: check validation
     return {
       jsonrpc: request.jsonrpc,
       id: request.id,

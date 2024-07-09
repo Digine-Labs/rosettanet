@@ -151,7 +151,16 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
     const handler: ResponseHandler | undefined = Methods.get(request.method)
     if (handler) {
       const result = await handler.handler(request)
-
+      if (isSnifferActive()) {
+        const logMsg = snifferOutput(request, result)
+        // TODO: improve error handling
+        // eslint-disable-next-line no-prototype-builtins
+        if (result.hasOwnProperty('code') && result.hasOwnProperty('message')) {
+          writeLog(1, logMsg)
+        } else {
+          writeLog(0, logMsg)
+        }
+      }
       res.send(result)
       return
     }

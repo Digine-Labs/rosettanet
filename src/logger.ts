@@ -19,6 +19,13 @@ export function writeLog(severity: number, text: string) {
     return
   }
 
+  // Logs only the severity higher
+  const minLogLevel = getMinimumSeverityLevel()
+
+  if (severity < minLogLevel) {
+    return
+  }
+
   let loggingType = 'console'
 
   if (startArguments.indexOf('--logging-type') > -1) {
@@ -79,4 +86,14 @@ function getSeverityString(severity: number) {
     default:
       throw `Unknown severity: ${severity}`
   }
+}
+
+function getMinimumSeverityLevel(): number {
+  const minLogIndex = process.argv.slice(2).indexOf('--min-log')
+
+  if (minLogIndex == 0) {
+    return 0
+  }
+
+  return Number(process.argv.slice(2)[minLogIndex + 1])
 }

@@ -16,7 +16,8 @@
     "start:file-logging": "npx nodemon --enable-logs --logging-type file --logging-file logs.md",
     "start:console-logging": "npx nodemon --enable-logs --logging-type console",
     "start:dev:console-sniff": "npx nodemon --enable-logs --logging-type console --sniffer",
-    "start:dev:file-sniff": "npx nodemon --enable-logs --logging-type file --logging-file sniffs.log --sniffer"
+    "start:dev:file-sniff": "npx nodemon --enable-logs --logging-type file --logging-file sniffs.log --sniffer",
+    "start:dev:console-error-sniffer": "npx nodemon --enable-logs --logging-type console --sniffer --min-log 1"
   },
   "keywords": [],
   "author": "",

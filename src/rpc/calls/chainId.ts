@@ -50,7 +50,7 @@ export async function chainIdHandler(
   const chainId = '0x534e534550'
   return {
     jsonrpc: '2.0',
-    id: 1,
+    id: request.id,
     result: chainId,
   }
 }

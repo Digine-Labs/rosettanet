@@ -80,7 +80,7 @@ export async function getCodeHandler(
       },
     }
   }
-
+  // TODO: Return 0x if rosetta account. otherwise transfer STRK on wallet will be problematic.
   return {
     jsonrpc: '2.0',
     id: request.id,
