@@ -1,3 +1,4 @@
+import { isHexString } from 'ethers'
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import {
@@ -58,11 +59,13 @@ export async function getCodeHandler(
       },
     }
   }
-
+  const params = isHexString(blockNumber)
+    ? [{ block_number: parseInt(blockNumber, 16) }, snAddress]
+    : [{ block_number: blockNumber }, snAddress]
   const response: RPCResponse | string = await callStarknet('testnet', {
     jsonrpc: request.jsonrpc,
     method: 'starknet_getClassHashAt',
-    params: [{ block_number: blockNumber }, snAddress],
+    params: params,
     id: request.id,
   })
 

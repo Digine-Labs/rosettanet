@@ -73,9 +73,17 @@ describe('Test Address validations', () => {
     const result = validateSnAddress('')
     expect(result).toBe(false)
   })
-  it('return true if block number is a valid number', async () => {
-    const result = validateBlockNumber(123)
+  it('return false if block number is a number but string', async () => {
+    const result = validateBlockNumber('123')
+    expect(result).toBe(false)
+  })
+  it('return true if block number is a hex number as string', async () => {
+    const result = validateBlockNumber('0x123')
     expect(result).toBe(true)
+  })
+  it('return false if block number is a number not string', async () => {
+    const result = validateBlockNumber(123)
+    expect(result).toBe(false)
   }),
     it('return false if block number is a negative number', async () => {
       const result = validateBlockNumber(-123)
@@ -88,10 +96,10 @@ describe('Test Address validations', () => {
 })
 
 describe('Validate block number', () => {
-  it('should return true if block number is a valid number', () => {
+  it('should return false if block number is a valid number', () => {
     const result = validateBlockNumber(999)
 
-    expect(result).toBe(true)
+    expect(result).toBe(false)
   })
 
   it("should return true if block number is the string 'latest'", () => {

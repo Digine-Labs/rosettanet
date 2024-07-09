@@ -1,3 +1,4 @@
+import { isHexString } from 'ethers'
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateBlockNumber } from '../../utils/validations'
@@ -19,7 +20,7 @@ export async function getTransactionsByBlockNumberAndIndexHandler(
   }
 
   // Extract block number and index from the request parameters
-  const blockNumber = request.params[0] as number
+  const blockNumber = request.params[0] as string // hex decimal string
   const index = parseInt(request.params[1] as string, 16) // Convert index from hex to integer
 
   // Validate block number
@@ -34,10 +35,9 @@ export async function getTransactionsByBlockNumberAndIndexHandler(
     }
   }
 
-  const params =
-    typeof blockNumber === 'string'
-      ? [blockNumber]
-      : [{ block_number: blockNumber }]
+  const params = isHexString(blockNumber)
+    ? [{ block_number: parseInt(blockNumber, 16) }]
+    : [{ block_number: blockNumber }]
 
   const response: RPCResponse | string = await callStarknet(network, {
     jsonrpc: request.jsonrpc,

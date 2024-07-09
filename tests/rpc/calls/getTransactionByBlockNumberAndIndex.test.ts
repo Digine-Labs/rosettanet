@@ -6,7 +6,7 @@ describe('Test getTransactionByBlockNumberAndIndex', () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getTransactionByBlockNumberAndIndex',
-      params: [15248, '0x03'],
+      params: ['0x3B90', '0x03'],
       id: 0,
     }
 
@@ -43,7 +43,7 @@ describe('Test getTransactionByBlockNumberAndIndex', () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getTransactionByBlockNumberAndIndex',
-      params: [-1, '0x03'],
+      params: ['-1', '0x03'],
       id: 0,
     }
 
@@ -66,7 +66,7 @@ describe('Test getTransactionByBlockNumberAndIndex', () => {
       jsonrpc: '2.0',
       method: 'eth_getTransactionByBlockNumberAndIndex',
       params: [
-        15248,
+        '15248',
         '0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ',
       ],
       id: 0,
@@ -80,8 +80,7 @@ describe('Test getTransactionByBlockNumberAndIndex', () => {
       id: request.id,
       error: {
         code: -32602,
-        message:
-          'Invalid argument, Transaction not found or index out of bounds.',
+        message: 'Invalid argument, Invalid block number.',
       },
     })
   })
@@ -110,7 +109,7 @@ describe('Test getTransactionByBlockNumberAndIndex', () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getTransactionsByBlockNumberAndIndex',
-      params: [1000000000000, '0x03'],
+      params: ['0x1000000000000', '0x03'],
       id: 1,
     }
     const response: RPCError = <RPCError>(
