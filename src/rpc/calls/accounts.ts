@@ -16,7 +16,7 @@ export async function accountsHandler(
 
   return {
     jsonrpc: '2.0',
-    id: 1,
+    id: request.id,
     result: [],
   }
 }
