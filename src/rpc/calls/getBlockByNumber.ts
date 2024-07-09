@@ -11,8 +11,12 @@ export async function getBlockByNumberHandler(
   // Check params' length
   if (request.params.length != 2) {
     return {
-      code: -32000,
-      message: 'Invalid input',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter lenght should be 2.',
+      },
     }
   }
 
@@ -23,8 +27,12 @@ export async function getBlockByNumberHandler(
   if (!validateBlockNumber(blockNumber)) {
     // TODO: check validation
     return {
-      code: -32602,
-      message: 'Invalid argument for block number',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Invalid block number.',
+      },
     }
   }
 
@@ -33,8 +41,13 @@ export async function getBlockByNumberHandler(
 
   if (typeof isFullTxObjectRequested != 'boolean') {
     return {
-      code: -32000,
-      message: 'Invalid input',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, Invalid parameter[1] type. Expected boolean',
+      },
     }
   }
 
@@ -59,9 +72,12 @@ export async function getBlockByNumberHandler(
       response == undefined
     ) {
       return {
-        code: 7979,
-        message: 'Starknet RPC Error',
-        data: response,
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: -32602,
+          message: response,
+        },
       }
     }
 
@@ -96,9 +112,12 @@ export async function getBlockByNumberHandler(
     ) {
       // Check if the block is accepted
       return {
-        code: 7979,
-        message: 'Starknet RPC error',
-        data: 'The block is not accepted',
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: -32002,
+          message: 'Resource unavailable, Block is not accepted yet.',
+        },
       }
     }
 
@@ -169,9 +188,12 @@ export async function getBlockByNumberHandler(
       response == undefined
     ) {
       return {
-        code: 7979,
-        message: 'Starknet RPC Error',
-        data: response,
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: -32602,
+          message: response,
+        },
       }
     }
 

@@ -12,9 +12,12 @@ export async function getBlockTransactionCountByHashHandler(
   // Validate request parameters
   if (request.params.length == 0) {
     return {
-      code: 7979,
-      message: 'Starknet RPC Error',
-      data: 'Params should not be empty',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter should be valid block hash.',
+      },
     }
   }
 
@@ -23,9 +26,12 @@ export async function getBlockTransactionCountByHashHandler(
   // Validate block hash
   if (!validateBlockHash(blockHash)) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid block hash',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter should be valid block hash.',
+      },
     }
   }
 
@@ -46,9 +52,12 @@ export async function getBlockTransactionCountByHashHandler(
     response === undefined
   ) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: response,
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: response,
+      },
     }
   }
 

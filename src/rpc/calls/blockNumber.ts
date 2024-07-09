@@ -11,19 +11,26 @@ export async function blockNumberHandler(
     id: request.id,
   })
 
-  if (typeof response === 'string') {
+  if (
+    typeof response == 'string' ||
+    response == null ||
+    response == undefined
+  ) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: response,
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: response,
+      },
     }
   }
 
   const hexBlockNumber = '0x' + response.result.toString(16)
 
   return {
-    jsonrpc: '2.0',
-    id: 1,
+    jsonrpc: request.jsonrpc,
+    id: request.id,
     result: hexBlockNumber,
   }
 }

@@ -5,11 +5,15 @@ export async function accountsHandler(
 ): Promise<RPCResponse | RPCError> {
   if (request.params.length != 0) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'params are not expected',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter field should be empty.',
+      },
     }
   }
+
   return {
     jsonrpc: '2.0',
     id: 1,

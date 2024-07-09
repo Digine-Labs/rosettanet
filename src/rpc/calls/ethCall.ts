@@ -42,9 +42,12 @@ export async function ethCallHandler(
 
   if (Array.isArray(request.params) && request.params.length != 2) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'params length must be 2',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter lenght should be 2.',
+      },
     }
   }
 
@@ -53,9 +56,12 @@ export async function ethCallHandler(
     typeof request.params[1] !== 'number'
   ) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'second param must be string',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Second parameter must be string',
+      },
     }
   }
 
@@ -66,9 +72,13 @@ export async function ethCallHandler(
     if (blockId !== 'latest' && blockId !== 'pending') {
       // TODO: Support earliest
       return {
-        code: 7979,
-        message: 'Starknet RPC error',
-        data: 'only pending and latest block id supported',
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: -32602,
+          message:
+            'Invalid argument, Only "pending" and "latest" block id supported',
+        },
       }
     }
   } */
@@ -79,9 +89,12 @@ export async function ethCallHandler(
     request.params[0] === null
   ) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'first parameter is not object',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, First parameter must be object',
+      },
     }
   }
 
@@ -90,9 +103,12 @@ export async function ethCallHandler(
 
   if (!isCallParameters(request.params[0])) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'to field is mandatory',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, "to" field is mandatory',
+      },
     }
   }
 
@@ -100,17 +116,23 @@ export async function ethCallHandler(
 
   if (!validateEthAddress(parameters.to)) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'to field is not valid eth address',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, "to" field is not valid Ethereum address',
+      },
     }
   }
 
   if (parameters.from && validateEthAddress(parameters.from)) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'from field is not valid eth address',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, "from" field is not valid Ethereum address',
+      },
     }
   }
 
@@ -131,12 +153,26 @@ export async function ethCallHandler(
 
   if (functionSelector === '0x0') {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'function call zero.',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Function selector is "0x0"',
+      },
     }
   }
   const starknetTarget: string = await getSnAddressFromEthAddress(parameters.to)
+
+  if (starknetTarget === '0x0') {
+    return {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Ethereum address is not in Lens Contract.',
+      },
+    }
+  }
 
   const starknetCallableMethods: Array<StarknetFunction> =
     await getContractsMethods(starknetTarget)
@@ -152,9 +188,12 @@ export async function ethCallHandler(
 
   if (typeof targetStarknetFunction === 'undefined') {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'target function not found',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Target Starknet Function is not found.',
+      },
     }
   }
 
@@ -195,11 +234,18 @@ export async function ethCallHandler(
     id: request.id,
   })
 
-  if (typeof snResponse === 'string') {
+  if (
+    typeof snResponse == 'string' ||
+    snResponse == null ||
+    snResponse == undefined
+  ) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: snResponse,
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: snResponse,
+      },
     }
   }
 
@@ -214,9 +260,12 @@ export async function ethCallHandler(
   if (typeof targetStarknetFunctionAsStarknetFunction === 'undefined') {
     // no way to here executed
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'target function not found',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Target Starknet Function is not found.',
+      },
     }
   }
 

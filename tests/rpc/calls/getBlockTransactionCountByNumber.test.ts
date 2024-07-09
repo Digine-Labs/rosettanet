@@ -39,9 +39,12 @@ describe('Test getBlockTransactionCountByNumber request testnet', () => {
       await getBlockTransactionCountByNumberHandler(request)
     )
     expect(response).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid block number',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter should be valid block number.',
+      },
     })
   })
   it('Error if no params', async () => {
@@ -55,9 +58,12 @@ describe('Test getBlockTransactionCountByNumber request testnet', () => {
       await getBlockTransactionCountByNumberHandler(request)
     )
     expect(response).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC Error',
-      data: 'Params should not be empty',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter should be valid block number.',
+      },
     })
   })
   it('Error if block number is empty string', async () => {
@@ -71,9 +77,12 @@ describe('Test getBlockTransactionCountByNumber request testnet', () => {
       await getBlockTransactionCountByNumberHandler(request)
     )
     expect(response).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid block number',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter should be valid block number.',
+      },
     })
   })
   it('Error if block number is non-existent', async () => {
@@ -87,19 +96,13 @@ describe('Test getBlockTransactionCountByNumber request testnet', () => {
       await getBlockTransactionCountByNumberHandler(request)
     )
     expect(response).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-
-      // RPC response when block not found is like this:
-      //   {
-      //     jsonrpc: '2.0',
-      //     error: { code: 24, message: 'Block not found' },
-      //     id: 1
-      //   }
-      data: Object.create({
-        code: 24,
-        message: 'Block not found',
-      }) as string,
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, Parameter "block_number" can not be higher than current live block number of network.',
+      },
     })
   })
 })

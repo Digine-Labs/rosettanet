@@ -58,9 +58,12 @@ describe('Test getTransactionsByBlockHashAndIndexHandler', () => {
       await getTransactionsByBlockHashAndIndexHandler(request)
     )
     expect(starkResult).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid block hash',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Invalid block hash.',
+      },
     })
   })
 
@@ -79,9 +82,12 @@ describe('Test getTransactionsByBlockHashAndIndexHandler', () => {
       await getTransactionsByBlockHashAndIndexHandler(request)
     )
     expect(starkResult).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Transaction index out of bounds',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Transaction index out of bounds.',
+      },
     })
   })
 })

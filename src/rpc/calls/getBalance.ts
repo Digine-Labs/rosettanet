@@ -17,22 +17,41 @@ export async function getBalanceHandler(
 
   if (request.params.length == 0) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'params should not be empty',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, Parameter should be a valid Ethereum Address.',
+      },
     }
   }
 
   const ethAddress = request.params[0] as string
   if (!validateEthAddress(ethAddress)) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'invalid eth address',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid argument, Parameter should be a valid Ethereum Address.',
+      },
     }
   }
 
   const snAddress = await getSnAddressFromEthAddress(ethAddress)
+
+  if (snAddress === '0x0') {
+    return {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Ethereum address is not in Lens contract.',
+      },
+    }
+  }
 
   const starknet_params = {
     jsonrpc: request.jsonrpc,
@@ -53,11 +72,18 @@ export async function getBalanceHandler(
     starknet_params,
   )
 
-  if (typeof response === 'string') {
+  if (
+    typeof response == 'string' ||
+    response == null ||
+    response == undefined
+  ) {
     return {
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: response,
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: response,
+      },
     }
   }
 

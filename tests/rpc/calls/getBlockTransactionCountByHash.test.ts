@@ -35,9 +35,38 @@ describe('Test get Block Count By Hash request testnet ', () => {
     )
 
     expect(response).toMatchObject({
-      code: 7979,
-      message: 'Starknet RPC error',
-      data: 'Invalid block hash',
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter should be valid block hash.',
+      },
+    })
+  })
+
+  it('Returns error message if parameter length is invalid', async () => {
+    const request = {
+      jsonrpc: '2.0',
+      method: 'eth_getBlockTransactionCountByHash',
+      params: [
+        '0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ',
+        '0x0',
+        '0x0',
+      ],
+      id: 0,
+    }
+
+    const response: RPCError = <RPCError>(
+      await getBlockTransactionCountByHashHandler(request)
+    )
+
+    expect(response).toMatchObject({
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter should be valid block hash.',
+      },
     })
   })
 })

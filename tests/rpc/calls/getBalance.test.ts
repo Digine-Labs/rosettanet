@@ -30,12 +30,18 @@ describe('Test get Balance request testnet', () => {
 
     expect(starkResult).toEqual(
       expect.objectContaining({
-        data: 'invalid eth address',
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: -32602,
+          message:
+            'Invalid argument, Parameter should be a valid Ethereum Address.',
+        },
       }),
     )
   })
 
-  it('Returns 0x0 if the address does not exist in the registry', async () => {
+  it('Returns error if the address does not exist in the registry', async () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
@@ -46,6 +52,16 @@ describe('Test get Balance request testnet', () => {
       await getBalanceHandler(request)
     )
 
-    expect(starkResult.result).toBe('0x0')
+    expect(starkResult).toEqual(
+      expect.objectContaining({
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: -32602,
+          message:
+            'Invalid argument, Ethereum address is not in Lens contract.',
+        },
+      }),
+    )
   })
 })
