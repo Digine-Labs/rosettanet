@@ -73,9 +73,9 @@ export async function getBalanceHandler(
   )
 
   if (
-    typeof response == 'string' ||
-    response == null ||
-    typeof response == 'undefined'
+    typeof response === 'string' ||
+    response === null ||
+    typeof response === 'undefined'
   ) {
     return {
       jsonrpc: request.jsonrpc,
