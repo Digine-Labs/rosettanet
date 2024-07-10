@@ -8,7 +8,7 @@ describe('test ethereum transfer function estimated gas', () => {
       method: 'eth_estimateGas',
       params: [
         {
-          from: '0x4af0da20bece16d2af2bc9f1690b1efc2db7c5b2',
+          from: '0xF9B8B18bb518132B21133e942Af756B62Bec786e',
           to: '0xd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
           data: '0xa9059cbb0000000000000000000000004af0da20bece16d2af2bc9f1690b1efc2db7c5b200000000000000000000000000000000000000000000000000005af3107a4000',
         },
@@ -22,7 +22,7 @@ describe('test ethereum transfer function estimated gas', () => {
     expect(result.result).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          gas_consumed: '0x686',
+          gas_consumed: '0xad4',
         }),
       ]),
     )
@@ -47,7 +47,7 @@ describe('test failure ethereum transferFrom function estimated gas ', () => {
       method: 'eth_estimateGas',
       params: [
         {
-          from: '0x4af0da20bece16d2af2bc9f1690b1efc2db7c5b2',
+          from: '0xF9B8B18bb518132B21133e942Af756B62Bec786e',
           to: '0xd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
           data: '0x23b872dd0000000000000000000000004af0da20bece16d2af2bc9f1690b1efc2db7c5b2000000000000000000000000f6ce7a652df7793b666a16ce46b1bf5850cc739d0000000000000000000000000000000000000000000000000000000000002710',
         },

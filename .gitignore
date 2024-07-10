@@ -24,3 +24,4 @@ contracts/account
 contracts/keystore
 
 logs.md
+sniffs.log

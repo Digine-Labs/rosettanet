@@ -12,9 +12,9 @@ export async function blockNumberHandler(
   })
 
   if (
-    typeof response == 'string' ||
-    response == null ||
-    response == undefined
+    typeof response === 'string' ||
+    response === null ||
+    typeof response === 'undefined'
   ) {
     return {
       jsonrpc: request.jsonrpc,
