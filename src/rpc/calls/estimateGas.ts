@@ -151,9 +151,9 @@ export async function estimateGasHandler(
     })
 
     if (
-      typeof response == 'string' ||
-      response == null ||
-      response == undefined
+      typeof response === 'string' ||
+      response === null ||
+      typeof response === 'undefined'
     ) {
       return {
         jsonrpc: call.jsonrpc,
@@ -186,7 +186,7 @@ export async function estimateGasHandler(
       result: response.result,
     }
   } else {
-    const getSnNonce: RPCResponse | string = await callStarknet('mainnet', {
+    const getSnNonce: RPCResponse | string = await callStarknet('testnet', {
       jsonrpc: call.jsonrpc,
       method: 'starknet_getNonce',
       params: ['latest', snFromAddress],
@@ -303,7 +303,7 @@ export async function estimateGasHandler(
 
     //version 1
 
-    const response: RPCResponse | string = await callStarknet('mainnet', {
+    const response: RPCResponse | string = await callStarknet('testnet', {
       jsonrpc: call.jsonrpc,
       method: method,
       params: {
@@ -331,9 +331,9 @@ export async function estimateGasHandler(
     })
 
     if (
-      typeof response == 'string' ||
-      response == null ||
-      response == undefined
+      typeof response === 'string' ||
+      response === null ||
+      typeof response === 'undefined'
     ) {
       return {
         jsonrpc: call.jsonrpc,

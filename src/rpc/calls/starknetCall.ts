@@ -14,7 +14,7 @@ export async function starknetCallHandler(
   if (
     typeof response == 'string' ||
     response == null ||
-    response == undefined
+    typeof response == 'undefined'
   ) {
     return {
       jsonrpc: request.jsonrpc,

@@ -73,7 +73,7 @@ export async function getTransactionsByBlockNumberAndIndexHandler(
   if (
     typeof response == 'string' ||
     response == null ||
-    response == undefined
+    typeof response == 'undefined'
   ) {
     return {
       jsonrpc: request.jsonrpc,

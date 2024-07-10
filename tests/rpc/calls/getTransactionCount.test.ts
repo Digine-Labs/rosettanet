@@ -17,10 +17,25 @@ describe('Test getTransactionCount', () => {
     expect(starkResult.result).toBe('0x0')
   })
 
+  it('Returns Transaction Count', async () => {
+    const request = {
+      jsonrpc: '2.0',
+      method: 'eth_getTransactionCount',
+      params: ['0xf9b8b18bb518132b21133e942af756b62bec786e'],
+      id: 1,
+    }
+    const starkResult: RPCResponse = <RPCResponse>(
+      await getTransactionCountHandler(request)
+    )
+
+    expect(typeof starkResult.result).toBe('string')
+    expect(starkResult.result).toBe('0x6')
+  })
+
   it('Returns invalid eth address', async () => {
     const request = {
       jsonrpc: '2.0',
-      method: 'eth_getBalance',
+      method: 'eth_getTransactionCount',
       params: ['0x0002'],
       id: 1,
     }
