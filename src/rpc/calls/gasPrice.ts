@@ -1,9 +1,11 @@
-import { RPCError, RPCResponse } from '../../types/types'
+import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 
-export async function gasPriceHandler(): Promise<RPCResponse | RPCError> {
+export async function gasPriceHandler(
+  request: RPCRequest,
+): Promise<RPCResponse | RPCError> {
   return {
     jsonrpc: '2.0',
-    id: 1,
+    id: request.id,
     result: '0x1778dc527',
   }
 }

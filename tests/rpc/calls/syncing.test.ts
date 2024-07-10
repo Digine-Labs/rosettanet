@@ -7,7 +7,7 @@ describe('Test starknet syncing', () => {
       jsonrpc: '2.0',
       method: 'starknet_syncing',
       params: [],
-      id: 0,
+      id: 1,
     }
     const starkResult: RPCResponse = <RPCResponse>(
       await ethSyncingHandler(request)
@@ -40,7 +40,7 @@ describe('Test starknet syncing', () => {
       params: [
         '0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ',
       ],
-      id: 0,
+      id: 1,
     }
     const starkResult: RPCResponse = <RPCResponse>(
       await ethSyncingHandler(request)
