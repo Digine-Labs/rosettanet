@@ -16,7 +16,7 @@ export async function netVersionHandler(
 
   return {
     jsonrpc: '2.0',
-    id: 1,
+    id: request.id,
     result: '1', // TODO: is it correct form? Compare with infura
     // https://docs.infura.io/api/networks/ethereum/json-rpc-methods/net_version
   }

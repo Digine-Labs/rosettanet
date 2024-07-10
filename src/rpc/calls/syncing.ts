@@ -51,7 +51,7 @@ export async function ethSyncingHandler(
 
   return {
     jsonrpc: '2.0',
-    id: 1,
+    id: request.id,
     result: {
       currentBlock: result.current_block_num,
       healedBytecodeBytes: '0x0',

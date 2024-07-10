@@ -43,7 +43,7 @@ export async function feeHistoryHandler(
 
   return {
     jsonrpc: '2.0',
-    id: 1,
+    id: request.id,
     result: {
       oldestBlock: 10762137,
       reward: [

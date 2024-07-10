@@ -92,7 +92,7 @@ export async function getBalanceHandler(
 
   return {
     jsonrpc: '2.0',
-    id: 1,
+    id: request.id,
     result: response.result,
   }
 }
