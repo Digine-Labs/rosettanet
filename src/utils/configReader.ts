@@ -1,11 +1,39 @@
 import * as fs from 'fs'
 import * as path from 'path'
-interface Config {
-  appName: string
-  port: number
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let configuration: any;
+
+export function getConfiguration(): object | undefined {
+  if(typeof configuration === 'undefined') {
+    throw new Error('Config not initialized');
+  }
+
+  return configuration;
 }
 
-export function readConfig(): Config {
+export function isConfigurationInitialized(): boolean {
+  if(typeof configuration === 'undefined') {
+    return false
+  }
+  return true;
+ }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getConfigurationProperty(prop: string): any {
+  if(!isConfigurationInitialized()) {
+    throw new Error('Config not initialized')
+  }
+
+  // eslint-disable-next-line no-prototype-builtins
+  if(!configuration.hasOwnProperty(prop)) {
+    throw new Error(`Property ${prop} not found in configuration`)
+  }
+
+  return configuration[prop]
+}
+
+export function initConfig() {
   const configPath = path.resolve(__dirname, '../../config.json')
 
   // Check if the config file exists
@@ -28,7 +56,7 @@ export function readConfig(): Config {
   const rawData = fs.readFileSync(configPath, 'utf8')
 
   // Try to parse the JSON file
-  let config: Config
+  let config
   try {
     config = JSON.parse(rawData)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,9 +76,7 @@ export function readConfig(): Config {
     )
   }
 
-  return config
+  configuration = config;
 }
 
-const config: Config = readConfig()
 
-export default config
