@@ -1,8 +1,5 @@
 {
   "appName": "RosettaNet",
   "port": 3000,
-  "rpcUrls": [
-    "https://starknet-sepolia.public.blastapi.io",
-    "https://free-rpc.nethermind.io/sepolia-juno"
-  ]
+  "rpcUrls": ["https://starknet-sepolia.public.blastapi.io"]
 }
