@@ -18,7 +18,7 @@ export async function callStarknet(
   request: RPCRequest | EstimateFeeRequest,
 ): Promise<RPCResponse | string> {
   try {
-    const rpcUrl: string = getRpc(network)
+    const rpcUrl: string = getRpc()
     const { data } = await axios.post<RPCResponse>(
       rpcUrl,
       JSON.stringify(request),

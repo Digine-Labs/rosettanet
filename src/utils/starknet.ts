@@ -14,7 +14,7 @@ export async function getContractsMethods(
   if (!validateSnAddress(snAddress)) {
     return []
   }
-  const rpcUrl: string = getRpc('testnet')
+  const rpcUrl: string = getRpc()
   const provider = new RpcProvider({ nodeUrl: rpcUrl })
 
   let contractAbi: Abi = []
