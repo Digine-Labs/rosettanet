@@ -470,15 +470,15 @@ Tests:
 
 RPC-convert:
 
-- [ ] Finished
-- [x] Not Finished
+- [x] Finished
+- [ ] Not Finished
 
 Tests:
 
-- [ ] Finished
+- [x] Finished
 - [ ] Not Finished
 
-**Why (if not finished) :**
+**Why (if not finished) :** Finished, returning static object.
 
 ## eth_maxPriorityFeePerGas
 
