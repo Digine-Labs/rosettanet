@@ -23,8 +23,12 @@ import { getTransactionCountHandler } from './calls/getTransactionCount'
 import { estimateGasHandler } from './calls/estimateGas'
 import { accountsHandler } from './calls/accounts'
 import { netVersionHandler } from './calls/netVersion'
+import { blobBaseFeeHandler } from './calls/blobBaseFee'
 import { isSnifferActive, writeLog, snifferOutput } from '../logger'
 import { protocolVersionHandler } from './calls/protocolVersion'
+import { getWorkHandler } from './calls/getWork'
+import { miningHandler } from './calls/mining'
+import { hashrateHandler } from './calls/hashrate'
 
 const router: Router = Router()
 
@@ -142,6 +146,26 @@ Methods.set('net_version', {
 Methods.set('eth_protocolVersion', {
   method: 'eth_protocolVersion',
   handler: protocolVersionHandler,
+})
+
+Methods.set('eth_getWork', {
+  method: 'eth_getWork',
+  handler: getWorkHandler,
+})
+
+Methods.set('eth_mining', {
+  method: 'eth_mining',
+  handler: miningHandler,
+})
+
+Methods.set('eth_hashrate', {
+  method: 'eth_hashrate',
+  handler: hashrateHandler,
+})
+
+Methods.set('eth_blobBaseFee', {
+  method: 'eth_blobBaseFee',
+  handler: blobBaseFeeHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
