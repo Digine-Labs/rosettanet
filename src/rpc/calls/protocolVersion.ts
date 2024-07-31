@@ -1,4 +1,3 @@
-import { num } from 'starknet'
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 
