@@ -18,7 +18,7 @@ export async function getWorkHandler(
     jsonrpc: request.jsonrpc,
     id: request.id,
     error: {
-      code: -32601,
+      code: -32000,
       message: 'the method eth_getWork does not exist/is not available', // Infura's answer to eth_getWork
     },
   }
