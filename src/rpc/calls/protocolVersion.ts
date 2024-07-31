@@ -1,3 +1,4 @@
+import { num } from 'starknet'
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 
@@ -37,9 +38,17 @@ export async function protocolVersionHandler(
     }
   }
 
+  const result = response.result as string
+
+  const numericString = result.replace(/\./g, '')
+
+  const number = parseInt(numericString, 10)
+
+  const hexNumber = '0x' + number.toString(16)
+
   return {
     jsonrpc: request.jsonrpc,
     id: request.id,
-    result: response.result,
+    result: hexNumber,
   }
 }

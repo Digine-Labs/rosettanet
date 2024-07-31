@@ -14,7 +14,7 @@ describe('Test protocol version handler', () => {
     )
 
     expect(typeof response.result).toBe('string')
-    expect(response.result).toMatch(/\d+\.\d+\.\d+/)
+    expect(response.result).toMatch(/^0x[0-9a-fA-F]+$/)
   })
 
   it('Returns error when parameter length > 0', async () => {
