@@ -25,12 +25,10 @@ import { accountsHandler } from './calls/accounts'
 import { netVersionHandler } from './calls/netVersion'
 import { blobBaseFeeHandler } from './calls/blobBaseFee'
 import { isSnifferActive, writeLog, snifferOutput } from '../logger'
-
 import { getWorkHandler } from './calls/getWork'
-
 import { miningHandler } from './calls/mining'
 import { hashrateHandler } from './calls/hashrate'
-
+import { netListeningHandler } from './calls/netListening'
 
 const router: Router = Router()
 
@@ -145,7 +143,6 @@ Methods.set('net_version', {
   handler: netVersionHandler,
 })
 
-
 Methods.set('eth_getWork', {
   method: 'eth_getWork',
   handler: getWorkHandler,
@@ -159,12 +156,16 @@ Methods.set('eth_mining', {
 Methods.set('eth_hashrate', {
   method: 'eth_hashrate',
   handler: hashrateHandler,
-  })
+})
 
 Methods.set('eth_blobBaseFee', {
   method: 'eth_blobBaseFee',
   handler: blobBaseFeeHandler,
+})
 
+Methods.set('net_listening', {
+  method: 'net_listening',
+  handler: netListeningHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
