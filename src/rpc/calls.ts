@@ -24,6 +24,7 @@ import { estimateGasHandler } from './calls/estimateGas'
 import { accountsHandler } from './calls/accounts'
 import { netVersionHandler } from './calls/netVersion'
 import { isSnifferActive, writeLog, snifferOutput } from '../logger'
+import { getWorkHandler } from './calls/getWork'
 
 const router: Router = Router()
 
@@ -136,6 +137,11 @@ Methods.set('eth_accounts', {
 Methods.set('net_version', {
   method: 'net_version',
   handler: netVersionHandler,
+})
+
+Methods.set('eth_getWork', {
+  method: 'eth_getWork',
+  handler: getWorkHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
