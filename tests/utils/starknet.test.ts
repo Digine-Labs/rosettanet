@@ -2,7 +2,7 @@ import {
   getContractsMethods,
   getContractsCustomStructs,
 } from '../../src/utils/starknet'
-import { testnetRpc } from '../../src/utils/getRpc'
+import { getRpc } from '../../src/utils/getRpc'
 describe('test get contract methods from starknet contract abi', () => {
   it('should return contract methods', async () => {
     const contractAddress =
@@ -15,7 +15,7 @@ describe('test getContractsCustomStructs', () => {
   it('should return custom structs', async () => {
     const customStructs = await getContractsCustomStructs(
       '0x05f2aff796caf3f09dda2cb66400d2f27f6e503ba09570f3a2cf23ecaefe1e00',
-      testnetRpc[0],
+      getRpc(),
     )
     expect(customStructs).toEqual([
       {
@@ -38,7 +38,7 @@ describe('test getContractsCustomStructs', () => {
   it('should return empty array for invalid contract address', async () => {
     const customStructs = await getContractsCustomStructs(
       '0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ',
-      testnetRpc[0],
+      getRpc(),
     )
     expect(customStructs).toEqual('Invalid Starknet addreess')
   })

@@ -2,31 +2,31 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-let configuration: any;
+let configuration: any
 
 export function getConfiguration(): object | undefined {
-  if(typeof configuration === 'undefined') {
-    throw new Error('Config not initialized');
+  if (typeof configuration === 'undefined') {
+    throw new Error('Config not initialized')
   }
 
-  return configuration;
+  return configuration
 }
 
 export function isConfigurationInitialized(): boolean {
-  if(typeof configuration === 'undefined') {
+  if (typeof configuration === 'undefined') {
     return false
   }
-  return true;
- }
+  return true
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getConfigurationProperty(prop: string): any {
-  if(!isConfigurationInitialized()) {
+  if (!isConfigurationInitialized()) {
     throw new Error('Config not initialized')
   }
 
   // eslint-disable-next-line no-prototype-builtins
-  if(!configuration.hasOwnProperty(prop)) {
+  if (!configuration.hasOwnProperty(prop)) {
     throw new Error(`Property ${prop} not found in configuration`)
   }
 
@@ -76,7 +76,5 @@ export function initConfig() {
     )
   }
 
-  configuration = config;
+  configuration = config
 }
-
-

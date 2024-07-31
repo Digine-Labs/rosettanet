@@ -23,6 +23,7 @@ import { getTransactionCountHandler } from './calls/getTransactionCount'
 import { estimateGasHandler } from './calls/estimateGas'
 import { accountsHandler } from './calls/accounts'
 import { netVersionHandler } from './calls/netVersion'
+import { blobBaseFeeHandler } from './calls/blobBaseFee'
 import { isSnifferActive, writeLog, snifferOutput } from '../logger'
 
 const router: Router = Router()
@@ -136,6 +137,11 @@ Methods.set('eth_accounts', {
 Methods.set('net_version', {
   method: 'net_version',
   handler: netVersionHandler,
+})
+
+Methods.set('eth_blobBaseFee', {
+  method: 'eth_blobBaseFee',
+  handler: blobBaseFeeHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
