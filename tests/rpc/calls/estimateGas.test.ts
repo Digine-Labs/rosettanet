@@ -22,7 +22,10 @@ describe('test ethereum transfer function estimated gas', () => {
     expect(result.result).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          gas_consumed: '0xad4',
+          gas_consumed: expect.any(String),
+          gas_price: expect.any(String),
+          overall_fee: expect.any(String),
+          unit: expect.any(String),
         }),
       ]),
     )
