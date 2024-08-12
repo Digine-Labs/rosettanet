@@ -29,6 +29,7 @@ import { protocolVersionHandler } from './calls/protocolVersion'
 import { getWorkHandler } from './calls/getWork'
 import { miningHandler } from './calls/mining'
 import { hashrateHandler } from './calls/hashrate'
+import { netListeningHandler } from './calls/netListening'
 
 const router: Router = Router()
 
@@ -166,6 +167,11 @@ Methods.set('eth_hashrate', {
 Methods.set('eth_blobBaseFee', {
   method: 'eth_blobBaseFee',
   handler: blobBaseFeeHandler,
+})
+
+Methods.set('net_listening', {
+  method: 'net_listening',
+  handler: netListeningHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {

@@ -710,15 +710,15 @@ Tests:
 
 RPC-convert:
 
-- [ ] Finished
-- [x] Not Finished
+- [x] Finished
+- [ ] Not Finished
 
 Tests:
 
-- [ ] Finished
+- [x] Finished
 - [ ] Not Finished
 
-**Why (if not finished) :**
+**Why (if not finished) :** Finished, Returns static object. Indicating whether the client is actively listening for network connections. Probably returns true if connected to other nodes.
 
 ## net_peerCount
 
