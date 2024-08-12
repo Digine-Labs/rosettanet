@@ -518,15 +518,15 @@ Tests:
 
 RPC-convert:
 
-- [ ] Finished
-- [x] Not Finished
+- [x] Finished
+- [ ] Not Finished
 
 Tests:
 
-- [ ] Finished
+- [x] Finished
 - [ ] Not Finished
 
-**Why (if not finished) :** Not supported in Starknet. We can return a static object.
+**Why (if not finished) :** Returning value from starknet_specVersion
 
 ## eth_sendRawTransaction
 

@@ -25,6 +25,7 @@ import { accountsHandler } from './calls/accounts'
 import { netVersionHandler } from './calls/netVersion'
 import { blobBaseFeeHandler } from './calls/blobBaseFee'
 import { isSnifferActive, writeLog, snifferOutput } from '../logger'
+import { protocolVersionHandler } from './calls/protocolVersion'
 import { getWorkHandler } from './calls/getWork'
 import { miningHandler } from './calls/mining'
 import { hashrateHandler } from './calls/hashrate'
@@ -141,6 +142,11 @@ Methods.set('eth_accounts', {
 Methods.set('net_version', {
   method: 'net_version',
   handler: netVersionHandler,
+})
+
+Methods.set('eth_protocolVersion', {
+  method: 'eth_protocolVersion',
+  handler: protocolVersionHandler,
 })
 
 Methods.set('eth_getWork', {
