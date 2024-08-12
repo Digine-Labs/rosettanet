@@ -30,6 +30,7 @@ import { getWorkHandler } from './calls/getWork'
 import { miningHandler } from './calls/mining'
 import { hashrateHandler } from './calls/hashrate'
 import { netListeningHandler } from './calls/netListening'
+import { web3clientVersionHandler } from './calls/web3clientVersion'
 
 const router: Router = Router()
 
@@ -172,6 +173,11 @@ Methods.set('eth_blobBaseFee', {
 Methods.set('net_listening', {
   method: 'net_listening',
   handler: netListeningHandler,
+})
+
+Methods.set('web3_clientVersion', {
+  method: 'web3_clientVersion',
+  handler: web3clientVersionHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
