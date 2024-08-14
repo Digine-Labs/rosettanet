@@ -26,6 +26,8 @@ export function convertSnToEth(sntype: string): string | Array<string> {
       return 'uint256'
     case 'core::starknet::contract_address::ContractAddress':
       return 'address'
+    case 'core::starknet::eth_address::EthAddress':
+      return 'address'
     case 'core::felt252':
       return 'uint256'
     default:
@@ -52,6 +54,8 @@ export function getSnSlotCount(sntype: string): number {
     case 'core::integer::u256':
       return 2 // TODO: !! u256 by default 2 u128 so should fix it with custom struct support. !!
     case 'core::starknet::contract_address::ContractAddress':
+      return 1
+    case 'core::starknet::eth_address::EthAddress':
       return 1
     case 'core::felt252':
       return 1
