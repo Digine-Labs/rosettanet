@@ -31,6 +31,7 @@ import { miningHandler } from './calls/mining'
 import { hashrateHandler } from './calls/hashrate'
 import { netListeningHandler } from './calls/netListening'
 import { web3clientVersionHandler } from './calls/web3clientVersion'
+import { netPeerCountHandler } from './calls/netPeerCount'
 
 const router: Router = Router()
 
@@ -178,6 +179,11 @@ Methods.set('net_listening', {
 Methods.set('web3_clientVersion', {
   method: 'web3_clientVersion',
   handler: web3clientVersionHandler,
+})
+
+Methods.set('net_peerCount', {
+  method: 'net_peerCount',
+  handler: netPeerCountHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {

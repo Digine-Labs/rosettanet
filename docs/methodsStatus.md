@@ -726,12 +726,12 @@ Tests:
 
 RPC-convert:
 
-- [ ] Finished
-- [x] Not Finished
+- [x] Finished
+- [ ] Not Finished
 
 Tests:
 
-- [ ] Finished
+- [x] Finished
 - [ ] Not Finished
 
 **Why (if not finished) :**
@@ -870,12 +870,12 @@ Tests:
 
 RPC-convert:
 
-- [ ] Finished
-- [x] Not Finished
+- [x] Finished
+- [ ] Not Finished
 
 Tests:
 
-- [ ] Finished
+- [x] Finished
 - [ ] Not Finished
 
 **Why (if not finished) :**
