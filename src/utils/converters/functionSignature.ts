@@ -3,7 +3,10 @@
 import { Abi } from "starknet";
 import { StarknetTypeMember } from "../../types/types";
 
-const convertableTypes = [
+// Enums are uint8 in solidity.
+// https://ethereum.stackexchange.com/questions/137436/what-is-a-functions-function-signature-if-it-uses-a-custom-type-stuct-enum
+
+const elementaryTypes = [
     ["core::felt252", "uint256"],
     ["core::integer::u8", "uint8"],
     ["core::integer::u16", "uint16"],
@@ -40,7 +43,7 @@ export function generateEthereumFunctionSignatures(classABI: Abi) : Array<string
 function initializeConvertableTypes() : Map<string,string> {
     const mapping: Map<string,string> = new Map<string,string>();
 
-    for(const val of convertableTypes) {
+    for(const val of elementaryTypes) {
         mapping.set(val[0], val[1])
     }
 
