@@ -55,6 +55,11 @@ export interface StarknetFunctionOutput {
   type: string
 }
 
+export interface StarknetTypeMember {
+  name: string
+  type: string
+}
+
 export interface StarknetFunction {
   name: string
   inputs?: Array<StarknetFunctionInput>
