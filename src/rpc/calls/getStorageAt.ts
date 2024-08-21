@@ -10,7 +10,6 @@ export async function getStorageAtHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
   // TODO: dynamic network from env?
-  const network = 'testnet'
   const method = 'starknet_getStorageAt'
 
   if (request.params.length == 0) {
@@ -55,10 +54,7 @@ export async function getStorageAtHandler(
     params: [snAddress, ...request.params.slice(1)],
     id: request.id,
   }
-  const response: RPCResponse | string = await callStarknet(
-    network,
-    starknet_params,
-  )
+  const response: RPCResponse | string = await callStarknet(starknet_params)
 
   if (
     typeof response === 'string' ||

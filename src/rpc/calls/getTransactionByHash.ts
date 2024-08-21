@@ -5,7 +5,6 @@ import { validateBlockHash } from '../../utils/validations'
 export async function getTransactionsByHashHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  const network = 'testnet'
   const method = 'starknet_getTransactionByHash'
 
   if (request.params.length != 1) {
@@ -34,7 +33,7 @@ export async function getTransactionsByHashHandler(
     }
   }
 
-  const response: RPCResponse | string = await callStarknet(network, {
+  const response: RPCResponse | string = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: method,
     params: [txHash],
@@ -69,7 +68,7 @@ export async function getTransactionsByHashHandler(
   }
 
   // Get the transaction recipt of this transaction
-  const transactionReceipt: RPCResponse | string = await callStarknet(network, {
+  const transactionReceipt: RPCResponse | string = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_getTransactionReceipt',
     params: [txHash],

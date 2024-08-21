@@ -14,7 +14,6 @@ interface EstimateFeeRequest {
 }
 
 export async function callStarknet(
-  network: string,
   request: RPCRequest | EstimateFeeRequest,
 ): Promise<RPCResponse | string> {
   try {

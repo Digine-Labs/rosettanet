@@ -6,7 +6,6 @@ export async function getBlockByNumberHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
   // Define the network and method
-  const network = 'testnet'
 
   // Check params' length
   if (request.params.length != 2) {
@@ -36,7 +35,7 @@ export async function getBlockByNumberHandler(
     }
   }
 
-  const currentLiveBlockNumber = await callStarknet(network, {
+  const currentLiveBlockNumber = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_blockNumber',
     params: [],
@@ -82,7 +81,7 @@ export async function getBlockByNumberHandler(
   if (isFullTxObjectRequested == true) {
     const method = 'starknet_getBlockWithTxs'
 
-    const response: RPCResponse | string = await callStarknet(network, {
+    const response: RPCResponse | string = await callStarknet({
       jsonrpc: request.jsonrpc,
       method,
       params,
@@ -198,7 +197,7 @@ export async function getBlockByNumberHandler(
   } else {
     const method = 'starknet_getBlockWithTxHashes'
 
-    const response: RPCResponse | string = await callStarknet(network, {
+    const response: RPCResponse | string = await callStarknet({
       jsonrpc: request.jsonrpc,
       method,
       params,

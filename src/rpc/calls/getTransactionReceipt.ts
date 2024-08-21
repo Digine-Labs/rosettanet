@@ -21,7 +21,7 @@ export async function getTransactionReceiptHandler(
 
   const transactionHash = request.params[0] as string
 
-  const response1: RPCResponse | string = await callStarknet('testnet', {
+  const response1: RPCResponse | string = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_getTransactionReceipt',
     params: [transactionHash],
@@ -61,7 +61,7 @@ export async function getTransactionReceiptHandler(
     }
   }
 
-  const response2 = await callStarknet('testnet', {
+  const response2 = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_getBlockWithTxs',
     params: [{ block_number: result1.block_number! }],

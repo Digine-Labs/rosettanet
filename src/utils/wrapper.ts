@@ -35,7 +35,7 @@ export async function getEthAddressFromSnAddress(
     ],
     id: 1,
   }
-  const response: RPCResponse | string = await callStarknet('testnet', request)
+  const response: RPCResponse | string = await callStarknet(request)
 
   if (typeof response === 'string') {
     return '0'
@@ -65,7 +65,7 @@ export async function getSnAddressFromEthAddress(
     ],
     id: 1,
   }
-  const response: RPCResponse | string = await callStarknet('testnet', request)
+  const response: RPCResponse | string = await callStarknet(request)
 
   if (typeof response === 'string') {
     return '0'

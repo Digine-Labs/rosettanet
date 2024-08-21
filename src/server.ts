@@ -19,6 +19,7 @@ export function StartListening() {
 
 // Resolves starknet chain id
 // TODO: use it while initializing server. Create state that holds which network we are working with.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function resolveNetwork(): Promise<string> {
   const response: RPCResponse | string = await callStarknet({
     jsonrpc: '2.0',

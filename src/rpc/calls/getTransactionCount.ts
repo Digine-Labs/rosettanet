@@ -6,7 +6,6 @@ import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 export async function getTransactionCountHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  const network = 'testnet'
   const method = 'starknet_getNonce'
 
   if (request.params.length == 0) {
@@ -47,7 +46,7 @@ export async function getTransactionCountHandler(
     }
   }
 
-  const response: RPCResponse | string = await callStarknet(network, {
+  const response: RPCResponse | string = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: method,
     params: ['latest', snAddress],
