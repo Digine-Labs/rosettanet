@@ -227,7 +227,7 @@ export async function ethCallHandler(
     'pending', // update to latest
   ]
 
-  const snResponse: RPCResponse | string = await callStarknet('testnet', {
+  const snResponse: RPCResponse | string = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_call',
     params: starknetCallParams,

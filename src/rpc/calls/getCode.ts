@@ -10,7 +10,6 @@ import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 export async function getCodeHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  const network = 'testnet'
   if (request.params.length != 2) {
     return {
       jsonrpc: request.jsonrpc,
@@ -48,7 +47,7 @@ export async function getCodeHandler(
     }
   }
 
-  const currentLiveBlockNumber = await callStarknet(network, {
+  const currentLiveBlockNumber = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_blockNumber',
     params: [],
@@ -87,7 +86,7 @@ export async function getCodeHandler(
   const params = isHexString(blockNumber)
     ? [{ block_number: parseInt(blockNumber, 16) }, snAddress]
     : [{ block_number: blockNumber }, snAddress]
-  const response: RPCResponse | string = await callStarknet(network, {
+  const response: RPCResponse | string = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_getClassHashAt',
     params: params,

@@ -6,8 +6,6 @@ import { validateBlockNumber } from '../../utils/validations'
 export async function getBlockTransactionCountByNumberHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  // TODO: Dynamic network from env?
-  const network = 'testnet'
   const method = 'starknet_getBlockTransactionCount'
 
   // Validate request parameters
@@ -35,7 +33,7 @@ export async function getBlockTransactionCountByNumberHandler(
     }
   }
 
-  const currentLiveBlockNumber = await callStarknet(network, {
+  const currentLiveBlockNumber = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_blockNumber',
     params: [],
@@ -61,7 +59,7 @@ export async function getBlockTransactionCountByNumberHandler(
   const params = isHexString(blockNumber)
     ? [{ block_number: parseInt(blockNumber, 16) }]
     : [{ block_number: blockNumber }]
-  const response: RPCResponse | string = await callStarknet(network, {
+  const response: RPCResponse | string = await callStarknet({
     jsonrpc: request.jsonrpc,
     method,
     params,

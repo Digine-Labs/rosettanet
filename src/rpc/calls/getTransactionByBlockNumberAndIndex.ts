@@ -6,8 +6,6 @@ import { validateBlockNumber } from '../../utils/validations'
 export async function getTransactionsByBlockNumberAndIndexHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  const network = 'testnet'
-
   if (request.params.length != 2) {
     return {
       jsonrpc: request.jsonrpc,
@@ -35,7 +33,7 @@ export async function getTransactionsByBlockNumberAndIndexHandler(
     }
   }
 
-  const currentLiveBlockNumber = await callStarknet(network, {
+  const currentLiveBlockNumber = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_blockNumber',
     params: [],
@@ -63,7 +61,7 @@ export async function getTransactionsByBlockNumberAndIndexHandler(
     ? [{ block_number: parseInt(blockNumber, 16) }]
     : [{ block_number: blockNumber }]
 
-  const response: RPCResponse | string = await callStarknet(network, {
+  const response: RPCResponse | string = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_getBlockWithTxs',
     params,
@@ -151,7 +149,7 @@ export async function getTransactionsByBlockNumberAndIndexHandler(
   }
 
   // Retrieve transaction receipt using transaction hash
-  const transactionRes: RPCResponse | string = await callStarknet(network, {
+  const transactionRes: RPCResponse | string = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_getTransactionReceipt',
     params: [transaction.transaction_hash],

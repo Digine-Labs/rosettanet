@@ -15,7 +15,7 @@ export async function web3clientVersionHandler(
     }
   }
 
-  const response: RPCResponse | string = await callStarknet('testnet', {
+  const response: RPCResponse | string = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_specVersion',
     params: [],

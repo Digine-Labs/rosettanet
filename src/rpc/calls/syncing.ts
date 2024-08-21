@@ -4,7 +4,6 @@ import { callStarknet } from '../../utils/callHelper'
 export async function ethSyncingHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  const network = 'testnet'
   const method = 'starknet_syncing'
 
   if (request.params.length != 0) {
@@ -18,7 +17,7 @@ export async function ethSyncingHandler(
     }
   }
 
-  const response: RPCResponse | string = await callStarknet(network, {
+  const response: RPCResponse | string = await callStarknet({
     jsonrpc: request.jsonrpc,
     method,
     params: [],

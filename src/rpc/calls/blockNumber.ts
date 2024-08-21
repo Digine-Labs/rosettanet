@@ -4,7 +4,7 @@ import { callStarknet } from '../../utils/callHelper'
 export async function blockNumberHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  const response: RPCResponse | string = await callStarknet('testnet', {
+  const response: RPCResponse | string = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_blockNumber',
     params: [],

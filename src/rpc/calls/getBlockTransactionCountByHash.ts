@@ -5,8 +5,6 @@ import { validateBlockHash } from '../../utils/validations'
 export async function getBlockTransactionCountByHashHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  // TODO: Dynamic network from env?
-  const network = 'testnet'
   const method = 'starknet_getBlockTransactionCount'
 
   // Validate request parameters
@@ -35,7 +33,7 @@ export async function getBlockTransactionCountByHashHandler(
     }
   }
 
-  const response: RPCResponse | string = await callStarknet(network, {
+  const response: RPCResponse | string = await callStarknet({
     jsonrpc: request.jsonrpc,
     method,
     params: [

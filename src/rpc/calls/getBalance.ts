@@ -8,7 +8,7 @@ export async function getBalanceHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
   // TODO: dynamic network from env?
-  const network = 'testnet'
+  // const network = 'testnet'
   const method = 'starknet_call'
   const functionSelector =
     '0x035a73cd311a05d46deda634c5ee045db92f811b4e74bca4437fcb5302b7af33' //balance_of function selector
@@ -67,10 +67,7 @@ export async function getBalanceHandler(
     ],
     id: request.id,
   }
-  const response: RPCResponse | string = await callStarknet(
-    network,
-    starknet_params,
-  )
+  const response: RPCResponse | string = await callStarknet(starknet_params)
 
   if (
     typeof response === 'string' ||

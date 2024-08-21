@@ -99,7 +99,7 @@ export async function estimateGasHandler(
     parameters.value.length > 0 &&
     parameters.data == '0x'
   ) {
-    const getSnNonce: RPCResponse | string = await callStarknet('testnet', {
+    const getSnNonce: RPCResponse | string = await callStarknet({
       jsonrpc: call.jsonrpc,
       method: 'starknet_getNonce',
       params: ['latest', snFromAddress],
@@ -121,7 +121,7 @@ export async function estimateGasHandler(
 
     const snNonce = getSnNonce.result
 
-    const response: RPCResponse | string = await callStarknet('testnet', {
+    const response: RPCResponse | string = await callStarknet({
       jsonrpc: call.jsonrpc,
       method: method,
       params: {
@@ -186,7 +186,7 @@ export async function estimateGasHandler(
       result: response.result,
     }
   } else {
-    const getSnNonce: RPCResponse | string = await callStarknet('testnet', {
+    const getSnNonce: RPCResponse | string = await callStarknet({
       jsonrpc: call.jsonrpc,
       method: 'starknet_getNonce',
       params: ['latest', snFromAddress],
@@ -303,7 +303,7 @@ export async function estimateGasHandler(
 
     //version 1
 
-    const response: RPCResponse | string = await callStarknet('testnet', {
+    const response: RPCResponse | string = await callStarknet({
       jsonrpc: call.jsonrpc,
       method: method,
       params: {

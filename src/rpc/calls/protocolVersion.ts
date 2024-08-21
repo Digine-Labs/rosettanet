@@ -15,7 +15,7 @@ export async function protocolVersionHandler(
     }
   }
 
-  const response: RPCResponse | string = await callStarknet('testnet', {
+  const response: RPCResponse | string = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_specVersion',
     params: [],
