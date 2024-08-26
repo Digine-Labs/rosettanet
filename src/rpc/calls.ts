@@ -33,6 +33,7 @@ import { netListeningHandler } from './calls/netListening'
 import { web3clientVersionHandler } from './calls/web3clientVersion'
 import { netPeerCountHandler } from './calls/netPeerCount'
 import { getUncleByBlockHashAndIndexHandler } from './calls/getUncleByBlockHashAndIndex'
+import { getUncleByBlockNumberAndIndexHandler } from './calls/getUncleByBlockNumberAndIndex'
 
 const router: Router = Router()
 
@@ -190,6 +191,11 @@ Methods.set('net_peerCount', {
 Methods.set('eth_getUncleByBlockHashAndIndex', {
   method: 'eth_getUncleByBlockHashAndIndex',
   handler: getUncleByBlockHashAndIndexHandler,
+})  
+ 
+Methods.set('eth_getUncleByBlockNumberAndIndex', {
+  method: 'eth_getUncleByBlockNumberAndIndex',
+  handler: getUncleByBlockNumberAndIndexHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
