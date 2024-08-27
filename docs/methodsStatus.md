@@ -438,15 +438,15 @@ Tests:
 
 RPC-convert:
 
-- [ ] Finished
-- [x] Not Finished
+- [x] Finished
+- [ ] Not Finished
 
 Tests:
 
-- [ ] Finished
+- [x] Finished
 - [ ] Not Finished
 
-**Why (if not finished) :** Not supported in Starknet. We can return a static object.
+**Why (if not finished) :** Not supported in Starknet. Returning error with message 'the method eth_getUncleCountByBlockNumber does not exist/is not available'
 
 ## eth_getWork
 
