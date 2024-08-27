@@ -1,22 +1,21 @@
-import { getUncleByBlockNumberAndIndexHandler } from '../../../src/rpc/calls/getUncleByBlockNumberAndIndex'
+import { getUncleCountByBlockHashHandler } from '../../../src/rpc/calls/getUncleCountByBlockHash'
 import { RPCError, RPCResponse } from '../../../src/types/types'
 
-describe('Test getUncleByBlockNumberAndIndexHandler', () => {
+describe('Test getUncleCountByBlockHashHandler', () => {
   it('Returns not available', async () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getUncleByBlockHashAndIndex',
       params: [
         '0x07410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
-        '0x02',
       ],
       id: 1,
     }
     const result: RPCResponse | RPCError = <RPCResponse>(
-      await getUncleByBlockNumberAndIndexHandler(request)
+      await getUncleCountByBlockHashHandler(request)
     )
     expect(result.error?.message).toBe(
-      'the method eth_getUncleByBlockNumberAndIndex does not exist/is not available',
+      'the method eth_getUncleCountByBlockHash does not exist/is not available',
     )
   })
 
@@ -26,28 +25,27 @@ describe('Test getUncleByBlockNumberAndIndexHandler', () => {
       method: 'eth_getUncleByBlockHashAndIndex',
       params: [
         '0xzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz',
-        '0x02',
       ],
       id: 1,
     }
     const result: RPCResponse | RPCError = <RPCResponse>(
-      await getUncleByBlockNumberAndIndexHandler(request)
+      await getUncleCountByBlockHashHandler(request)
     )
-    expect(result.error?.message).toBe('Invalid argument, Invalid blockNumber.')
+    expect(result.error?.message).toBe('Invalid argument, Invalid blockHash.')
   })
 
-  it('Gives error when parameter length != 2', async () => {
+  it('Gives error when parameter length != 1', async () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getUncleByBlockHashAndIndex',
-      params: ['0x0'],
+      params: ['0x0', '0x0'],
       id: 1,
     }
     const result: RPCResponse | RPCError = <RPCResponse>(
-      await getUncleByBlockNumberAndIndexHandler(request)
+      await getUncleCountByBlockHashHandler(request)
     )
     expect(result.error?.message).toBe(
-      'Invalid argument, Parameter lenght should be 2.',
+      'Invalid argument, Parameter lenght should be 1.',
     )
   })
 })
