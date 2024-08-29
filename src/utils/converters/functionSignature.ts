@@ -71,6 +71,7 @@ function generateTupleFormat(input: SolidityType, typeMapping: Map<string, Solid
   for(const curr  of input.value) {
     if(!typeMapping.has(curr)) {
       // TODO: error handling, type not found
+      // Eğer type yoksa hata ver, içerisindeki struct daha yüklenmemiş demek
       index++;
       continue;
     }
