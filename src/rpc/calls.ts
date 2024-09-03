@@ -36,6 +36,7 @@ import { getUncleByBlockHashAndIndexHandler } from './calls/getUncleByBlockHashA
 import { getUncleByBlockNumberAndIndexHandler } from './calls/getUncleByBlockNumberAndIndex'
 import { getUncleCountByBlockNumberHandler } from './calls/getUncleCountByBlockNumber'
 import { getUncleCountByBlockHashHandler } from './calls/getUncleCountByBlockHash'
+import { unsubscribeHandler } from './calls/unsubscribe'
 
 const router: Router = Router()
 
@@ -193,8 +194,8 @@ Methods.set('net_peerCount', {
 Methods.set('eth_getUncleByBlockHashAndIndex', {
   method: 'eth_getUncleByBlockHashAndIndex',
   handler: getUncleByBlockHashAndIndexHandler,
-})  
- 
+})
+
 Methods.set('eth_getUncleByBlockNumberAndIndex', {
   method: 'eth_getUncleByBlockNumberAndIndex',
   handler: getUncleByBlockNumberAndIndexHandler,
@@ -208,6 +209,11 @@ Methods.set('eth_getUncleCountByBlockNumber', {
 Methods.set('eth_getUncleCountByBlockHash', {
   method: 'eth_getUncleCountByBlockHash',
   handler: getUncleCountByBlockHashHandler,
+})
+
+Methods.set('eth_unsubscribe', {
+  method: 'eth_unsubscribe',
+  handler: unsubscribeHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
