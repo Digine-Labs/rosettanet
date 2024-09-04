@@ -44,7 +44,6 @@ export function generateEthereumFunctionSignatures(
 
   const typeConversions: Map<string, SolidityType> = initializeConvertableTypes()
 
-  console.log(typeConversions.keys())
 
   importCustomStructs(classABI)
   return []
@@ -114,7 +113,6 @@ function importCustomStructs(classABI: Abi): Array<any> {
     structArray.push({type: 'struct', value: structMembers})
     
     structs.push(structArray)
-    console.log(structArray)
     // Burda custom structların memberleri array şeklinde var. Bunları tuple çevireceğiz ama önce ethereum haline mi çevirsek??
   }
 
