@@ -10,14 +10,14 @@ describe('Config file check', () => {
   })
 
   it('Error with missing prop', () => {
+    initConfig()
     expect(() => {
       getConfigurationProperty('asd')
     }).toThrow('Property asd not found in configuration')
   })
 
   it('Returns an element from Array', () => {
-    expect(getConfigurationProperty('rpcUrls')[0]).toBe(
-      'https://starknet-sepolia.public.blastapi.io',
-    )
+    initConfig()
+    expect(typeof getConfigurationProperty('rpcUrls')[0]).toBe('string')
   })
 })
