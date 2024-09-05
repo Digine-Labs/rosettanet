@@ -1,0 +1,863 @@
+import { getBlockReceiptsHandler } from '../../../src/rpc/calls/getBlockReceipts'
+import { RPCResponse } from '../../../src/types/types'
+
+describe('Test getBlockReceiptsHandler', () => {
+  it('Returns Error with Invalid block hash', async () => {
+    const request = {
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'eth_getBlockReceipts',
+      params: [
+        {
+          block_hash: '0xzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz',
+        },
+      ],
+    }
+
+    const starkResult: RPCResponse = <RPCResponse>(
+      await getBlockReceiptsHandler(request)
+    )
+
+    expect(starkResult).toMatchObject({
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Invalid block hash.',
+      },
+    })
+  })
+
+  it('Returns transaction details for a valid request', async () => {
+    const request = {
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'eth_getBlockReceipts',
+      params: [
+        {
+          block_hash:
+            '0x07410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        },
+      ],
+    }
+
+    const starkResult: RPCResponse = <RPCResponse>(
+      await getBlockReceiptsHandler(request)
+    )
+
+    // Verify the structure and content of the response
+    expect(typeof starkResult.result).toBe('object')
+    expect(starkResult.result).toMatchObject([
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x573ea9a8602e03417a4a31d55d115748f37a08bbb23adf6347cb699743a998d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x1730b20846e904de106ec706a41d7153c8fce8f670006e239989f76539659af',
+        transactionHash:
+          '0x558b329bfc481338a755464f24dd5714823a089e0fa861f7eaccc55ad27bfd2',
+        transactionIndex: '0x0',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x573ea9a8602e03417a4a31d55d115748f37a08bbb23adf6347cb699743a998d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x12b0847cf221531f729090c10161692401c94994a033467c496db63a3d5facb',
+        transactionHash:
+          '0x46d36084517b85fa8a07c87a7eac1c0f7a7d0de7b3e4a08c62bc1a533307f3f',
+        transactionIndex: '0x1',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x37a10f2808c05f4a328bdac9a9344358547ae4676ebddc005e24ff887b188fd',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x36031daa264c24520b11d93af622c848b2499b66b41d611bac95e13cfca131a',
+        transactionHash:
+          '0x7ad3e1c6ac233cfbf039c7996aa23d911c2f7506966b228ed0123f755534bb4',
+        transactionIndex: '0x2',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x23a4d7f2cdf202ea916bbb07814f5bc32ae50e9cdf1fde114d8e6e808b1e965',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x132303a40ae2f271f4e1b707596a63f6f2921c4d400b38822548ed1bb0cbe0',
+        transactionHash:
+          '0x7c1b2fa5f59180b923b1eab4ef390693c0eb8ae77cf45dd9056bdbbbda649c1',
+        transactionIndex: '0x3',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x573ea9a8602e03417a4a31d55d115748f37a08bbb23adf6347cb699743a998d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x53d5cb0de4f03f9ac31f83621cef64b9372bf1f690fdfa2ba8a07c316e67817',
+        transactionHash:
+          '0x6a618230b3bd2460dfceb1fbeae96c90ac910e93d1a8c7d899404c65aced6fa',
+        transactionIndex: '0x4',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x4c1d9da136846ab084ae18cf6ce7a652df7793b666a16ce46b1bf5850cc739d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x36031daa264c24520b11d93af622c848b2499b66b41d611bac95e13cfca131a',
+        transactionHash:
+          '0x565c81551add39f9a3aa7ccc9ffa52c1b927af2d2ecdd3b4f892c01797d8ae7',
+        transactionIndex: '0x5',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x37a10f2808c05f4a328bdac9a9344358547ae4676ebddc005e24ff887b188fd',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x36031daa264c24520b11d93af622c848b2499b66b41d611bac95e13cfca131a',
+        transactionHash:
+          '0x6d7d36e52489e0cedbd66bcf27fcaa4aa10ae87d803adba15f7afbc655b08e9',
+        transactionIndex: '0x6',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x1d091b30a2d20ca2509579f8beae26934bfdc3725c0b497f50b353b7a3c636f',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x79c0bc2a03570241c27235a2dca7696a658cbdaae0bad5762e30204b2791aba',
+        transactionHash:
+          '0x1ee67b94067934dd82df5708b3c0bb1f266af0d9fe8bf6c45fb87cf01f3981d',
+        transactionIndex: '0x7',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x1d091b30a2d20ca2509579f8beae26934bfdc3725c0b497f50b353b7a3c636f',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x424ce41bea300e095e763d9fb4316af76c9da9c0fa926009f25b42b6f4ad04a',
+        transactionHash:
+          '0x302161d279df4645c52fb02ca74c56f038bd6d9dc02596e85c284aff1d2f657',
+        transactionIndex: '0x8',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x143fe26927dd6a302522ea1cd6a821ab06b3753194acee38d88a85c93b3cbc6',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x224d3c33d3dd10789e7d1075f12c4e279e2c6e81baa6c74801b5e6262f70c83',
+        transactionHash:
+          '0x3e116c93c157c26ce06d204ad2a0a4bf80a3f7ec344d1927c4510ce33dc3e08',
+        transactionIndex: '0x9',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x1d091b30a2d20ca2509579f8beae26934bfdc3725c0b497f50b353b7a3c636f',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x1730b20846e904de106ec706a41d7153c8fce8f670006e239989f76539659af',
+        transactionHash:
+          '0x162771adf5a3209a20bd41c4a2e31b2d65a7213856a7d60eac487bda2af06ad',
+        transactionIndex: '0x10',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x4c1d9da136846ab084ae18cf6ce7a652df7793b666a16ce46b1bf5850cc739d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x36031daa264c24520b11d93af622c848b2499b66b41d611bac95e13cfca131a',
+        transactionHash:
+          '0x28c52c5d7d1888d9143b32308f64c103ce3bc2e42190a61f7991bc36afd8d21',
+        transactionIndex: '0x11',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x4c1d9da136846ab084ae18cf6ce7a652df7793b666a16ce46b1bf5850cc739d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x36031daa264c24520b11d93af622c848b2499b66b41d611bac95e13cfca131a',
+        transactionHash:
+          '0x60c838694c7cc1355d50f02f4e35e410b440175e8d4fcb09fc37e73a0c1c69d',
+        transactionIndex: '0x12',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x143fe26927dd6a302522ea1cd6a821ab06b3753194acee38d88a85c93b3cbc6',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x12b0847cf221531f729090c10161692401c94994a033467c496db63a3d5facb',
+        transactionHash:
+          '0x1ae0679d895f96e31f0aa6068532c097355a56e64dc6f070324a26f3006bf45',
+        transactionIndex: '0x13',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x1d091b30a2d20ca2509579f8beae26934bfdc3725c0b497f50b353b7a3c636f',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x132303a40ae2f271f4e1b707596a63f6f2921c4d400b38822548ed1bb0cbe0',
+        transactionHash:
+          '0x3865bfa22aa0ed6b365e8eece3729da81d6c06c079b44c2b20aea7f621527e3',
+        transactionIndex: '0x14',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x1d091b30a2d20ca2509579f8beae26934bfdc3725c0b497f50b353b7a3c636f',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x53d5cb0de4f03f9ac31f83621cef64b9372bf1f690fdfa2ba8a07c316e67817',
+        transactionHash:
+          '0x7f6bbc6dff357bd93346984866ff36b81230bff792f25a30ad9a638db08c408',
+        transactionIndex: '0x15',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x37a10f2808c05f4a328bdac9a9344358547ae4676ebddc005e24ff887b188fd',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x36031daa264c24520b11d93af622c848b2499b66b41d611bac95e13cfca131a',
+        transactionHash:
+          '0x3cf889fd67f620d4712e6bb3b6b91e0332ba21f3a41f861821d4587404f7789',
+        transactionIndex: '0x16',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x23a4d7f2cdf202ea916bbb07814f5bc32ae50e9cdf1fde114d8e6e808b1e965',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x79c0bc2a03570241c27235a2dca7696a658cbdaae0bad5762e30204b2791aba',
+        transactionHash:
+          '0x27866878c2fd9493fd754aec887805a1c08d3038321976f49fd98fbdcef8bdd',
+        transactionIndex: '0x17',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x4c1d9da136846ab084ae18cf6ce7a652df7793b666a16ce46b1bf5850cc739d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x36031daa264c24520b11d93af622c848b2499b66b41d611bac95e13cfca131a',
+        transactionHash:
+          '0x361912957d44524f31c1bf9c804ae389c2eadb9ecbe0410f5563f5d524ace50',
+        transactionIndex: '0x18',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x4c1d9da136846ab084ae18cf6ce7a652df7793b666a16ce46b1bf5850cc739d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x36031daa264c24520b11d93af622c848b2499b66b41d611bac95e13cfca131a',
+        transactionHash:
+          '0x15e9a1472a25a28bd5cdcc5ec3b0d5a0d4887dea94e6ba578b9fd8f22b55359',
+        transactionIndex: '0x19',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x143fe26927dd6a302522ea1cd6a821ab06b3753194acee38d88a85c93b3cbc6',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x424ce41bea300e095e763d9fb4316af76c9da9c0fa926009f25b42b6f4ad04a',
+        transactionHash:
+          '0x563f6c4ac6f949d1333d4107c68a79a9efd0cdd734f41e7517eba46d27e8528',
+        transactionIndex: '0x20',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x573ea9a8602e03417a4a31d55d115748f37a08bbb23adf6347cb699743a998d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x224d3c33d3dd10789e7d1075f12c4e279e2c6e81baa6c74801b5e6262f70c83',
+        transactionHash:
+          '0x614f60d20b86d7d22ece44ec804d08fad138310719e62e1c948386816a11152',
+        transactionIndex: '0x21',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x573ea9a8602e03417a4a31d55d115748f37a08bbb23adf6347cb699743a998d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x1730b20846e904de106ec706a41d7153c8fce8f670006e239989f76539659af',
+        transactionHash:
+          '0x52889920b24591a652de2779ab832dbef857ffc6aaeab412f5e251433713d09',
+        transactionIndex: '0x22',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x23a4d7f2cdf202ea916bbb07814f5bc32ae50e9cdf1fde114d8e6e808b1e965',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x12b0847cf221531f729090c10161692401c94994a033467c496db63a3d5facb',
+        transactionHash:
+          '0x3001cad5ad515e4ebf70bc70c40b1801812ba2298c1633f4af54983c5c013d1',
+        transactionIndex: '0x23',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x37a10f2808c05f4a328bdac9a9344358547ae4676ebddc005e24ff887b188fd',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x36031daa264c24520b11d93af622c848b2499b66b41d611bac95e13cfca131a',
+        transactionHash:
+          '0x36d096edda7249c7c2a982f66e9f45f71a116d39bd593e77a28610ab8593752',
+        transactionIndex: '0x24',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x23a4d7f2cdf202ea916bbb07814f5bc32ae50e9cdf1fde114d8e6e808b1e965',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x53d5cb0de4f03f9ac31f83621cef64b9372bf1f690fdfa2ba8a07c316e67817',
+        transactionHash:
+          '0x5a03ddb3551bec9c43525d52576519203f599ce0c6d50ad4950e8886062a763',
+        transactionIndex: '0x25',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x573ea9a8602e03417a4a31d55d115748f37a08bbb23adf6347cb699743a998d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x132303a40ae2f271f4e1b707596a63f6f2921c4d400b38822548ed1bb0cbe0',
+        transactionHash:
+          '0x589abaaef8518e8c4ec1c75f6244da7f7e293cf714881871a77051984aa467',
+        transactionIndex: '0x26',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x4c1d9da136846ab084ae18cf6ce7a652df7793b666a16ce46b1bf5850cc739d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x36031daa264c24520b11d93af622c848b2499b66b41d611bac95e13cfca131a',
+        transactionHash:
+          '0x1770eeb2116c156c48783199c545db3011cdd5f12a62d76740b86174459db16',
+        transactionIndex: '0x27',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x4c1d9da136846ab084ae18cf6ce7a652df7793b666a16ce46b1bf5850cc739d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x36031daa264c24520b11d93af622c848b2499b66b41d611bac95e13cfca131a',
+        transactionHash:
+          '0x67edf9323f89a58017156aba1f6709ba8e58fc7d1b33c0d9159d18fb2477249',
+        transactionIndex: '0x28',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x573ea9a8602e03417a4a31d55d115748f37a08bbb23adf6347cb699743a998d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x424ce41bea300e095e763d9fb4316af76c9da9c0fa926009f25b42b6f4ad04a',
+        transactionHash:
+          '0x36958af225ec2f96e185865e9b2cde9b1e78ba961425d1c55ba1a595aa9d1bd',
+        transactionIndex: '0x29',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x37a10f2808c05f4a328bdac9a9344358547ae4676ebddc005e24ff887b188fd',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x36031daa264c24520b11d93af622c848b2499b66b41d611bac95e13cfca131a',
+        transactionHash:
+          '0x4d6a214d7b35576973e0656c9732b681196f588fdf9b1bb2825d1d6f6be0dea',
+        transactionIndex: '0x30',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x573ea9a8602e03417a4a31d55d115748f37a08bbb23adf6347cb699743a998d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x224d3c33d3dd10789e7d1075f12c4e279e2c6e81baa6c74801b5e6262f70c83',
+        transactionHash:
+          '0x5a33860913fc94d526b4f24d420c90065eb0d3c109bd6489088baf9ab3a8dc5',
+        transactionIndex: '0x31',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x1d091b30a2d20ca2509579f8beae26934bfdc3725c0b497f50b353b7a3c636f',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x79c0bc2a03570241c27235a2dca7696a658cbdaae0bad5762e30204b2791aba',
+        transactionHash:
+          '0x66e1fa9fb21d0ee77a3651e3b6ee6946b2a5b64abd6acb42927f96c590f5025',
+        transactionIndex: '0x32',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x23a4d7f2cdf202ea916bbb07814f5bc32ae50e9cdf1fde114d8e6e808b1e965',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x1730b20846e904de106ec706a41d7153c8fce8f670006e239989f76539659af',
+        transactionHash:
+          '0xe9511f0fc83ddae4110d98f49e9418bd7aecad5df00b516be368b1b381cc06',
+        transactionIndex: '0x33',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x4c1d9da136846ab084ae18cf6ce7a652df7793b666a16ce46b1bf5850cc739d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x36031daa264c24520b11d93af622c848b2499b66b41d611bac95e13cfca131a',
+        transactionHash:
+          '0x5349d195da12fa79cf132309f386feb47cb396b587ae2298c441a797425994b',
+        transactionIndex: '0x34',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x4c1d9da136846ab084ae18cf6ce7a652df7793b666a16ce46b1bf5850cc739d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x36031daa264c24520b11d93af622c848b2499b66b41d611bac95e13cfca131a',
+        transactionHash:
+          '0x6a90936d950441331f9cb3ec840c048b4f0f88f3156ccc513c86a15e9dc5eb4',
+        transactionIndex: '0x35',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x143fe26927dd6a302522ea1cd6a821ab06b3753194acee38d88a85c93b3cbc6',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x12b0847cf221531f729090c10161692401c94994a033467c496db63a3d5facb',
+        transactionHash:
+          '0x4b0cf41e3d6c84567f85b257c251a156e531ca85d1d7d61f6b3ef46e3488315',
+        transactionIndex: '0x36',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x37a10f2808c05f4a328bdac9a9344358547ae4676ebddc005e24ff887b188fd',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x36031daa264c24520b11d93af622c848b2499b66b41d611bac95e13cfca131a',
+        transactionHash:
+          '0x510f5e1a930cf03508e7c599e2e9bc2ce1ed0be982257ecdeae3e750bf4a4b8',
+        transactionIndex: '0x37',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x23a4d7f2cdf202ea916bbb07814f5bc32ae50e9cdf1fde114d8e6e808b1e965',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x132303a40ae2f271f4e1b707596a63f6f2921c4d400b38822548ed1bb0cbe0',
+        transactionHash:
+          '0x6c206353405f4e0cf532f1e34ecee79dcff1e02f92d135fff92687314f68f07',
+        transactionIndex: '0x38',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x1d091b30a2d20ca2509579f8beae26934bfdc3725c0b497f50b353b7a3c636f',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x424ce41bea300e095e763d9fb4316af76c9da9c0fa926009f25b42b6f4ad04a',
+        transactionHash:
+          '0x4baf1f85aa4e8d7fedc355e9fd246c8120ce085f15294fc196214e0830cdc4b',
+        transactionIndex: '0x39',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x143fe26927dd6a302522ea1cd6a821ab06b3753194acee38d88a85c93b3cbc6',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x79c0bc2a03570241c27235a2dca7696a658cbdaae0bad5762e30204b2791aba',
+        transactionHash:
+          '0x5de0c10ff59100f6a6fbb436beb54c3dfa9b3980f0795b416fb753824500eb7',
+        transactionIndex: '0x40',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x143fe26927dd6a302522ea1cd6a821ab06b3753194acee38d88a85c93b3cbc6',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x53d5cb0de4f03f9ac31f83621cef64b9372bf1f690fdfa2ba8a07c316e67817',
+        transactionHash:
+          '0x530e54d6e5206cea095b20d2c05794a7c387a55d74c8572a8e801aa440a8e37',
+        transactionIndex: '0x41',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x4c1d9da136846ab084ae18cf6ce7a652df7793b666a16ce46b1bf5850cc739d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x36031daa264c24520b11d93af622c848b2499b66b41d611bac95e13cfca131a',
+        transactionHash:
+          '0x3f5f67e77d9d62615eeff2e204e7365d9ffe6b0a511d288c6de7dde0c9e1778',
+        transactionIndex: '0x42',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x4c1d9da136846ab084ae18cf6ce7a652df7793b666a16ce46b1bf5850cc739d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x36031daa264c24520b11d93af622c848b2499b66b41d611bac95e13cfca131a',
+        transactionHash:
+          '0x66ecc79b513e42ffbeef2d8e57e06cb08e0d8386ea45be0c85ad8b68ccfb29e',
+        transactionIndex: '0x43',
+        type: '0x2',
+      },
+      {
+        blockHash:
+          '0x7410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        blockNumber: 62941,
+        contractAddress: null,
+        cumulativeGasUsed: '0x0',
+        effectiveGasPrice: '0xb67a2431',
+        from: '0x573ea9a8602e03417a4a31d55d115748f37a08bbb23adf6347cb699743a998d',
+        gasUsed: '0x0',
+        logs: [],
+        logsBloom: '0x0',
+        status: '0x1',
+        to: '0x1730b20846e904de106ec706a41d7153c8fce8f670006e239989f76539659af',
+        transactionHash:
+          '0x130b452e837b75b4162e03619d92ebda78c5953c9e8893436a49b37b2f4096b',
+        transactionIndex: '0x44',
+        type: '0x2',
+      },
+    ])
+  })
+})
