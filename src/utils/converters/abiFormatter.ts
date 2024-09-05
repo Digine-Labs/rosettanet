@@ -3,7 +3,7 @@ import { StarknetTypeMember } from '../../types/types'
 
 interface SolidityType {
     type: string, // basic are directly name changed, conversion needs to call formatter for actual value
-    value: string | Array<string>,
+    value: string | SolidityType | Array<string | SolidityType>,
     formatter?: (value: string | Array<string>) => string // param: starknet value returns solidity value
 }
 
@@ -19,7 +19,14 @@ const starknetElementaryTypes: Array<Array<string | SolidityType>> = [
     ['core::starknet::contract_address::ContractAddress', {type: 'conversion', value: 'uint256'}], //TODO: formatter ekle
     ['core::starknet::eth_address::EthAddress', {type: 'basic', value: 'address'}],
     ['core::starknet::class_hash::ClassHash', {type: 'basic', value: 'uint256'}],
-    ['bool', {type: 'basic', value: 'bool'}],
+    ['core::bool', {type: 'basic', value: 'bool'}],
+    ['core::bytes_31::bytes31', {type: 'basic', value: 'bytes31'}],
+    ['core::integer::i8', {type: 'basic', value: 'int8'}],
+    ['core::integer::i16', {type: 'basic', value: 'int16'}],
+    ['core::integer::i32', {type: 'basic', value: 'int32'}],
+    ['core::integer::i64', {type: 'basic', value: 'int64'}],
+    ['core::integer::i128', {type: 'basic', value: 'int128'}],
+    ['core::integer::i256', {type: 'basic', value: 'int256'}],
 ]
 
 function initializeStarknetConvertableTypes(): Map<string, SolidityType> {
@@ -43,16 +50,17 @@ export function getSolidityTypesFromStarknetABI(classABI: Abi): Map<string, Soli
         return initialMap
     }
 
-    const customStructs = readCustomStructs(classABI)
+    const structsIncludedMapping = readCustomStructs(classABI)
 
 
-    return initialMap // fix
+    return structsIncludedMapping
 } 
 
 // Returns what custom structs includes
-function readCustomStructs(classABI: Abi) {
+function readCustomStructs(classABI: Abi): Map<string, SolidityType> {
+    const elementaries = initializeStarknetConvertableTypes();
     if (classABI.length == 0) {
-        return [[]]
+        return elementaries
     }
 
     const customStructs = classABI.filter(x => x.type === 'struct')
@@ -73,27 +81,94 @@ function readCustomStructs(classABI: Abi) {
     }
 
     // Mevcut mappingi al ve custom structlari elementarylerle matchle
-    const formattedCustomStructs = []
-
-    const elementaries = initializeStarknetConvertableTypes();
+    
     if(structs.length == 0) {
-        return [[]]
+        return elementaries
     }
+    console.log(structs)
+    while(structs.length != 0) {
+        for(let i = 0; i < structs.length; i++) {
+            const currentStruct: Array<string | SolidityType> = structs[i];
+            if(typeof currentStruct[1] === 'string' || typeof currentStruct[0] !== 'string') {
+                continue;
+            }
+            if(elementaries.has(currentStruct[0])) {
+                structs.splice(i, 1) // TODO: filter structs outside of while loop
+                continue;
+            }
 
-    for(const struct of structs) {
-        const nonElementaryTypes = (struct[1].value as Array<string>).filter(val => !elementaries.has(val))
-        if(nonElementaryTypes.length > 0) {
-            console.log(`Type ${struct[0]} contains non elem type`)
-            continue
+            // Check if array contains non elem type. to achieve this. We add array values inside temp struct value array
+            const structElements: Array<string> = Array.from((currentStruct[1].value as Array<string>));
+
+            structElements.map((elem) => {
+                if(isArrayLike(elem)) {
+                    const deepElements = getDeepArrayTypes(elem)
+                    structElements.push(...deepElements)
+                }
+            })
+
+            const arraysRemovedElements = structElements.filter((elem) => !isArrayLike(elem))
+            // Burada arrayler cikip icerisindeki typelarda listeye eklendi
+
+            const nonElementaryTypes = (arraysRemovedElements as Array<string>).filter(val => !elementaries.has(val))
+            if(nonElementaryTypes.length > 0) {
+                continue;
+            }
+
+            elementaries.set(currentStruct[0], {
+                type: "struct",
+                value: currentStruct[1].value
+            })
+
+            structs.splice(i, 1)
+            
         }
-
-        console.log(struct)
     }
+
+    return elementaries
 }
 
 function isArrayLike(type: string): boolean {
-    if (type.indexOf('<') > -1 || type.indexOf('>') > -1) {
+    if (type.indexOf('<') > -1 && type.indexOf('>') > -1) {
         return true
-      }
+    }
     return false
+}
+
+function isTuple(type: string): boolean {
+    if(type.indexOf('(') > -1 && type.indexOf(')') > -1) {
+        return true
+    }
+    return false
+}
+
+function getArrayStruct(type: string): SolidityType {
+    const arrayChar = type.indexOf('<')
+    const arrayEndChar = type.lastIndexOf('>')
+    const typeName = type.slice(arrayChar+1, arrayEndChar)
+    // can it be also array ?
+    if(isArrayLike(typeName)) {
+        const deepArray = getArrayStruct(typeName)
+        return {
+            type: 'array',
+            value: deepArray
+        }
+    }
+
+    return {
+        type: 'array',
+        value: typeName
+    }
+}
+
+function getDeepArrayTypes(type: string): Array<string> {
+    const typeNameChar = type.lastIndexOf('<')
+    const typeNameLastChar = type.indexOf('>')
+    const typeName = type.slice(typeNameChar+1, typeNameLastChar)
+
+    if(isTuple(typeName)) {
+        return typeName.replace('(','').replace(')','').replace(' ','').split(',')
+    }
+
+    return [typeName]
 }
