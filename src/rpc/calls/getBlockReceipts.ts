@@ -149,8 +149,6 @@ export async function getBlockReceiptsHandler(
       type: '0x2',
     }))
 
-    console.log(transactions)
-
     return {
       jsonrpc: request.jsonrpc,
       id: request.id,
