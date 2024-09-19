@@ -37,6 +37,7 @@ import { getUncleByBlockNumberAndIndexHandler } from './calls/getUncleByBlockNum
 import { getUncleCountByBlockNumberHandler } from './calls/getUncleCountByBlockNumber'
 import { getUncleCountByBlockHashHandler } from './calls/getUncleCountByBlockHash'
 import { unsubscribeHandler } from './calls/unsubscribe'
+import { traceBlockHandler } from './calls/traceBlock'
 
 const router: Router = Router()
 
@@ -214,6 +215,11 @@ Methods.set('eth_getUncleCountByBlockHash', {
 Methods.set('eth_unsubscribe', {
   method: 'eth_unsubscribe',
   handler: unsubscribeHandler,
+})
+
+Methods.set('trace_block', {
+  method: 'trace_block',
+  handler: traceBlockHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {

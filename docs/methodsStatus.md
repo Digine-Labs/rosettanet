@@ -790,15 +790,15 @@ Tests:
 
 RPC-convert:
 
-- [ ] Finished
-- [x] Not Finished
+- [x] Finished
+- [ ] Not Finished
 
 Tests:
 
-- [ ] Finished
+- [x] Finished
 - [ ] Not Finished
 
-**Why (if not finished) :**
+**Why (if not finished) :** Not supported in Starknet. Returning error with message 'the method trace_block does not exist/is not available'
 
 ## trace_call
 
