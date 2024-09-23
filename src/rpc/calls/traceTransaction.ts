@@ -199,6 +199,52 @@ export async function traceTransactionHandler(
         type: response.result.execute_invocation.call_type,
       }
     }
+  } else if (
+    isSnTraceTransactionResponse(response) &&
+    response.result.constructor_invocation
+  ) {
+    ethResponse = {
+      action: {
+        from: response.result.constructor_invocation.caller_address,
+        callType: response.result.constructor_invocation.call_type,
+        input: response.result.constructor_invocation.calldata,
+        to: response.result.constructor_invocation.contract_address,
+      },
+      blockHash: '0x0',
+      blockNumber: '0x0',
+      result: {
+        gasUsed: '0x0',
+        output: response.result.constructor_invocation.result,
+      },
+      subtraces: 0,
+      traceAddress: [],
+      transactionHash: transactionHash,
+      transactionPosition: 0,
+      type: response.result.constructor_invocation.call_type,
+    }
+  } else if (
+    isSnTraceTransactionResponse(response) &&
+    response.result.function_invocation
+  ) {
+    ethResponse = {
+      action: {
+        from: response.result.function_invocation.caller_address,
+        callType: response.result.function_invocation.call_type,
+        input: response.result.function_invocation.calldata,
+        to: response.result.function_invocation.contract_address,
+      },
+      blockHash: '0x0',
+      blockNumber: '0x0',
+      result: {
+        gasUsed: '0x0',
+        output: response.result.function_invocation.result,
+      },
+      subtraces: 0,
+      traceAddress: [],
+      transactionHash: transactionHash,
+      transactionPosition: 0,
+      type: response.result.function_invocation.call_type,
+    }
   }
 
   return {
