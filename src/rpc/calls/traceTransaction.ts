@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 
@@ -77,7 +79,6 @@ export async function traceTransactionHandler(
   }
 
   function isSnTraceTransactionResponse(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     response: any,
   ): response is snTraceTransactionResponse {
     return (
@@ -115,16 +116,7 @@ export async function traceTransactionHandler(
     }
   }
 
-  let allInvocations: Invocation[] = []
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let ethResponse: any = []
-
-  // Helper function to check for nested invocations
-  function hasNestedInvocationCheck(invocation: Invocation): boolean {
-    return invocation.calls && invocation.calls.length > 0
-      ? invocation.calls.some(call => hasNestedInvocationCheck(call))
-      : false
-  }
 
   // Helper function to extract all nested invocations
   function extractAllInvocations(invocation: Invocation): Invocation[] {
