@@ -82,19 +82,6 @@ export async function traceBlockHandler(
     }
   }
 
-  function isSnTraceBlockResponse(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    response: any,
-  ): response is snTraceBlockResponse {
-    return (
-      typeof response === 'object' &&
-      response !== null &&
-      'result' in response &&
-      typeof response.result === 'object' &&
-      'type' in response.result
-    )
-  }
-
   const blockNumber = request.params[0] as string
 
   // Validate the blockNumber
@@ -131,10 +118,10 @@ export async function traceBlockHandler(
       },
     }
   }
-
-  let resultArray: any = response.result
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let ethResponseArray: any = []
+  const resultArray: any = response.result
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const ethResponseArray: any = []
 
   function countAllInvocations(invocation: Invocation): number {
     let count = 1
