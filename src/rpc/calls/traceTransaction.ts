@@ -119,131 +119,81 @@ export async function traceTransactionHandler(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let ethResponse: any = []
 
-  if (
-    isSnTraceTransactionResponse(response) &&
-    response.result.execute_invocation
-  ) {
-    const hasNestedInvocationCheck = (invocation: Invocation): boolean => {
-      // Check if the 'calls' array has nested invocations
-      if (invocation.calls && invocation.calls.length > 0) {
-        for (const call of invocation.calls) {
-          if (hasNestedInvocationCheck(call)) {
-            return true // Found nested invocation
-          }
-        }
-        return true // At least one call exists
-      }
-      return false // No nested invocations
+  // Helper function to check for nested invocations
+  function hasNestedInvocationCheck(invocation: Invocation): boolean {
+    return invocation.calls && invocation.calls.length > 0
+      ? invocation.calls.some(call => hasNestedInvocationCheck(call))
+      : false
+  }
+
+  // Helper function to extract all nested invocations
+  function extractAllInvocations(invocation: Invocation): Invocation[] {
+    const invocations: Invocation[] = [invocation] // Start with the current invocation
+
+    // Recursively extract nested invocations from the 'calls' array
+    for (const call of invocation.calls) {
+      invocations.push(...extractAllInvocations(call)) // Add all nested invocations
     }
 
-    const hasNestedInvocation = hasNestedInvocationCheck(
+    return invocations
+  }
+
+  function generateEthResponse(
+    invocation: Invocation,
+    transactionHash: string,
+  ) {
+    return {
+      action: {
+        from: invocation.caller_address, // TODO: handle address conversion
+        callType: invocation.call_type, // TODO: handle call type conversion for "LIBRARY_CALL" and "DELEGATE"
+        gas: '0x0',
+        input: invocation.calldata, // TODO: possibly join array for Ethereum format
+        to: invocation.contract_address,
+      },
+      blockHash: '0x0',
+      blockNumber: '0x0',
+      result: {
+        gasUsed: '0x0',
+        output: invocation.result, // TODO: possibly join array for Ethereum format
+      },
+      subtraces: 0,
+      traceAddress: [],
+      transactionHash: transactionHash,
+      transactionPosition: 0,
+      type: invocation.call_type, // TODO: handle call type conversion
+    }
+  }
+
+  function processInvocation(
+    invocation: Invocation | undefined,
+    transactionHash: string,
+  ): any[] | undefined {
+    if (!invocation) return undefined
+
+    const allInvocations = extractAllInvocations(invocation) // Extract all invocations including nested ones
+
+    // Map all invocations to ethResponse objects
+    return allInvocations.map(inv => generateEthResponse(inv, transactionHash))
+  }
+
+  if (isSnTraceTransactionResponse(response)) {
+    const executeInvocation = processInvocation(
       response.result.execute_invocation,
+      transactionHash,
     )
 
-    if (hasNestedInvocation) {
-      // Function to extract all nested invocation objects
-      // eslint-disable-next-line no-inner-declarations
-      function extractAllInvocations(invocation: Invocation): Invocation[] {
-        const invocations: Invocation[] = [invocation] // Start with the current invocation
+    const constructorInvocation = processInvocation(
+      response.result.constructor_invocation,
+      transactionHash,
+    )
 
-        // Recursively extract nested invocations from the 'calls' array
-        for (const call of invocation.calls) {
-          invocations.push(...extractAllInvocations(call)) // Recursively get nested invocations
-        }
+    const functionInvocation = processInvocation(
+      response.result.function_invocation,
+      transactionHash,
+    )
 
-        return invocations
-      }
-
-      // Example usage with the provided invocation structure
-      allInvocations = extractAllInvocations(response.result.execute_invocation)
-
-      ethResponse = allInvocations.map(invocation => ({
-        action: {
-          from: invocation.caller_address, //TODO: should be getSnAddressFromEthAddress(invocation.caller_address), but not every address added to lens it can cause problems right now it need fix
-          callType: invocation.call_type, //todo: calltype in sn can be different then eth find a way to convert "LIBRARY_CALL" and "DELEGATE". "CALL" should be same, maybe can lowercase it
-          gas: '0x0',
-          input: invocation.calldata, //todo: maybe need to join() array of strings to make it more like ethereum
-          to: invocation.contract_address,
-        },
-        blockHash: '0x0',
-        blockNumber: '0x0',
-        result: {
-          gasUsed: '0x0',
-          output: invocation.result, //todo: maybe need to join() array of strings to make it more like ethereum
-        },
-        subtraces: 0,
-        traceAddress: [],
-        transactionHash: transactionHash,
-        transactionPosition: 0,
-        type: invocation.call_type, //todo: calltype in sn can be different then eth find a way to convert "LIBRARY_CALL" and "DELEGATE". "CALL" should be same, maybe can lowercase it
-      }))
-    } else {
-      ethResponse = {
-        action: {
-          from: response.result.execute_invocation.caller_address,
-          callType: response.result.execute_invocation.call_type,
-          input: response.result.execute_invocation.calldata,
-          to: response.result.execute_invocation.contract_address,
-        },
-        blockHash: '0x0',
-        blockNumber: '0x0',
-        result: {
-          gasUsed: '0x0',
-          output: response.result.execute_invocation.result,
-        },
-        subtraces: 0,
-        traceAddress: [],
-        transactionHash: transactionHash,
-        transactionPosition: 0,
-        type: response.result.execute_invocation.call_type,
-      }
-    }
-  } else if (
-    isSnTraceTransactionResponse(response) &&
-    response.result.constructor_invocation
-  ) {
-    ethResponse = {
-      action: {
-        from: response.result.constructor_invocation.caller_address,
-        callType: response.result.constructor_invocation.call_type,
-        input: response.result.constructor_invocation.calldata,
-        to: response.result.constructor_invocation.contract_address,
-      },
-      blockHash: '0x0',
-      blockNumber: '0x0',
-      result: {
-        gasUsed: '0x0',
-        output: response.result.constructor_invocation.result,
-      },
-      subtraces: 0,
-      traceAddress: [],
-      transactionHash: transactionHash,
-      transactionPosition: 0,
-      type: response.result.constructor_invocation.call_type,
-    }
-  } else if (
-    isSnTraceTransactionResponse(response) &&
-    response.result.function_invocation
-  ) {
-    ethResponse = {
-      action: {
-        from: response.result.function_invocation.caller_address,
-        callType: response.result.function_invocation.call_type,
-        input: response.result.function_invocation.calldata,
-        to: response.result.function_invocation.contract_address,
-      },
-      blockHash: '0x0',
-      blockNumber: '0x0',
-      result: {
-        gasUsed: '0x0',
-        output: response.result.function_invocation.result,
-      },
-      subtraces: 0,
-      traceAddress: [],
-      transactionHash: transactionHash,
-      transactionPosition: 0,
-      type: response.result.function_invocation.call_type,
-    }
+    ethResponse =
+      executeInvocation || constructorInvocation || functionInvocation
   }
 
   return {
