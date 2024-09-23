@@ -860,9 +860,9 @@ RPC-convert:
 Tests:
 
 - [ ] Finished
-- [ ] Not Finished
+- [x] Not Finished
 
-**Why (if not finished) :**
+**Why (if not finished) :** MOSTLY FINISHED HAS TODO'S INSIDE
 
 ## web3_clientVersion
 
