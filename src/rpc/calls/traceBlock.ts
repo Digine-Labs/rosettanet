@@ -118,6 +118,7 @@ export async function traceBlockHandler(
       },
     }
   }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const resultArray: any = response.result
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
