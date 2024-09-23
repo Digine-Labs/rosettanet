@@ -119,7 +119,6 @@ export async function traceTransactionHandler(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let ethResponse: any = []
 
-  //execute_invocation yok ise ne yapılmalı?
   if (
     isSnTraceTransactionResponse(response) &&
     response.result.execute_invocation
