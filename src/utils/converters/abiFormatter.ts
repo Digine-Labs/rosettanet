@@ -27,6 +27,19 @@ const starknetElementaryTypes: Array<Array<string | SolidityType>> = [
     ['core::integer::i64', {type: 'basic', value: 'int64'}],
     ['core::integer::i128', {type: 'basic', value: 'int128'}],
     ['core::integer::i256', {type: 'basic', value: 'int256'}],
+    // Arrays
+    ['core::array::Array::<core::integer::u8>', {type: 'array', value: '[]uint8'}],
+    ['core::array::Array::<core::integer::u16>', {type: 'array', value: '[]uint16'}],
+    ['core::array::Array::<core::integer::u32>', {type: 'array', value: '[]uint32'}],
+    ['core::array::Array::<core::integer::u64>', {type: 'array', value: '[]uint64'}],
+    ['core::array::Array::<core::integer::u128>', {type: 'array', value: '[]uint128'}],
+    ['core::array::Array::<core::integer::u256>', {type: 'array', value: '[]uint256'}],
+    ['core::array::Array::<core::integer::i8>', {type: 'array', value: '[]int8'}],
+    ['core::array::Array::<core::integer::i16>', {type: 'array', value: '[]int16'}],
+    ['core::array::Array::<core::integer::i32>', {type: 'array', value: '[]int32'}],
+    ['core::array::Array::<core::integer::i64>', {type: 'array', value: '[]int64'}],
+    ['core::array::Array::<core::integer::i128>', {type: 'array', value: '[]int128'}],
+    ['core::array::Array::<core::integer::i256>', {type: 'array', value: '[]int256'}],
 ]
 
 function initializeStarknetConvertableTypes(): Map<string, SolidityType> {
@@ -85,7 +98,7 @@ function readCustomStructs(classABI: Abi): Map<string, SolidityType> {
     if(structs.length == 0) {
         return elementaries
     }
-    console.log(structs)
+
     while(structs.length != 0) {
         for(let i = 0; i < structs.length; i++) {
             const currentStruct: Array<string | SolidityType> = structs[i];
@@ -124,8 +137,25 @@ function readCustomStructs(classABI: Abi): Map<string, SolidityType> {
             
         }
     }
-
+    // TODO: check all types correct?
     return elementaries
+}
+
+// input map ve starknet veri tipi: core::integer::u64
+// output uint64
+function convertStarknetTypeToSolidity(map: Map<string, SolidityType>, type: string): string | Array<string> {
+    const isArray = isArrayLike(type) // true if type has array chars
+    const isTupledType = isTuple(type) // true if type has tuple chars
+
+    const mapValue = map.get(type);
+
+    if(!mapValue) {
+        return '' // TODO: error handling
+    }
+    
+    if(mapValue.type === 'basic' && typeof mapValue.value === 'string') { // In basic types, value always string.
+        return mapValue.value
+    }
 }
 
 function isArrayLike(type: string): boolean {
