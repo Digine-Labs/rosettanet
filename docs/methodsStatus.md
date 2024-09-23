@@ -798,7 +798,7 @@ Tests:
 - [ ] Finished
 - [ ] Not Finished
 
-**Why (if not finished) :**
+**Why (if not finished) :** MOSTLY FINISHED HAS TODO'S SAME WITH TRACE_TRANSACTION
 
 ## trace_call
 
