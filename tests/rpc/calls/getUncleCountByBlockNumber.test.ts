@@ -7,7 +7,7 @@ describe('Test getUncleCountByBlockNumberHandler', () => {
       jsonrpc: '2.0',
       method: 'eth_getUncleCountByBlockNumber',
       params: [
-        '0x07410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        '0x410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
       ],
       id: 1,
     }
@@ -19,7 +19,7 @@ describe('Test getUncleCountByBlockNumberHandler', () => {
     )
   })
 
-  it('Gives error with wrong block hash', async () => {
+  it('Gives error with wrong block number', async () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getUncleCountByBlockNumber',
