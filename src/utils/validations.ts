@@ -48,6 +48,19 @@ export function validateBlockNumber(value: string | number): boolean {
   if (typeof value === 'number') {
     return false // Only string hex supported on ethereum
   }
+
+  const blockNumberWithoutPrefix: string = removeHexPrefix(value)
+
+  // Ensure block number does not starts with "0" after hex prefix
+  if (blockNumberWithoutPrefix[0] === '0') {
+    return false
+  }
+
+  // Ensure block number's length is > 64 after hex prefix
+  if (blockNumberWithoutPrefix.length > 64) {
+    return false
+  }
+
   switch (value) {
     case 'latest':
       return true

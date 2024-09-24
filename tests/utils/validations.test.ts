@@ -2,6 +2,7 @@ import {
   validateEthAddress,
   validateSnAddress,
   validateBlockNumber,
+  validateBlockHash,
 } from '../../src/utils/validations'
 
 describe('Test Address validations', () => {
@@ -124,5 +125,31 @@ describe('Validate block number', () => {
     const result = validateBlockNumber('finalized')
 
     expect(result).toBe(false)
+  })
+
+  it('return false with hex number with leading zero digits', () => {
+    const result = validateBlockNumber(
+      '0x05244f782a69ae4833db6eeea887fef835e11561f3f957af8194a62a7e3cbd4b',
+    )
+
+    expect(result).toBe(false)
+  })
+
+  it('return false with hex number > 64 bits', () => {
+    const result = validateBlockNumber(
+      '0x34534244f782a69ae4833db6eeea887fef835e115000000000061f3f957af8194a62a7e3cbd4b',
+    )
+
+    expect(result).toBe(false)
+  })
+})
+
+describe('Validate block hash', () => {
+  it('should return true with correct block hash', () => {
+    const result = validateBlockHash(
+      '0xf5244f782a69ae4833db6eeea887fef835e11561f3f957af8194a62a7e3cbd4b',
+    )
+
+    expect(result).toBe(true)
   })
 })
