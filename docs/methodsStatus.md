@@ -656,21 +656,21 @@ Tests:
 
 **Why (if not finished) :** Dynamic network. Tests needs improvement.
 
-## eth_newFilter
+## eth_newBlockFilter
 
 **Status :**
 
 RPC-convert:
 
-- [ ] Finished
-- [x] Not Finished
+- [x] Finished
+- [ ] Not Finished
 
 Tests:
 
-- [ ] Finished
+- [x] Finished
 - [ ] Not Finished
 
-**Why (if not finished) :**
+**Why (if not finished) :** Not supported in Starknet. Returning error with message 'the method eth_newBlockFilter does not exist/is not available'
 
 ## eth_newPendingTransactionFilter
 
