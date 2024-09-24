@@ -3,7 +3,8 @@ import { StarknetTypeMember } from '../../types/types'
 
 interface SolidityType {
     type: string, // basic are directly name changed, conversion needs to call formatter for actual value
-    value: string | SolidityType | Array<string | SolidityType>,
+    value?: string | Array<string>,
+    properties?: string | Array<string>,
     formatter?: (value: string | Array<string>) => string // param: starknet value returns solidity value
 }
 
@@ -28,18 +29,62 @@ const starknetElementaryTypes: Array<Array<string | SolidityType>> = [
     ['core::integer::i128', {type: 'basic', value: 'int128'}],
     ['core::integer::i256', {type: 'basic', value: 'int256'}],
     // Arrays
-    ['core::array::Array::<core::integer::u8>', {type: 'array', value: '[]uint8'}],
-    ['core::array::Array::<core::integer::u16>', {type: 'array', value: '[]uint16'}],
-    ['core::array::Array::<core::integer::u32>', {type: 'array', value: '[]uint32'}],
-    ['core::array::Array::<core::integer::u64>', {type: 'array', value: '[]uint64'}],
-    ['core::array::Array::<core::integer::u128>', {type: 'array', value: '[]uint128'}],
-    ['core::array::Array::<core::integer::u256>', {type: 'array', value: '[]uint256'}],
-    ['core::array::Array::<core::integer::i8>', {type: 'array', value: '[]int8'}],
-    ['core::array::Array::<core::integer::i16>', {type: 'array', value: '[]int16'}],
-    ['core::array::Array::<core::integer::i32>', {type: 'array', value: '[]int32'}],
-    ['core::array::Array::<core::integer::i64>', {type: 'array', value: '[]int64'}],
-    ['core::array::Array::<core::integer::i128>', {type: 'array', value: '[]int128'}],
-    ['core::array::Array::<core::integer::i256>', {type: 'array', value: '[]int256'}],
+    ['core::array::Array::<core::integer::u8>', {type: 'array', value: 'uint8[]'}],
+    ['core::array::Array::<core::integer::u16>', {type: 'array', value: 'uint16[]'}],
+    ['core::array::Array::<core::integer::u32>', {type: 'array', value: 'uint32[]'}],
+    ['core::array::Array::<core::integer::u64>', {type: 'array', value: 'uint64[]'}],
+    ['core::array::Array::<core::integer::u128>', {type: 'array', value: 'uint128[]'}],
+    ['core::array::Array::<core::integer::u256>', {type: 'array', value: 'uint256[]'}],
+    ['core::array::Array::<core::integer::i8>', {type: 'array', value: 'int8[]'}],
+    ['core::array::Array::<core::integer::i16>', {type: 'array', value: 'int16[]'}],
+    ['core::array::Array::<core::integer::i32>', {type: 'array', value: 'int32[]'}],
+    ['core::array::Array::<core::integer::i64>', {type: 'array', value: 'int64[]'}],
+    ['core::array::Array::<core::integer::i128>', {type: 'array', value: 'int128[]'}],
+    ['core::array::Array::<core::integer::i256>', {type: 'array', value: 'int256[]'}],
+    ['core::array::Array::<core::felt252>', {type: 'array', value: 'uint256[]'}],
+    ['core::array::Array::<core::starknet::contract_address::ContractAddress>', {type: 'array', value: 'uint256[]'}], // TODO: add formatter
+    ['core::array::Array::<core::starknet::eth_address::EthAddress>', {type: 'array', value: 'address[]'}],
+    ['core::array::Array::<core::starknet::class_hash::ClassHash>', {type: 'array', value: 'uint256[]'}],
+    ['core::array::Array::<core::bool>', {type: 'array', value: 'bool[]'}],
+    ['core::array::Array::<core::bytes_31::bytes31>', {type: 'array', value: 'bytes31[]'}],
+    // Options
+    ['core::option::Option::<core::integer::u8>', {type: 'array', value: 'uint8[]'}],
+    ['core::option::Option::<core::integer::u16>', {type: 'array', value: 'uint16[]'}],
+    ['core::option::Option::<core::integer::u32>', {type: 'array', value: 'uint32[]'}],
+    ['core::option::Option::<core::integer::u64>', {type: 'array', value: 'uint64[]'}],
+    ['core::option::Option::<core::integer::u128>', {type: 'array', value: 'uint128[]'}],
+    ['core::option::Option::<core::integer::u256>', {type: 'array', value: 'uint256[]'}],
+    ['core::option::Option::<core::integer::i8>', {type: 'array', value: 'int8[]'}],
+    ['core::option::Option::<core::integer::i16>', {type: 'array', value: 'int16[]'}],
+    ['core::option::Option::<core::integer::i32>', {type: 'array', value: 'int32[]'}],
+    ['core::option::Option::<core::integer::i64>', {type: 'array', value: 'int64[]'}],
+    ['core::option::Option::<core::integer::i128>', {type: 'array', value: 'int128[]'}],
+    ['core::option::Option::<core::integer::i256>', {type: 'array', value: 'int256[]'}],
+    ['core::option::Option::<core::felt252>', {type: 'array', value: 'uint256[]'}],
+    ['core::option::Option::<core::starknet::contract_address::ContractAddress>', {type: 'array', value: 'uint256[]'}], // TODO: add formatter
+    ['core::option::Option::<core::starknet::eth_address::EthAddress>', {type: 'array', value: 'address[]'}],
+    ['core::option::Option::<core::starknet::class_hash::ClassHash>', {type: 'array', value: 'uint256[]'}],
+    ['core::option::Option::<core::bool>', {type: 'array', value: 'bool[]'}],
+    ['core::option::Option::<core::bytes_31::bytes31>', {type: 'array', value: 'bytes31[]'}],
+    // Spans
+    ['core::array::Span::<core::integer::u8>', {type: 'array', value: 'uint8[]'}],
+    ['core::array::Span::<core::integer::u16>', {type: 'array', value: 'uint16[]'}],
+    ['core::array::Span::<core::integer::u32>', {type: 'array', value: 'uint32[]'}],
+    ['core::array::Span::<core::integer::u64>', {type: 'array', value: 'uint64[]'}],
+    ['core::array::Span::<core::integer::u128>', {type: 'array', value: 'uint128[]'}],
+    ['core::array::Span::<core::integer::u256>', {type: 'array', value: 'uint256[]'}],
+    ['core::array::Span::<core::integer::i8>', {type: 'array', value: 'int8[]'}],
+    ['core::array::Span::<core::integer::i16>', {type: 'array', value: 'int16[]'}],
+    ['core::array::Span::<core::integer::i32>', {type: 'array', value: 'int32[]'}],
+    ['core::array::Span::<core::integer::i64>', {type: 'array', value: 'int64[]'}],
+    ['core::array::Span::<core::integer::i128>', {type: 'array', value: 'int128[]'}],
+    ['core::array::Span::<core::integer::i256>', {type: 'array', value: 'int256[]'}],
+    ['core::array::Span::<core::felt252>', {type: 'array', value: 'uint256[]'}],
+    ['core::array::Span::<core::starknet::contract_address::ContractAddress>', {type: 'array', value: 'uint256[]'}], // TODO: add formatter
+    ['core::array::Span::<core::starknet::eth_address::EthAddress>', {type: 'array', value: 'address[]'}],
+    ['core::array::Span::<core::starknet::class_hash::ClassHash>', {type: 'array', value: 'uint256[]'}],
+    ['core::array::Span::<core::bool>', {type: 'array', value: 'bool[]'}],
+    ['core::array::Span::<core::bytes_31::bytes31>', {type: 'array', value: 'bytes31[]'}],
 ]
 
 function initializeStarknetConvertableTypes(): Map<string, SolidityType> {
@@ -127,35 +172,84 @@ function readCustomStructs(classABI: Abi): Map<string, SolidityType> {
             if(nonElementaryTypes.length > 0) {
                 continue;
             }
-
+            if(typeof currentStruct[1].value === 'undefined') {
+                continue
+            }
             elementaries.set(currentStruct[0], {
                 type: "struct",
-                value: currentStruct[1].value
+                properties: currentStruct[1].value,
+                value: convertStarknetTypeToSolidity(elementaries, currentStruct[1].value)
             })
 
             structs.splice(i, 1)
             
         }
     }
+
     // TODO: check all types correct?
+    console.log(elementaries)
     return elementaries
 }
 
 // input map ve starknet veri tipi: core::integer::u64
 // output uint64
-function convertStarknetTypeToSolidity(map: Map<string, SolidityType>, type: string): string | Array<string> {
-    const isArray = isArrayLike(type) // true if type has array chars
-    const isTupledType = isTuple(type) // true if type has tuple chars
+function convertStarknetTypeToSolidity(map: Map<string, SolidityType>, types: string | Array<string>): string | Array<string> {
+    if(Array.isArray(types)) {
+        const convertedTypes: Array<string> = []
+        for(const type of types) {
+            const converted = map.get(type)
+            if(typeof converted === 'undefined') {
+                // TODO: handle not found type
+                continue
+            }
 
-    const mapValue = map.get(type);
+            if(converted.type === 'basic' && typeof converted.value === 'string') {
+                // Basic types values always string because hard coded
+                convertedTypes.push(converted.value)
+            }
 
-    if(!mapValue) {
-        return '' // TODO: error handling
+            // Convert structs
+            if(converted.type === 'struct' && Array.isArray(converted.properties)) {
+                let tuple = `(`
+                for(const structType of converted.properties) {
+                    const convertedStructType = map.get(structType)
+                    tuple = `${tuple}${convertedStructType?.value},`
+                }
+                tuple = `${tuple})`.replace(',)',')')
+                convertedTypes.push(tuple)
+            }
+
+            // Convert arrays
+
+            if(converted.type === 'array') {
+                // TODO: support arrays
+            }
+        }
+        return convertedTypes
     }
+
+    const convertedType = map.get(types)
+    if(typeof convertedType === 'undefined' || Array.isArray(convertedType.value) || typeof convertedType.value === 'undefined') {
+        // TODO: handle error
+        return ''
+    }
+
     
-    if(mapValue.type === 'basic' && typeof mapValue.value === 'string') { // In basic types, value always string.
-        return mapValue.value
+    return convertedType.value
+}
+
+// Inputs tuple type as starknet e.g. (core::integer::u256, core::integer::u256)
+// outputs eth value (uint256,uint256)
+function convertTupleToSolidity(map: Map<string, SolidityType>, elements:string) : string {
+    const snTypes = elements.replace('(','').replace(')','').split(',')
+    let solidityType = `(`
+    for(const type of snTypes) {
+        const solType = map.get(type)
+        solidityType = `${solidityType}${solType},`
     }
+    solidityType = `${solidityType})`.replace(',)',')')
+
+    return solidityType
 }
 
 function isArrayLike(type: string): boolean {
@@ -170,25 +264,6 @@ function isTuple(type: string): boolean {
         return true
     }
     return false
-}
-
-function getArrayStruct(type: string): SolidityType {
-    const arrayChar = type.indexOf('<')
-    const arrayEndChar = type.lastIndexOf('>')
-    const typeName = type.slice(arrayChar+1, arrayEndChar)
-    // can it be also array ?
-    if(isArrayLike(typeName)) {
-        const deepArray = getArrayStruct(typeName)
-        return {
-            type: 'array',
-            value: deepArray
-        }
-    }
-
-    return {
-        type: 'array',
-        value: typeName
-    }
 }
 
 function getDeepArrayTypes(type: string): Array<string> {

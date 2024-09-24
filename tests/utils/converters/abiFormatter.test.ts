@@ -8,57 +8,31 @@ const abi = [
   {
     "type": "struct",
     "name": "core::starknet::eth_address::EthAddress",
-    "members": [
-      {
-        "name": "address",
-        "type": "core::felt252"
-      }
-    ]
+    "members": [{ "name": "address", "type": "core::felt252" }]
   },
   {
     "type": "struct",
     "name": "core::integer::u512",
     "members": [
-      {
-        "name": "limb0",
-        "type": "core::integer::u128"
-      },
-      {
-        "name": "limb1",
-        "type": "core::integer::u128"
-      },
-      {
-        "name": "limb2",
-        "type": "core::integer::u128"
-      },
-      {
-        "name": "limb3",
-        "type": "core::integer::u128"
-      }
+      { "name": "limb0", "type": "core::integer::u128" },
+      { "name": "limb1", "type": "core::integer::u128" },
+      { "name": "limb2", "type": "core::integer::u128" },
+      { "name": "limb3", "type": "core::integer::u128" }
     ]
   },
   {
     "type": "struct",
     "name": "core::integer::u256",
     "members": [
-      {
-        "name": "low",
-        "type": "core::integer::u128"
-      },
-      {
-        "name": "high",
-        "type": "core::integer::u128"
-      }
+      { "name": "low", "type": "core::integer::u128" },
+      { "name": "high", "type": "core::integer::u128" }
     ]
   },
   {
     "type": "struct",
     "name": "cairoabi::exampleStruct1",
     "members": [
-      {
-        "name": "firstVal",
-        "type": "core::integer::u256"
-      },
+      { "name": "firstVal", "type": "core::integer::u256" },
       {
         "name": "secondVal",
         "type": "core::starknet::eth_address::EthAddress"
@@ -69,28 +43,16 @@ const abi = [
     "type": "enum",
     "name": "core::bool",
     "variants": [
-      {
-        "name": "False",
-        "type": "()"
-      },
-      {
-        "name": "True",
-        "type": "()"
-      }
+      { "name": "False", "type": "()" },
+      { "name": "True", "type": "()" }
     ]
   },
   {
     "type": "enum",
     "name": "core::option::Option::<core::integer::u32>",
     "variants": [
-      {
-        "name": "Some",
-        "type": "core::integer::u32"
-      },
-      {
-        "name": "None",
-        "type": "()"
-      }
+      { "name": "Some", "type": "core::integer::u32" },
+      { "name": "None", "type": "()" }
     ]
   },
   {
@@ -107,30 +69,12 @@ const abi = [
     "type": "struct",
     "name": "cairoabi::exampleStruct2",
     "members": [
-      {
-        "name": "firstVal",
-        "type": "core::integer::u64"
-      },
-      {
-        "name": "secondVal",
-        "type": "core::integer::u128"
-      },
-      {
-        "name": "thirdVal",
-        "type": "core::integer::u256"
-      },
-      {
-        "name": "fourthVal",
-        "type": "core::felt252"
-      },
-      {
-        "name": "fifthVal",
-        "type": "core::bytes_31::bytes31"
-      },
-      {
-        "name": "booleanVal",
-        "type": "core::bool"
-      },
+      { "name": "firstVal", "type": "core::integer::u64" },
+      { "name": "secondVal", "type": "core::integer::u128" },
+      { "name": "thirdVal", "type": "core::integer::u256" },
+      { "name": "fourthVal", "type": "core::felt252" },
+      { "name": "fifthVal", "type": "core::bytes_31::bytes31" },
+      { "name": "booleanVal", "type": "core::bool" },
       {
         "name": "firstArr",
         "type": "core::array::Array::<core::integer::u128>"
@@ -165,14 +109,8 @@ const abi = [
     "type": "enum",
     "name": "core::option::Option::<core::integer::u256>",
     "variants": [
-      {
-        "name": "Some",
-        "type": "core::integer::u256"
-      },
-      {
-        "name": "None",
-        "type": "()"
-      }
+      { "name": "Some", "type": "core::integer::u256" },
+      { "name": "None", "type": "()" }
     ]
   },
   {
@@ -193,30 +131,12 @@ const abi = [
         "name": "str",
         "type": "core::array::Array::<cairoabi::exampleStruct2>"
       },
-      {
-        "name": "firstVal",
-        "type": "core::integer::u64"
-      },
-      {
-        "name": "secondVal",
-        "type": "core::integer::u128"
-      },
-      {
-        "name": "thirdVal",
-        "type": "core::integer::u256"
-      },
-      {
-        "name": "fourthVal",
-        "type": "core::felt252"
-      },
-      {
-        "name": "fifthVal",
-        "type": "core::bytes_31::bytes31"
-      },
-      {
-        "name": "booleanVal",
-        "type": "core::bool"
-      },
+      { "name": "firstVal", "type": "core::integer::u64" },
+      { "name": "secondVal", "type": "core::integer::u128" },
+      { "name": "thirdVal", "type": "core::integer::u256" },
+      { "name": "fourthVal", "type": "core::felt252" },
+      { "name": "fifthVal", "type": "core::bytes_31::bytes31" },
+      { "name": "booleanVal", "type": "core::bool" },
       {
         "name": "firstArr",
         "type": "core::array::Array::<core::integer::u128>"
@@ -251,14 +171,8 @@ const abi = [
     "type": "enum",
     "name": "core::option::Option::<core::integer::u128>",
     "variants": [
-      {
-        "name": "Some",
-        "type": "core::integer::u128"
-      },
-      {
-        "name": "None",
-        "type": "()"
-      }
+      { "name": "Some", "type": "core::integer::u128" },
+      { "name": "None", "type": "()" }
     ]
   },
   {
@@ -279,30 +193,13 @@ const abi = [
         "name": "str",
         "type": "core::array::Array::<cairoabi::exampleStruct3>"
       },
-      {
-        "name": "firstVal",
-        "type": "core::integer::u64"
-      },
-      {
-        "name": "secondVal",
-        "type": "core::integer::u128"
-      },
-      {
-        "name": "thirdVal",
-        "type": "core::integer::u256"
-      },
-      {
-        "name": "fourthVal",
-        "type": "core::felt252"
-      },
-      {
-        "name": "fifthVal",
-        "type": "core::bytes_31::bytes31"
-      },
-      {
-        "name": "booleanVal",
-        "type": "core::bool"
-      },
+      { "name": "str2", "type": "cairoabi::exampleStruct3" },
+      { "name": "firstVal", "type": "core::integer::u64" },
+      { "name": "secondVal", "type": "core::integer::u128" },
+      { "name": "thirdVal", "type": "core::integer::u256" },
+      { "name": "fourthVal", "type": "core::felt252" },
+      { "name": "fifthVal", "type": "core::bytes_31::bytes31" },
+      { "name": "booleanVal", "type": "core::bool" },
       {
         "name": "firstArr",
         "type": "core::array::Array::<core::integer::u128>"
@@ -337,14 +234,8 @@ const abi = [
     "type": "struct",
     "name": "alexandria_math::i257::i257",
     "members": [
-      {
-        "name": "abs",
-        "type": "core::integer::u256"
-      },
-      {
-        "name": "is_negative",
-        "type": "core::bool"
-      }
+      { "name": "abs", "type": "core::integer::u256" },
+      { "name": "is_negative", "type": "core::bool" }
     ]
   },
   {
@@ -355,20 +246,10 @@ const abi = [
         "type": "function",
         "name": "twoFelts",
         "inputs": [
-          {
-            "name": "a",
-            "type": "core::felt252"
-          },
-          {
-            "name": "b",
-            "type": "core::felt252"
-          }
+          { "name": "a", "type": "core::felt252" },
+          { "name": "b", "type": "core::felt252" }
         ],
-        "outputs": [
-          {
-            "type": "(core::felt252, core::felt252)"
-          }
-        ],
+        "outputs": [{ "type": "(core::felt252, core::felt252)" }],
         "state_mutability": "view"
       },
       {
@@ -394,17 +275,8 @@ const abi = [
       {
         "type": "function",
         "name": "useUsize",
-        "inputs": [
-          {
-            "name": "usize",
-            "type": "core::integer::u32"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::integer::u32"
-          }
-        ],
+        "inputs": [{ "name": "usize", "type": "core::integer::u32" }],
+        "outputs": [{ "type": "core::integer::u32" }],
         "state_mutability": "view"
       },
       {
@@ -417,222 +289,116 @@ const abi = [
           }
         ],
         "outputs": [
-          {
-            "type": "core::starknet::storage_access::StorageAddress"
-          }
+          { "type": "core::starknet::storage_access::StorageAddress" }
         ],
         "state_mutability": "view"
       },
       {
         "type": "function",
         "name": "useU512",
-        "inputs": [
-          {
-            "name": "u512",
-            "type": "core::integer::u512"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::integer::u512"
-          }
-        ],
+        "inputs": [{ "name": "u512", "type": "core::integer::u512" }],
+        "outputs": [{ "type": "core::integer::u512" }],
         "state_mutability": "view"
       },
       {
         "type": "function",
         "name": "classHash",
         "inputs": [
-          {
-            "name": "cHash",
-            "type": "core::starknet::class_hash::ClassHash"
-          }
+          { "name": "cHash", "type": "core::starknet::class_hash::ClassHash" }
         ],
-        "outputs": [
-          {
-            "type": "core::starknet::class_hash::ClassHash"
-          }
-        ],
+        "outputs": [{ "type": "core::starknet::class_hash::ClassHash" }],
         "state_mutability": "view"
       },
       {
         "type": "function",
         "name": "useExampleStruct1",
-        "inputs": [
-          {
-            "name": "str",
-            "type": "cairoabi::exampleStruct1"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "cairoabi::exampleStruct1"
-          }
-        ],
+        "inputs": [{ "name": "str", "type": "cairoabi::exampleStruct1" }],
+        "outputs": [{ "type": "cairoabi::exampleStruct1" }],
         "state_mutability": "view"
       },
       {
         "type": "function",
         "name": "useExampleStruct2",
-        "inputs": [
-          {
-            "name": "strTwo",
-            "type": "cairoabi::exampleStruct2"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "cairoabi::exampleStruct2"
-          }
-        ],
+        "inputs": [{ "name": "strTwo", "type": "cairoabi::exampleStruct2" }],
+        "outputs": [{ "type": "cairoabi::exampleStruct2" }],
         "state_mutability": "view"
       },
       {
         "type": "function",
         "name": "useExampleStruct3",
         "inputs": [
-          {
-            "name": "strTwo",
-            "type": "cairoabi::exampleStruct2"
-          },
-          {
-            "name": "strThree",
-            "type": "cairoabi::exampleStruct3"
-          }
+          { "name": "strTwo", "type": "cairoabi::exampleStruct2" },
+          { "name": "strThree", "type": "cairoabi::exampleStruct3" }
         ],
         "outputs": [
-          {
-            "type": "(cairoabi::exampleStruct2, cairoabi::exampleStruct3)"
-          }
+          { "type": "(cairoabi::exampleStruct2, cairoabi::exampleStruct3)" }
         ],
         "state_mutability": "view"
       },
       {
         "type": "function",
         "name": "useExampleStruct4",
-        "inputs": [
-          {
-            "name": "strFour",
-            "type": "cairoabi::exampleStruct4"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "cairoabi::exampleStruct4"
-          }
-        ],
+        "inputs": [{ "name": "strFour", "type": "cairoabi::exampleStruct4" }],
+        "outputs": [{ "type": "cairoabi::exampleStruct4" }],
         "state_mutability": "view"
       },
       {
         "type": "function",
         "name": "useAlexandriai257",
-        "inputs": [
-          {
-            "name": "alex",
-            "type": "alexandria_math::i257::i257"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "alexandria_math::i257::i257"
-          }
-        ],
+        "inputs": [{ "name": "alex", "type": "alexandria_math::i257::i257" }],
+        "outputs": [{ "type": "alexandria_math::i257::i257" }],
         "state_mutability": "view"
       },
       {
         "type": "function",
         "name": "useBytes31",
-        "inputs": [
-          {
-            "name": "byte31",
-            "type": "core::bytes_31::bytes31"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::bytes_31::bytes31"
-          }
-        ],
+        "inputs": [{ "name": "byte31", "type": "core::bytes_31::bytes31" }],
+        "outputs": [{ "type": "core::bytes_31::bytes31" }],
         "state_mutability": "view"
       },
       {
         "type": "function",
         "name": "useSignedIntegeri8",
         "inputs": [
-          {
-            "name": "signedIntegeri8",
-            "type": "core::integer::i8"
-          }
+          { "name": "signedIntegeri8", "type": "core::integer::i8" }
         ],
-        "outputs": [
-          {
-            "type": "core::integer::i8"
-          }
-        ],
+        "outputs": [{ "type": "core::integer::i8" }],
         "state_mutability": "view"
       },
       {
         "type": "function",
         "name": "useSignedIntegeri16",
         "inputs": [
-          {
-            "name": "signedIntegeri16",
-            "type": "core::integer::i16"
-          }
+          { "name": "signedIntegeri16", "type": "core::integer::i16" }
         ],
-        "outputs": [
-          {
-            "type": "core::integer::i16"
-          }
-        ],
+        "outputs": [{ "type": "core::integer::i16" }],
         "state_mutability": "view"
       },
       {
         "type": "function",
         "name": "useSignedIntegeri32",
         "inputs": [
-          {
-            "name": "signedIntegeri32",
-            "type": "core::integer::i32"
-          }
+          { "name": "signedIntegeri32", "type": "core::integer::i32" }
         ],
-        "outputs": [
-          {
-            "type": "core::integer::i32"
-          }
-        ],
+        "outputs": [{ "type": "core::integer::i32" }],
         "state_mutability": "view"
       },
       {
         "type": "function",
         "name": "useSignedIntegeri64",
         "inputs": [
-          {
-            "name": "signedIntegeri64",
-            "type": "core::integer::i64"
-          }
+          { "name": "signedIntegeri64", "type": "core::integer::i64" }
         ],
-        "outputs": [
-          {
-            "type": "core::integer::i64"
-          }
-        ],
+        "outputs": [{ "type": "core::integer::i64" }],
         "state_mutability": "view"
       },
       {
         "type": "function",
         "name": "useSignedIntegeri128",
         "inputs": [
-          {
-            "name": "signedIntegeri128",
-            "type": "core::integer::i128"
-          }
+          { "name": "signedIntegeri128", "type": "core::integer::i128" }
         ],
-        "outputs": [
-          {
-            "type": "core::integer::i128"
-          }
-        ],
+        "outputs": [{ "type": "core::integer::i128" }],
         "state_mutability": "view"
       },
       {
@@ -661,9 +427,7 @@ const abi = [
           }
         ],
         "outputs": [
-          {
-            "type": "core::array::Array::<(core::felt252, core::felt252)>"
-          }
+          { "type": "core::array::Array::<(core::felt252, core::felt252)>" }
         ],
         "state_mutability": "view"
       }
