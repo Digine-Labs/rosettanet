@@ -117,78 +117,84 @@ export function getSolidityTypesFromStarknetABI(classABI: Abi): Map<string, Soli
 // Returns what custom structs includes
 function readCustomStructs(classABI: Abi): Map<string, SolidityType> {
     const elementaries = initializeStarknetConvertableTypes();
-    if (classABI.length == 0) {
-        return elementaries
-    }
-
-    const customStructs = classABI.filter(x => x.type === 'struct')
-    const structs = []
-    for(const elem of customStructs) {
-        const structArray = [elem.name]
-        if(isArrayLike(elem.name)) {
-            // TODO: support arrays
-            continue;
+    try {
+        if (classABI.length == 0) {
+            return elementaries
         }
 
-        const structMembers = (elem.members as Array<StarknetTypeMember>).map(
-            x => x.type,
-        )
-        structArray.push({type: 'struct', value: structMembers})
-    
-        structs.push(structArray)
-    }
-
-    // Mevcut mappingi al ve custom structlari elementarylerle matchle
-    
-    if(structs.length == 0) {
-        return elementaries
-    }
-
-    while(structs.length != 0) {
-        for(let i = 0; i < structs.length; i++) {
-            const currentStruct: Array<string | SolidityType> = structs[i];
-            if(typeof currentStruct[1] === 'string' || typeof currentStruct[0] !== 'string') {
-                continue;
-            }
-            if(elementaries.has(currentStruct[0])) {
-                structs.splice(i, 1) // TODO: filter structs outside of while loop
+        const customStructs = classABI.filter(x => x.type === 'struct')
+        const structs = []
+        for(const elem of customStructs) {
+            const structArray = [elem.name]
+            if(isArrayLike(elem.name)) {
+                // TODO: support arrays
                 continue;
             }
 
-            // Check if array contains non elem type. to achieve this. We add array values inside temp struct value array
-            const structElements: Array<string> = Array.from((currentStruct[1].value as Array<string>));
+            const structMembers = (elem.members as Array<StarknetTypeMember>).map(
+                x => x.type,
+            )
+            structArray.push({type: 'struct', value: structMembers})
+        
+            structs.push(structArray)
+        }
 
-            structElements.map((elem) => {
-                if(isArrayLike(elem)) {
-                    const deepElements = getDeepArrayTypes(elem)
-                    structElements.push(...deepElements)
+        // Mevcut mappingi al ve custom structlari elementarylerle matchle
+        
+        if(structs.length == 0) {
+            return elementaries
+        }
+
+        while(structs.length != 0) {
+            for(let i = 0; i < structs.length; i++) {
+                const currentStruct: Array<string | SolidityType> = structs[i];
+                if(typeof currentStruct[1] === 'string' || typeof currentStruct[0] !== 'string') {
+                    continue;
                 }
-            })
+                if(elementaries.has(currentStruct[0])) {
+                    structs.splice(i, 1) // TODO: filter structs outside of while loop
+                    continue;
+                }
 
-            const arraysRemovedElements = structElements.filter((elem) => !isArrayLike(elem))
-            // Burada arrayler cikip icerisindeki typelarda listeye eklendi
+                // Check if array contains non elem type. to achieve this. We add array values inside temp struct value array
+                const structElements: Array<string> = Array.from((currentStruct[1].value as Array<string>));
 
-            const nonElementaryTypes = (arraysRemovedElements as Array<string>).filter(val => !elementaries.has(val))
-            if(nonElementaryTypes.length > 0) {
-                continue;
+                structElements.map((elem) => {
+                    if(isArrayLike(elem)) {
+                        const deepElements = getDeepArrayTypes(elem)
+                        structElements.push(...deepElements)
+                    }
+                })
+
+                const arraysRemovedElements = structElements.filter((elem) => !isArrayLike(elem))
+                // Burada arrayler cikip icerisindeki typelarda listeye eklendi
+
+                const nonElementaryTypes = (arraysRemovedElements as Array<string>).filter(val => !elementaries.has(val))
+                if(nonElementaryTypes.length > 0) {
+                    continue;
+                }
+                if(typeof currentStruct[1].value === 'undefined') {
+                    continue
+                }
+                elementaries.set(currentStruct[0], {
+                    type: "struct",
+                    properties: currentStruct[1].value,
+                    value: convertStarknetTypeToSolidity(elementaries, currentStruct[1].value)
+                })
+
+                structs.splice(i, 1)
+                
             }
-            if(typeof currentStruct[1].value === 'undefined') {
-                continue
-            }
-            elementaries.set(currentStruct[0], {
-                type: "struct",
-                properties: currentStruct[1].value,
-                value: convertStarknetTypeToSolidity(elementaries, currentStruct[1].value)
-            })
-
-            structs.splice(i, 1)
-            
         }
+
+        // TODO: check all types correct?
+        console.log(elementaries)
+        return elementaries    
+    } catch (ex) {
+        console.error(ex)
+        return elementaries
     }
 
-    // TODO: check all types correct?
-    console.log(elementaries)
-    return elementaries
 }
 
 // input map ve starknet veri tipi: core::integer::u64
@@ -199,11 +205,50 @@ function convertStarknetTypeToSolidity(map: Map<string, SolidityType>, types: st
         for(const type of types) {
             const converted = map.get(type)
             if(typeof converted === 'undefined') {
-                // TODO: handle not found type
+                // check if is array of custom struct or non basic type
+                const isArray = isArrayLike(type)
+                if(!isArray) {
+                    // TODO handle error type is not array and not found
+                    throw(`type ${type} not found`)
+                }
+
+                const arrayType = getArrayType(type)
+                console.log(arrayType) // This can be tuple or can be found in mapping. In case found in mapping we use it.
+
+                // NOTE: Currently only support 2 levels of arrays
+                const isArrayTypeTuple = isTuple(arrayType)
+                if(isArrayTypeTuple) {
+                    let tuple = `(`
+                    const tupleTypes = arrayType.split(',')
+                    for(const tupleType of tupleTypes) {
+                        const convertedTupleType = map.get(tupleType)
+                        if(typeof convertedTupleType === 'undefined') {
+                            // TODO: type inside tuple not found. Handle error
+                            // We can use default value like u256 if type not found or felt as fallback
+                            continue
+                        }
+                        tuple = `${tuple}${convertedTupleType},`
+                    }
+                    tuple = `${tuple})`.replace(',)',')')
+                    // Tuple string is prepared array of tuple must be like (elems...)[]
+                    const arrayOfTupleString = `${tuple}[]`
+                    convertedTypes.push(arrayOfTupleString)
+                    continue
+                }
+                const convertedArrayType = map.get(arrayType) // Try if the type is custom struct or array
+                if(typeof convertedArrayType === 'undefined') {
+                    throw(`Array inside type not found ${arrayType}`)
+                }
+
+                if(isArrayLike(arrayType)) {
+                    // TODO: array of arrays not supported atm
+                    throw('Array of arrays are not supported')
+                }
+
                 continue
             }
 
-            if(converted.type === 'basic' && typeof converted.value === 'string') {
+            if((converted.type === 'basic' || converted.type === 'array') && typeof converted.value === 'string') {
                 // Basic types values always string because hard coded
                 convertedTypes.push(converted.value)
             }
@@ -220,10 +265,6 @@ function convertStarknetTypeToSolidity(map: Map<string, SolidityType>, types: st
             }
 
             // Convert arrays
-
-            if(converted.type === 'array') {
-                // TODO: support arrays
-            }
         }
         return convertedTypes
     }
@@ -231,7 +272,7 @@ function convertStarknetTypeToSolidity(map: Map<string, SolidityType>, types: st
     const convertedType = map.get(types)
     if(typeof convertedType === 'undefined' || Array.isArray(convertedType.value) || typeof convertedType.value === 'undefined') {
         // TODO: handle error
-        return ''
+        throw('converted type not found')
     }
 
     
@@ -264,6 +305,15 @@ function isTuple(type: string): boolean {
         return true
     }
     return false
+}
+
+function getArrayType(array: string): string {
+    const firstArrayChar = array.indexOf('<')
+    const lastArrayChar = array.lastIndexOf('>')
+
+    const typeName = array.slice(firstArrayChar+1, lastArrayChar)
+
+    return typeName
 }
 
 function getDeepArrayTypes(type: string): Array<string> {
