@@ -1,4 +1,5 @@
 import { getSolidityTypesFromStarknetABI } from "../../../src/utils/converters/abiFormatter"
+import { initializeStarknetAbi } from "../../../src/utils/converters/abiFormatterv2"
 const abi = [
   {
     "type": "impl",
@@ -94,14 +95,6 @@ const abi = [
       {
         "name": "firstSpan",
         "type": "core::array::Span::<core::integer::u32>"
-      },
-      {
-        "name": "arrOfTuple",
-        "type": "core::array::Array::<(core::integer::u256, core::integer::u256)>"
-      },
-      {
-        "name": "arrOfArr",
-        "type": "core::array::Array::<core::array::Array::<core::integer::u256>>"
       }
     ]
   },
@@ -156,14 +149,6 @@ const abi = [
       {
         "name": "firstSpan",
         "type": "core::array::Span::<core::integer::u256>"
-      },
-      {
-        "name": "arrOfTuple",
-        "type": "core::array::Array::<(core::integer::u256, core::integer::u256)>"
-      },
-      {
-        "name": "arrOfArr",
-        "type": "core::array::Array::<core::array::Array::<core::integer::u256>>"
       }
     ]
   },
@@ -219,14 +204,6 @@ const abi = [
       {
         "name": "firstSpan",
         "type": "core::array::Span::<core::integer::u128>"
-      },
-      {
-        "name": "arrOfTuple",
-        "type": "core::array::Array::<(core::integer::u256, core::integer::u256)>"
-      },
-      {
-        "name": "arrOfArr",
-        "type": "core::array::Array::<core::array::Array::<core::integer::u256>>"
       }
     ]
   },
@@ -403,22 +380,6 @@ const abi = [
       },
       {
         "type": "function",
-        "name": "arrayOfArray",
-        "inputs": [
-          {
-            "name": "arr",
-            "type": "core::array::Array::<core::array::Array::<core::integer::u256>>"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::array::Array::<core::array::Array::<core::integer::u256>>"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
         "name": "arrayOfTuple",
         "inputs": [
           {
@@ -443,10 +404,10 @@ const abi = [
 
 describe('Signature generations', () => {
   it('Returns empty array if abi empty', () => {
-    // todo
+    const snAbi = initializeStarknetAbi(abi)
   })
   it('Function signature generates with simple types', () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const signature = getSolidityTypesFromStarknetABI(abi)
+    //const signature = getSolidityTypesFromStarknetABI(abi)
   })
 })

@@ -87,6 +87,8 @@ const starknetElementaryTypes: Array<Array<string | SolidityType>> = [
     ['core::array::Span::<core::bytes_31::bytes31>', {type: 'array', value: 'bytes31[]'}],
 ]
 
+// DEVAM: YENI ABI EKLE ARRAY OF ARRAY VS SUPPORT OLMADAN
+
 function initializeStarknetConvertableTypes(): Map<string, SolidityType> {
     const mapping: Map<string, SolidityType> = new Map<string, SolidityType>()
   
