@@ -144,6 +144,8 @@ export function initializeStarknetAbi(classAbi: Abi) {
     console.log(`End ${failedStructs.length}`)
 
     console.log(mapping.values())
+
+    // TODO: return updated map and complete tests
     return
 }
 
@@ -172,7 +174,7 @@ function updateMap(currentMap: Map<string, ConvertableType>, structs: Array<{nam
 
 function getStructConvertableTypes(map: Map<string, ConvertableType>, name: string, members: Array<{name: string, type: string}>) : Array<Array<string | ConvertableType>> {
     // TODO: remove @ char once
-    
+
     // All members has to be in list already.
     for(const mem of members) {
         const typeName = mem.type.replace('@','')
