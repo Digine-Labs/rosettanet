@@ -1,5 +1,4 @@
-import { getSolidityTypesFromStarknetABI } from "../../../src/utils/converters/abiFormatter"
-import { initializeStarknetAbi } from "../../../src/utils/converters/abiFormatterv2"
+import { ConvertableType, initializeStarknetAbi } from "../../../src/utils/converters/abiFormatter"
 const abi = [
   {
     "type": "impl",
@@ -402,12 +401,57 @@ const abi = [
   }
 ]
 
-describe('Signature generations', () => {
+describe('Initialization of abi', () => {
   it('Returns empty array if abi empty', () => {
-    const snAbi = initializeStarknetAbi(abi)
+    const snAbi = initializeStarknetAbi([])
+    expect(snAbi.size).toEqual(73)
   })
-  it('Function signature generates with simple types', () => {
+  it('Returns updated mapping', () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    //const signature = getSolidityTypesFromStarknetABI(abi)
+    const snAbi: Map<string,ConvertableType> = initializeStarknetAbi(abi)
+    const customStructs = abi.filter(x => x.type === 'struct')
+    const standartTypesLength = 73
+    expect(snAbi.size).toEqual(standartTypesLength + (customStructs.length * 3))
+    // Default type
+    // u256 also as a custom struct in abi but it wont effect the existing init mapping
+    const u256: ConvertableType | undefined = snAbi.get('core::integer::u256');
+    if(typeof u256 === 'undefined') {
+      throw('u256 not found')
+    }
+    expect(u256).toBeDefined()
+    expect(u256.size).toEqual(256)
+    expect(u256.isTuple).toBe(false)
+    expect(u256.solidityType).toBe('uint256')
+
+    const customStruct1: ConvertableType | undefined = snAbi.get('cairoabi::exampleStruct1')
+    if(typeof customStruct1 === 'undefined') {
+      throw('customStruct1 not found')
+    }
+
+    expect(customStruct1.isTuple).toBe(true)
+    expect(customStruct1.solidityType).toBe('(uint256,address)')
+    expect(customStruct1.size).toBe(160 + 256)
+
+    const customStruct1Array: ConvertableType | undefined = snAbi.get('core::array::Array::<cairoabi::exampleStruct1>')
+    if(typeof customStruct1Array === 'undefined'){
+      throw('customStruct1Array not found')
+    }
+
+    expect(customStruct1Array.isTuple).toBe(true)
+    expect(customStruct1Array.isDynamicSize).toBe(true)
+    expect(customStruct1Array.size).toBe(160 + 256)
+    expect(customStruct1Array.solidityType).toBe('(uint256,address)[]')
+
+    // Imported library type
+
+    const i257: ConvertableType | undefined = snAbi.get('alexandria_math::i257::i257')
+    if(typeof i257 === 'undefined') {
+      throw('i257 not found')
+    }
+
+    expect(i257.isTuple).toBe(true)
+    expect(i257.isDynamicSize).toBe(false)
+    expect(i257.solidityType).toBe('(uint256,bool)')
+    expect(i257.size).toBe(257)
   })
 })
