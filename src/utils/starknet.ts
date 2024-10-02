@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { RpcProvider, constants, Abi, FunctionAbi, StructAbi } from 'starknet'
+import { RpcProvider, constants, Abi, FunctionAbi } from 'starknet'
 import { snKeccak } from '../../src/utils/sn_keccak'
 import { validateSnAddress } from './validations'
 import { getRpc } from './getRpc'
@@ -99,7 +99,7 @@ export async function getContractsCustomStructs(
         'name' in item &&
         'members' in item,
     )
-    .map(item => item as StructAbi)
+    .map(item => item)
 
   return customStructs
 }
