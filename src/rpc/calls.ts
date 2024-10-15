@@ -38,6 +38,7 @@ import { getUncleCountByBlockNumberHandler } from './calls/getUncleCountByBlockN
 import { getUncleCountByBlockHashHandler } from './calls/getUncleCountByBlockHash'
 import { unsubscribeHandler } from './calls/unsubscribe'
 import { getFilterChangesHandler } from './calls/getFilterChanges'
+import { sendRawTransactionHandler } from './calls/sendRawTransaction'
 
 const router: Router = Router()
 
@@ -220,6 +221,11 @@ Methods.set('eth_unsubscribe', {
 Methods.set('eth_getFilterChanges', {
   method: 'eth_getFilterChanges',
   handler: getFilterChangesHandler,
+})
+
+Methods.set('eth_sendRawTransaction', {
+  method: 'eth_sendRawTransaction',
+  handler: sendRawTransactionHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
