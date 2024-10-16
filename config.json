@@ -1,5 +1,7 @@
 {
   "appName": "RosettaNet",
   "port": 3000,
-  "rpcUrls": ["https://starknet-sepolia.public.blastapi.io"]
+  "rpcUrls": ["https://starknet-sepolia.public.blastapi.io"],
+  "factoryAddress": "",
+  "accountClass": ""
 }

@@ -2,6 +2,7 @@
 
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { Transaction } from 'ethers'
+import { getRosettaAccountAddress } from '../../utils/rosettanet'
 export async function sendRawTransactionHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
@@ -38,12 +39,41 @@ export async function sendRawTransactionHandler(
       id: request.id,
       error: {
         code: -32603,
-        message: 'Only EIP1559 transactions are supported at the moment',
+        message: 'Only EIP1559 transactions are supported at the moment.',
       },
     }
   }
   // TODO: chainId check
-  // const { from, to, data } = tx;
+  const { from, to, data, value } = tx;
+
+  if(typeof from !== 'string' ) {
+    return {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid from argument type.',
+      }
+    }
+  }
+
+  if(value.toString() !== '0') {
+    // If data is zero and value is 0 then it is usual ether transfer
+    if(data !== '0x') {
+      // If data is non-zero it is payable function call. This will be supported at new version
+      return {
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: -32603,
+          message: 'Payable function calls are not supported at the moment.',
+        }
+      }
+    }
+    // TODO: send ether transfer, approach might be similar, no need to call different function
+  }
+
+  const senderAddress = getRosettaAccountAddress(from)
 
   // Check if value is non-zero and data is empty it is ether transfer
   // Check if from address rosetta account
