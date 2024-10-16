@@ -25,7 +25,7 @@ interface GetClassHashRequest {
 
 export interface StarknetInvokeParams {
   invoke_transaction: {
-    type: string,
+    type: string
     sender_address: string
     calldata: Array<string>
     version: string
@@ -68,7 +68,12 @@ export async function callStarknet(
   }
 }
 
-export function prepareStarknetInvokeParams(sender_address: string, calldata: Array<string>, signature: Array<string>, nonce: string): StarknetInvokeParams {
+export function prepareStarknetInvokeParams(
+  sender_address: string,
+  calldata: Array<string>,
+  signature: Array<string>,
+  nonce: string,
+): StarknetInvokeParams {
   // TODO: fill the l1 gas and l2 gas values here
   return {
     invoke_transaction: {
@@ -80,13 +85,13 @@ export function prepareStarknetInvokeParams(sender_address: string, calldata: Ar
       nonce: nonce,
       resource_bounds: {
         l1_gas: '0x1', // TODO
-        l2_gas: '0x2' // TODO
+        l2_gas: '0x2', // TODO
       },
       tip: '0x0',
       paymaster_data: [],
       account_deployment_data: [],
       nonce_data_availability_mode: 'L1',
-      fee_data_availability_mode: 'L1'
-    }
+      fee_data_availability_mode: 'L1',
+    },
   }
-} 
+}

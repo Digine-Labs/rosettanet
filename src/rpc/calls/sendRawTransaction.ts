@@ -44,22 +44,22 @@ export async function sendRawTransactionHandler(
     }
   }
   // TODO: chainId check
-  const { from, to, data, value } = tx;
+  const { from, to, data, value } = tx
 
-  if(typeof from !== 'string' ) {
+  if (typeof from !== 'string') {
     return {
       jsonrpc: request.jsonrpc,
       id: request.id,
       error: {
         code: -32602,
         message: 'Invalid from argument type.',
-      }
+      },
     }
   }
 
-  if(value.toString() !== '0') {
+  if (value.toString() !== '0') {
     // If data is zero and value is 0 then it is usual ether transfer
-    if(data !== '0x') {
+    if (data !== '0x') {
       // If data is non-zero it is payable function call. This will be supported at new version
       return {
         jsonrpc: request.jsonrpc,
@@ -67,7 +67,7 @@ export async function sendRawTransactionHandler(
         error: {
           code: -32603,
           message: 'Payable function calls are not supported at the moment.',
-        }
+        },
       }
     }
     // TODO: send ether transfer, approach might be similar, no need to call different function
