@@ -31,6 +31,7 @@ export async function getRosettaAccountAddress(
 
 export async function isRosettaAccountDeployed(
   snAddress: string,
+  expectedClass: string,
 ): Promise<boolean> {
   const response: RPCResponse | string = await callStarknet({
     jsonrpc: '2.0',
@@ -41,13 +42,10 @@ export async function isRosettaAccountDeployed(
       contract_address: snAddress,
     },
   })
-  console.log(response)
 
   if (typeof response === 'string') {
     return false
   }
 
-  const currentClass = getConfigurationProperty('accountClass')
-
-  return response.result === currentClass
+  return response.result === expectedClass
 }

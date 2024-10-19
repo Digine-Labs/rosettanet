@@ -1,4 +1,4 @@
-import { convertHexChunkIntoFeltArray } from "../../src/utils/felt"
+import { convertHexChunkIntoFeltArray } from '../../src/utils/felt'
 describe('Test split of signed raw transaction', () => {
   it('Splits data can fit one felt', async () => {
     const data = '0xabcabcabc'
@@ -15,12 +15,14 @@ describe('Test split of signed raw transaction', () => {
     expect(chunks[0]).toBe('0xabcabcabc')
   })
   it('Splits data more than felt limit', async () => {
-    const data = '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'
+    const data =
+      '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'
 
     const chunks: Array<string> = convertHexChunkIntoFeltArray(data)
     expect(chunks.length).toBe(2)
-    expect(chunks[0]).toBe('0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')
+    expect(chunks[0]).toBe(
+      '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+    )
     expect(chunks[1]).toBe('0xF')
   })
-
 })

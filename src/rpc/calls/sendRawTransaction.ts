@@ -2,7 +2,12 @@
 
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { Transaction } from 'ethers'
-import { getRosettaAccountAddress } from '../../utils/rosettanet'
+import {
+  getRosettaAccountAddress,
+  isRosettaAccountDeployed,
+} from '../../utils/rosettanet'
+import { convertHexChunkIntoFeltArray } from '../../utils/felt'
+import { getERC20Balance } from '../../utils/callHelper'
 export async function sendRawTransactionHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
@@ -56,7 +61,7 @@ export async function sendRawTransactionHandler(
       },
     }
   }
-
+  // Check if value is non-zero and data is empty it is ether transfer
   if (value.toString() !== '0') {
     // If data is zero and value is 0 then it is usual ether transfer
     if (data !== '0x') {
@@ -73,10 +78,18 @@ export async function sendRawTransactionHandler(
     // TODO: send ether transfer, approach might be similar, no need to call different function
   }
 
-  const senderAddress = getRosettaAccountAddress(from)
-
-  // Check if value is non-zero and data is empty it is ether transfer
   // Check if from address rosetta account
+  const senderAddress = await getRosettaAccountAddress(from)
+
+  // This is invoke transaction signature
+  const rawTransactionChunks: Array<string> =
+    convertHexChunkIntoFeltArray(signedRawTransaction)
+
+  const callerETHBalance: string = await getERC20Balance(senderAddress) // Maybe we can also check strk balance too
+
+  // Find current account class.
+  // const isAccountDeployed = await isRosettaAccountDeployed(senderAddress) // Checks that class hash of given address is same with config
+
   // If not deployed address -> check if there is a balance
   // If there is a balance, try to deploy via factory or any from zero deployment
   // If no balance then revert rpc call
