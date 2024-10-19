@@ -29,7 +29,7 @@ describe('Test getTransactionCount', () => {
     )
 
     expect(typeof starkResult.result).toBe('string')
-    expect(starkResult.result).toBe('0x6')
+    expect(starkResult.result).toBe('0x7')
   })
 
   it('Returns invalid eth address', async () => {

@@ -7,7 +7,7 @@ import {
   isRosettaAccountDeployed,
 } from '../../utils/rosettanet'
 import { convertHexChunkIntoFeltArray } from '../../utils/felt'
-import { getERC20Balance } from '../../utils/callHelper'
+import { getETHBalance } from '../../utils/callHelper'
 export async function sendRawTransactionHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
@@ -85,7 +85,7 @@ export async function sendRawTransactionHandler(
   const rawTransactionChunks: Array<string> =
     convertHexChunkIntoFeltArray(signedRawTransaction)
 
-  const callerETHBalance: string = await getERC20Balance(senderAddress) // Maybe we can also check strk balance too
+  const callerETHBalance: string = await getETHBalance(senderAddress) // Maybe we can also check strk balance too
 
   // Find current account class.
   // const isAccountDeployed = await isRosettaAccountDeployed(senderAddress) // Checks that class hash of given address is same with config
