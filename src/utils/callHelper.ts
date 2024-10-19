@@ -121,7 +121,14 @@ export async function getETHBalance(snAddress: string): Promise<string> {
     throw new Error('Starknet call fails')
   }
 
-  return U256toUint256(response.result as string[])
+  if (
+    Array.isArray(response.result) &&
+    response.result.length > 0 &&
+    typeof response.result[0] === 'string'
+  ) {
+    return U256toUint256(response.result as string[])
+  }
+  return '0'
 }
 
 // TODO: complete tests for this function
