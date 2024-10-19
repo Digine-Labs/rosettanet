@@ -1,5 +1,7 @@
 import { getRpc } from './getRpc'
 import { RPCRequest, RPCResponse } from '../types/types'
+import { getConfigurationProperty } from './configReader'
+import { U256toUint256 } from './converters/integer'
 import axios from 'axios'
 
 interface EstimateFeeRequest {
@@ -94,4 +96,63 @@ export function prepareStarknetInvokeParams(
       fee_data_availability_mode: 'L1',
     },
   }
+}
+
+// TODO: complete tests for this function
+export async function getETHBalance(snAddress: string): Promise<string> {
+  const ethAddress = getConfigurationProperty('ethAddress')
+  const starknet_params = {
+    jsonrpc: '2.0',
+    method: 'starknet_call',
+    params: [
+      {
+        contract_address: ethAddress,
+        entry_point_selector:
+          '0x035a73cd311a05d46deda634c5ee045db92f811b4e74bca4437fcb5302b7af33', // balance_of entrypoint
+        calldata: [snAddress],
+      },
+      'latest',
+    ],
+    id: 1,
+  }
+
+  const response: RPCResponse | string = await callStarknet(starknet_params)
+  if (typeof response === 'string') {
+    throw new Error('Starknet call fails')
+  }
+
+  if (
+    Array.isArray(response.result) &&
+    response.result.length > 0 &&
+    typeof response.result[0] === 'string'
+  ) {
+    return U256toUint256(response.result as string[])
+  }
+  return '0'
+}
+
+// TODO: complete tests for this function
+export async function getSTRKBalance(snAddress: string): Promise<string> {
+  const ethAddress = getConfigurationProperty('strkAddress')
+  const starknet_params = {
+    jsonrpc: '2.0',
+    method: 'starknet_call',
+    params: [
+      {
+        contract_address: ethAddress,
+        entry_point_selector:
+          '0x035a73cd311a05d46deda634c5ee045db92f811b4e74bca4437fcb5302b7af33', // balance_of entrypoint
+        calldata: [snAddress],
+      },
+      'latest',
+    ],
+    id: 1,
+  }
+
+  const response: RPCResponse | string = await callStarknet(starknet_params)
+  if (typeof response === 'string') {
+    throw new Error('Starknet call fails')
+  }
+
+  return U256toUint256(response.result as string[])
 }
