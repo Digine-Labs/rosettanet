@@ -1,6 +1,6 @@
 // Returns array of hexdecimal strings splitted into specified chunksize.
 export function convertHexChunkIntoFeltArray(chunk: string): Array<string> {
-  const chunkSize = 63 // Reduce to 62 if it can be higher than felt252 limit
+  const chunkSize = 62 // Reduce to 62 if it can be higher than felt252 limit
   let hex = chunk
   if (chunk.indexOf('0x') > -1) {
     hex = chunk.slice(2)
