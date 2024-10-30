@@ -1,4 +1,7 @@
-import { convertHexChunkIntoFeltArray, convertHextIntoBytesArray } from '../../src/utils/felt'
+import {
+  convertHexChunkIntoFeltArray,
+  convertHextIntoBytesArray,
+} from '../../src/utils/felt'
 describe('Test split of signed raw transaction', () => {
   it('Splits data can fit one felt', async () => {
     const data = '0xabcabcabc'
@@ -26,14 +29,11 @@ describe('Test split of signed raw transaction', () => {
     expect(chunks[1]).toBe('0xFF')
   })
   it('Splits data to bytes', async () => {
-    const data =
-      '0xABCABDABEABFFFF'
+    const data = '0xABCABDABEABFFFF'
 
     const chunks: Array<string> = convertHextIntoBytesArray(data)
     expect(chunks.length).toBe(8)
-    expect(chunks[0]).toBe(
-      '0xAB',
-    )
+    expect(chunks[0]).toBe('0xAB')
     expect(chunks[1]).toBe('0xCA')
   })
 })
