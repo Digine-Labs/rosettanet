@@ -1,13 +1,34 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import {
+  RPCError,
+  RPCRequest,
+  RPCResponse,
+  StarknetFunction,
+} from '../../types/types'
 import { Transaction } from 'ethers'
 import {
   getRosettaAccountAddress,
   isRosettaAccountDeployed,
 } from '../../utils/rosettanet'
-import { convertHexChunkIntoFeltArray } from '../../utils/felt'
+import { convertHexIntoBytesArray } from '../../utils/felt'
 import { getETHBalance } from '../../utils/callHelper'
+import { validateRawTransaction } from '../../utils/validations'
+import { getSnAddressFromEthAddress } from '../../utils/wrapper'
+import {
+  generateEthereumFunctionSignatureFromTypeMapping,
+  getContractsAbi,
+  getContractsMethods,
+} from '../../utils/starknet'
+import {
+  ConvertableType,
+  initializeStarknetAbi,
+} from '../../utils/converters/abiFormatter'
+import { matchStarknetFunctionWithEthereumSelector } from '../../utils/match'
+import {
+  decodeCalldataWithTypes,
+  getFunctionSelectorFromCalldata,
+} from '../../utils/calldata'
 export async function sendRawTransactionHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
@@ -51,6 +72,17 @@ export async function sendRawTransactionHandler(
   // TODO: chainId check
   const { from, to, data, value } = tx
 
+  if (typeof to !== 'string') {
+    return {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Init transactions are not supported at the moment.',
+      },
+    }
+  }
+
   if (typeof from !== 'string') {
     return {
       jsonrpc: request.jsonrpc,
@@ -76,6 +108,7 @@ export async function sendRawTransactionHandler(
       }
     }
     // TODO: send ether transfer, approach might be similar, no need to call different function
+    // Send ether tx must be passed directly. Account contract will handles that.
   }
 
   // Check if from address rosetta account
@@ -83,9 +116,65 @@ export async function sendRawTransactionHandler(
 
   // This is invoke transaction signature
   const rawTransactionChunks: Array<string> =
-    convertHexChunkIntoFeltArray(signedRawTransaction)
+    convertHexIntoBytesArray(signedRawTransaction)
 
   const callerETHBalance: string = await getETHBalance(senderAddress) // Maybe we can also check strk balance too
+
+  const isTxValid = validateRawTransaction(tx)
+  if (!isTxValid) {
+    return {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32603,
+        message: 'Transaction validation error',
+      },
+    }
+  }
+
+  const targetContract: string = await getSnAddressFromEthAddress(to)
+  if (targetContract === '0x0') {
+    return {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Ethereum address is not in Lens Contract.',
+      },
+    }
+  }
+
+  const contractAbi = await getContractsAbi(targetContract) // Todo: Optimize this get methods, one call enough, methods and custom structs can be derived from abi.
+
+  const contractTypeMapping: Map<string, ConvertableType> =
+    initializeStarknetAbi(contractAbi)
+
+  const starknetCallableMethods: Array<StarknetFunction> =
+    await getContractsMethods(targetContract)
+  const starknetFunctionsEthereumSignatures = starknetCallableMethods.map(fn =>
+    generateEthereumFunctionSignatureFromTypeMapping(fn, contractTypeMapping),
+  )
+
+  const targetFunctionSelector = getFunctionSelectorFromCalldata(tx.data) // Todo: check if zero
+
+  const targetStarknetFunction = matchStarknetFunctionWithEthereumSelector(
+    starknetFunctionsEthereumSignatures,
+    targetFunctionSelector,
+  )
+
+  if (typeof targetStarknetFunction === 'undefined') {
+    return {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Target Starknet Function is not found.',
+      },
+    }
+  }
+  const calldata = tx.data.slice(10)
+  // TODO: decodeCalldataWithTypes fonksiyonuna parametreleri ethereum halini array olarak gönder [uint etc. etc.]
+  // const decodedCalldata = decodeCalldataWithTypes(,calldata);
 
   // Find current account class.
   // const isAccountDeployed = await isRosettaAccountDeployed(senderAddress) // Checks that class hash of given address is same with config

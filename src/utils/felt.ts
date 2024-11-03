@@ -4,7 +4,7 @@ export function convertHexChunkIntoFeltArray(chunk: string): Array<string> {
   return convertChunkIntoHexStringArray(chunk, chunkSize)
 }
 
-export function convertHextIntoBytesArray(chunk: string): Array<string> {
+export function convertHexIntoBytesArray(chunk: string): Array<string> {
   const chunkSize = 2
   return convertChunkIntoHexStringArray(chunk, chunkSize)
 }
