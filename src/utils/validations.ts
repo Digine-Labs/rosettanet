@@ -1,4 +1,4 @@
-import { isHexString } from 'ethers'
+import { isHexString, Transaction } from 'ethers'
 import { addHexPrefix, removeHexPrefix } from './padding'
 export function validateEthAddress(ethAddress: string): boolean {
   if (!ethAddress) {
@@ -59,4 +59,16 @@ export function validateBlockNumber(value: string | number): boolean {
       }
       return false
   }
+}
+
+export function validateRawTransaction(tx: Transaction): boolean {
+  // Add more sync validations
+
+  const calldata = tx.data
+
+  if (calldata.length < 10) {
+    return false // Empty calldata
+  }
+
+  return true
 }

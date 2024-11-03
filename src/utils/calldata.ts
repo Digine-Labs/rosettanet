@@ -1,3 +1,4 @@
+import { AbiCoder } from 'ethers'
 import { EthereumSlot } from '../types/types'
 import { Uint256ToU256 } from './converters/integer'
 import { getSnAddressFromEthAddress } from './wrapper'
@@ -180,4 +181,13 @@ function ethTypeBitLength(type: string): number {
     default:
       return 0
   }
+}
+
+export function decodeCalldataWithTypes(types: Array<string>, data: string) {
+  if (types.length == 0 || data.length == 0) {
+    return
+  }
+
+  const decoder = new AbiCoder()
+  return decoder.decode(types, data)
 }

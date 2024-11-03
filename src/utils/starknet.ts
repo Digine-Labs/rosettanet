@@ -6,6 +6,7 @@ import { validateSnAddress } from './validations'
 import { getRpc } from './getRpc'
 import { StarknetFunctionInput, StarknetFunction } from '../types/types'
 import { convertSnToEth } from './converters/typeConverters'
+import { ConvertableType } from './converters/abiFormatter'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getContractsMethods(
@@ -44,6 +45,31 @@ export async function getContractsMethods(
   return allEntrypoints
 }
 
+export function generateEthereumFunctionSignatureFromTypeMapping(
+  snFunction: StarknetFunction,
+  map: Map<string, ConvertableType>,
+): string {
+  if (!snFunction.inputs || snFunction.inputs.length == 0) {
+    return `${snFunction.name}()`
+  }
+  const inputTypes = getFunctionInputTypesFromMap(map, snFunction.inputs)
+  return `${snFunction.name}(${inputTypes})`
+}
+
+function getFunctionInputTypesFromMap(
+  map: Map<string, ConvertableType>,
+  inputs: Array<StarknetFunctionInput>,
+): string {
+  const inputTypes = inputs.map(input => {
+    if (map.has(input.type)) {
+      return map.get(input.type)?.solidityType
+    } else {
+      throw 'Type not found'
+    }
+  })
+  return inputTypes.toString()
+}
+
 // pass function name and input object. Types will be converted to eth types in this function
 export function generateEthereumFunctionSignature(
   name: string,
@@ -77,6 +103,7 @@ export async function getContractsCustomStructs(
   snAddress: string,
   nodeUrl: constants.NetworkName | string,
 ) {
+  // return type??
   if (!validateSnAddress(snAddress)) {
     return 'Invalid Starknet addreess'
   }
@@ -102,4 +129,18 @@ export async function getContractsCustomStructs(
     .map(item => item)
 
   return customStructs
+}
+
+// Returns contract abi
+export async function getContractsAbi(snAddress: string): Promise<Abi> {
+  const rpcUrl: string = getRpc()
+  const provider = new RpcProvider({ nodeUrl: rpcUrl })
+  let contractAbi: Abi = []
+  try {
+    const compressedContract = await provider.getClassAt(snAddress)
+    contractAbi = compressedContract.abi
+  } catch (e) {
+    return []
+  }
+  return contractAbi
 }
