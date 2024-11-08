@@ -1,5 +1,6 @@
 import { StarknetInvokeTransaction } from '../types/transactions.types'
 
+// Signature will be v,r,s
 export function prepareStarknetInvokeTransaction(/* ethTx: EthereumTransaction */) {
   const starknetTx: StarknetInvokeTransaction = {
     calldata: [],
