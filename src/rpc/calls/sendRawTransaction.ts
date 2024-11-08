@@ -19,12 +19,13 @@ import {
   generateEthereumFunctionSignatureFromTypeMapping,
   getContractsAbi,
   getContractsMethods,
+  getEthereumInputTypesFromStarknetFunction,
 } from '../../utils/starknet'
 import {
   ConvertableType,
   initializeStarknetAbi,
 } from '../../utils/converters/abiFormatter'
-import { matchStarknetFunctionWithEthereumSelector } from '../../utils/match'
+import { findStarknetFunctionWithEthereumSelector, matchStarknetFunctionWithEthereumSelector } from '../../utils/match'
 import {
   decodeCalldataWithTypes,
   getFunctionSelectorFromCalldata,
@@ -157,12 +158,14 @@ export async function sendRawTransactionHandler(
 
   const targetFunctionSelector = getFunctionSelectorFromCalldata(tx.data) // Todo: check if zero
 
-  const targetStarknetFunction = matchStarknetFunctionWithEthereumSelector(
+  const targetStarknetFunctionSelector = matchStarknetFunctionWithEthereumSelector(
     starknetFunctionsEthereumSignatures,
     targetFunctionSelector,
   )
 
-  if (typeof targetStarknetFunction === 'undefined') {
+  const targetStarknetFunction = findStarknetFunctionWithEthereumSelector(starknetCallableMethods, targetFunctionSelector, contractTypeMapping);
+
+  if (typeof targetStarknetFunction === 'undefined' || typeof targetStarknetFunctionSelector === 'undefined') {
     return {
       jsonrpc: request.jsonrpc,
       id: request.id,
@@ -172,7 +175,10 @@ export async function sendRawTransactionHandler(
       },
     }
   }
+  const starknetFunctionEthereumInputTypes = getEthereumInputTypesFromStarknetFunction(targetStarknetFunction, contractTypeMapping);
   const calldata = tx.data.slice(10)
+  
+  const decodedCalldata = decodeCalldataWithTypes(starknetFunctionEthereumInputTypes, calldata); // Array of all inputs
   // TODO: decodeCalldataWithTypes fonksiyonuna parametreleri ethereum halini array olarak gönder [uint etc. etc.]
   // const decodedCalldata = decodeCalldataWithTypes(,calldata);
 
