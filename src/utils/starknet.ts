@@ -45,24 +45,27 @@ export async function getContractsMethods(
   return allEntrypoints
 }
 
-export function getEthereumInputTypesFromStarknetFunction(snFunction: StarknetFunction, map: Map<string, ConvertableType>): Array<string> {
+export function getEthereumInputTypesFromStarknetFunction(
+  snFunction: StarknetFunction,
+  map: Map<string, ConvertableType>,
+): Array<string> {
   if (!snFunction.inputs || snFunction.inputs.length == 0) {
     return []
   }
 
   const inputs = snFunction.inputs.map(input => {
-    if(map.has(input.type)) {
+    if (map.has(input.type)) {
       const type = map.get(input.type)
-      if(typeof type === 'undefined') {
+      if (typeof type === 'undefined') {
         throw 'Type undefined'
-      } 
+      }
       return type.solidityType
     } else {
       throw 'Type not found'
     }
   })
 
-  return inputs;
+  return inputs
 }
 
 export function generateEthereumFunctionSignatureFromTypeMapping(

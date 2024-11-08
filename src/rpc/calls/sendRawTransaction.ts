@@ -25,7 +25,10 @@ import {
   ConvertableType,
   initializeStarknetAbi,
 } from '../../utils/converters/abiFormatter'
-import { findStarknetFunctionWithEthereumSelector, matchStarknetFunctionWithEthereumSelector } from '../../utils/match'
+import {
+  findStarknetFunctionWithEthereumSelector,
+  matchStarknetFunctionWithEthereumSelector,
+} from '../../utils/match'
 import {
   decodeCalldataWithTypes,
   getFunctionSelectorFromCalldata,
@@ -158,14 +161,22 @@ export async function sendRawTransactionHandler(
 
   const targetFunctionSelector = getFunctionSelectorFromCalldata(tx.data) // Todo: check if zero
 
-  const targetStarknetFunctionSelector = matchStarknetFunctionWithEthereumSelector(
-    starknetFunctionsEthereumSignatures,
+  const targetStarknetFunctionSelector =
+    matchStarknetFunctionWithEthereumSelector(
+      starknetFunctionsEthereumSignatures,
+      targetFunctionSelector,
+    )
+
+  const targetStarknetFunction = findStarknetFunctionWithEthereumSelector(
+    starknetCallableMethods,
     targetFunctionSelector,
+    contractTypeMapping,
   )
 
-  const targetStarknetFunction = findStarknetFunctionWithEthereumSelector(starknetCallableMethods, targetFunctionSelector, contractTypeMapping);
-
-  if (typeof targetStarknetFunction === 'undefined' || typeof targetStarknetFunctionSelector === 'undefined') {
+  if (
+    typeof targetStarknetFunction === 'undefined' ||
+    typeof targetStarknetFunctionSelector === 'undefined'
+  ) {
     return {
       jsonrpc: request.jsonrpc,
       id: request.id,
@@ -175,10 +186,17 @@ export async function sendRawTransactionHandler(
       },
     }
   }
-  const starknetFunctionEthereumInputTypes = getEthereumInputTypesFromStarknetFunction(targetStarknetFunction, contractTypeMapping);
+  const starknetFunctionEthereumInputTypes =
+    getEthereumInputTypesFromStarknetFunction(
+      targetStarknetFunction,
+      contractTypeMapping,
+    )
   const calldata = tx.data.slice(10)
-  
-  const decodedCalldata = decodeCalldataWithTypes(starknetFunctionEthereumInputTypes, calldata); // Array of all inputs
+
+  const decodedCalldata = decodeCalldataWithTypes(
+    starknetFunctionEthereumInputTypes,
+    calldata,
+  ) // Array of all inputs
   // TODO: decodeCalldataWithTypes fonksiyonuna parametreleri ethereum halini array olarak gönder [uint etc. etc.]
   // const decodedCalldata = decodeCalldataWithTypes(,calldata);
 

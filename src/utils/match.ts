@@ -5,7 +5,7 @@ import { generateEthereumFunctionSignatureFromTypeMapping } from './starknet'
 import { ConvertableType } from './converters/abiFormatter'
 export function matchStarknetFunctionWithEthereumSelector(
   snFunctions: Array<string>,
-  ethSelector: string
+  ethSelector: string,
 ): string | undefined {
   for (const func of snFunctions) {
     let hash = keccak256(func)
@@ -21,13 +21,14 @@ export function matchStarknetFunctionWithEthereumSelector(
   return
 }
 
-export function findStarknetFunctionWithEthereumSelector(  
+export function findStarknetFunctionWithEthereumSelector(
   snFunctions: Array<StarknetFunction>,
   ethSelector: string,
-  map: Map<string, ConvertableType>): StarknetFunction | undefined
-{
-  for(const func of snFunctions) {
-    const snFunctionSignature = generateEthereumFunctionSignatureFromTypeMapping(func, map);
+  map: Map<string, ConvertableType>,
+): StarknetFunction | undefined {
+  for (const func of snFunctions) {
+    const snFunctionSignature =
+      generateEthereumFunctionSignatureFromTypeMapping(func, map)
 
     let hash = keccak256(snFunctionSignature)
     hash = new BigNumber(hash, 16).toString(16)
