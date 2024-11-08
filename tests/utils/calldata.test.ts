@@ -3,6 +3,7 @@ import {
   getCalldataByteSize,
   convertEthereumCalldataToParameters,
   convertUint256s,
+  decodeCalldataWithTypes,
 } from '../../src/utils/calldata'
 import { EthereumSlot } from '../../src/types/types'
 
@@ -274,5 +275,39 @@ describe('Test uint256 converts', () => {
     expect(u256strings.length).toBe(2)
     expect(u256strings[0]).toBe('44ddd6b96f7c741b1562b82f9e004dc7')
     expect(u256strings[1]).toBe('10000000000000000000d3fcc846') // zeroes removed
+  })
+})
+
+describe('Test calldata decoding', () => {
+  it('Decodes simple calldata', () => {
+    const types = [ 'uint128', 'uint128'];
+    const calldata = "0x00000000000000000000000000000000000000000000000000000000000001590000000000000000000000000000000000000000000000000000000000000315"
+
+    const decodedData = decodeCalldataWithTypes(types, calldata);
+    expect(decodedData).toStrictEqual(["345", "789"])
+  })
+  it('Decodes packed simple calldata', () => {
+    const types = ['uint128', 'address' ];
+    const calldata = "0x00000000000000000000000000000000000000000000000000000000000a539f00000000000000000000000011655f4ee2a5b66f9dcbe758e9fcdcd3ebf95ee5"
+
+    const decodedData = decodeCalldataWithTypes(types, calldata);
+    expect(decodedData).toStrictEqual(["676767", "0x11655f4Ee2A5B66F9DCbe758e9FcdCd3eBF95eE5"])
+  })
+  it('Decodes uint256 array', () => {
+    const types = [ 'uint256[]']
+    const calldata = "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000e900000000000000000000000000000000000000000000000000000000000001c80000000000000000000000000000000000000000000000000000000000000315";
+
+    const expectedValues = ["233", "456", "789"];
+
+    const decodedData = decodeCalldataWithTypes(types, calldata);
+    expect(decodedData).toStrictEqual([expectedValues])
+  })
+  it('Decodes custom struct', () => {
+    const types = ['tuple(uint256, uint256)']
+    const calldata = "0x000000000000000000000000000000000000000000000000000000000000006f00000000000000000000000000000000000000000000000000000000000000de";
+
+    const expectedValues = ["111", "222"];
+    const decodedData = decodeCalldataWithTypes(types, calldata);
+    expect(decodedData).toStrictEqual([expectedValues])
   })
 })
