@@ -1,4 +1,4 @@
-import { AbiCoder, dataSlice, isBytesLike, isHexString, toBeArray } from 'ethers'
+import { AbiCoder, dataSlice } from 'ethers'
 import { EthereumSlot } from '../types/types'
 import { Uint256ToU256 } from './converters/integer'
 import { getSnAddressFromEthAddress } from './wrapper'
@@ -193,22 +193,25 @@ Output: 0x000000000000000000000000000001bd00000000000000000000000000000381
 */
 // Tuples also returned like array
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function decodeCalldataWithTypes(types: Array<any>, data: string): Array<string> {
+export function decodeCalldataWithTypes(
+  types: Array<string>,
+  data: string,
+): Array<string> {
   if (types.length == 0 || data.length == 0) {
-    throw("Calldata empty or wrong")
+    throw 'Calldata empty or wrong'
   }
 
   const decoder = new AbiCoder()
 
-  const result = decoder.decode(types, dataSlice(data, 0)).toArray();
-  const stringifiedResult = result.map((elem) => {
-    if(typeof elem === "string") {
-      return elem;
+  const result = decoder.decode(types, dataSlice(data, 0)).toArray()
+  const stringifiedResult = result.map(elem => {
+    if (typeof elem === 'string') {
+      return elem
     }
-    if(Array.isArray(elem)) {
-      return elem.map(x => typeof x === 'string' ? x : x.toString())
+    if (Array.isArray(elem)) {
+      return elem.map(x => (typeof x === 'string' ? x : x.toString()))
     }
     return elem.toString()
-  });
+  })
   return stringifiedResult
 }
