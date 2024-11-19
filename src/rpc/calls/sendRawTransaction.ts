@@ -201,12 +201,15 @@ export async function sendRawTransactionHandler(
     calldata, 
   )*/
 
-  const starknetFunctionEthereumInputTypes: Array<CairoNamedConvertableType> = getEthereumInputsCairoNamed(targetStarknetFunction, contractTypeMapping);
-  const calldata = tx.data.slice(10);
-  const decodedCalldata = decodeCalldataWithFelt252Limit(starknetFunctionEthereumInputTypes,calldata);
+  const starknetFunctionEthereumInputTypes: Array<CairoNamedConvertableType> =
+    getEthereumInputsCairoNamed(targetStarknetFunction, contractTypeMapping)
+  const calldata = tx.data.slice(10)
+  const decodedCalldata = decodeCalldataWithFelt252Limit(
+    starknetFunctionEthereumInputTypes,
+    calldata,
+  )
   // calldata is now in felt range and can be passed directly as starknet calldata
   // TODO: improve decoding tests and make this function async with address formatting
-
 
   // Array of all inputs
   // TODO: decodeCalldataWithTypes fonksiyonuna parametreleri ethereum halini array olarak gönder [uint etc. etc.]

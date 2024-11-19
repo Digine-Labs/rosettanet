@@ -328,14 +328,15 @@ describe('Test calldata decoding with cairo type names', () => {
       isTuple: false,
       size: 256,
       solidityType: 'uint256[]',
-      cairoType: 'core::array::Array::<core::integer::u256>'
+      cairoType: 'core::array::Array::<core::integer::u256>',
     }
 
-    const types: Array<CairoNamedConvertableType> = [type];
-    
-    const calldata = "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000e900000000000000000000000000000000000000000000000000000000000001c80000000000000000000000000000000000000000000000000000000000000315";
-    
-    const expectedValues = [ '233', '0', '456', '0', '789', '0' ]
+    const types: Array<CairoNamedConvertableType> = [type]
+
+    const calldata =
+      '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000e900000000000000000000000000000000000000000000000000000000000001c80000000000000000000000000000000000000000000000000000000000000315'
+
+    const expectedValues = ['233', '0', '456', '0', '789', '0']
     const decodedData = decodeCalldataWithFelt252Limit(types, calldata)
     expect(decodedData).toStrictEqual(expectedValues)
   })
@@ -346,12 +347,13 @@ describe('Test calldata decoding with cairo type names', () => {
       isTuple: false,
       size: 256,
       solidityType: 'uint256',
-      cairoType: 'core::integer::u256'
+      cairoType: 'core::integer::u256',
     }
-    const types: Array<CairoNamedConvertableType> = [type];
+    const types: Array<CairoNamedConvertableType> = [type]
 
-    const calldata = "0x0000000000000000000000000000000000000000000000000000000000000315"
-    const expectedValues = [ '789', '0' ]
+    const calldata =
+      '0x0000000000000000000000000000000000000000000000000000000000000315'
+    const expectedValues = ['789', '0']
     const decodedData = decodeCalldataWithFelt252Limit(types, calldata)
     expect(decodedData).toStrictEqual(expectedValues)
   })
@@ -361,14 +363,14 @@ describe('Test calldata decoding with cairo type names', () => {
       isTuple: false,
       size: 64,
       solidityType: 'uint64',
-      cairoType: 'core::integer::u64'
+      cairoType: 'core::integer::u64',
     }
     const type2: CairoNamedConvertableType = {
       isDynamicSize: false,
       isTuple: false,
       size: 128,
       solidityType: 'uint128',
-      cairoType: 'core::integer::u128'
+      cairoType: 'core::integer::u128',
     }
 
     const types = [type1, type2]
@@ -386,7 +388,7 @@ describe('Test calldata decoding with cairo type names', () => {
       size: 512,
       solidityType: 'tuple(uint256, uint256)',
       tupleSizes: [256, 256],
-      cairoType: 'customstruct'
+      cairoType: 'customstruct',
     }
     const types = [type]
     const calldata =
@@ -403,7 +405,7 @@ describe('Test calldata decoding with cairo type names', () => {
       size: 512,
       solidityType: 'tuple(uint128, uint128)',
       tupleSizes: [128, 128],
-      cairoType: 'customstruct'
+      cairoType: 'customstruct',
     }
     const types = [type]
     const calldata =
@@ -421,7 +423,7 @@ describe('Test calldata decoding with cairo type names', () => {
       isTuple: false,
       size: 128,
       solidityType: 'uint128',
-      cairoType: 'core::integer::u128'
+      cairoType: 'core::integer::u128',
     }
 
     const type2: CairoNamedConvertableType = {
@@ -429,11 +431,12 @@ describe('Test calldata decoding with cairo type names', () => {
       isTuple: false,
       size: 256,
       solidityType: 'uint256[]',
-      cairoType: 'core::array::Array::<core::integer::u256>'
+      cairoType: 'core::array::Array::<core::integer::u256>',
     }
     const types = [type1, type2]
-    const calldata = "0x00000000000000000000000000000000000000000000000000000000000b611300000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000071a000000000000000000000000000000000000000000000000000000000000014d00000000000000000000000000000000000000000000000000000000008c3592";
-    const expectedValues = [ '745747', '1818', '0', '333', '0', '9188754', '0' ]
+    const calldata =
+      '0x00000000000000000000000000000000000000000000000000000000000b611300000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000071a000000000000000000000000000000000000000000000000000000000000014d00000000000000000000000000000000000000000000000000000000008c3592'
+    const expectedValues = ['745747', '1818', '0', '333', '0', '9188754', '0']
     const decodedData = decodeCalldataWithFelt252Limit(types, calldata)
 
     expect(decodedData).toStrictEqual(expectedValues)
@@ -444,7 +447,7 @@ describe('Test calldata decoding with cairo type names', () => {
       isTuple: false,
       size: 256,
       solidityType: 'uint256',
-      cairoType: 'core::integer::u256'
+      cairoType: 'core::integer::u256',
     }
 
     const type2: CairoNamedConvertableType = {
@@ -452,11 +455,21 @@ describe('Test calldata decoding with cairo type names', () => {
       isTuple: false,
       size: 256,
       solidityType: 'uint256[]',
-      cairoType: 'core::array::Array::<core::integer::u256>'
+      cairoType: 'core::array::Array::<core::integer::u256>',
     }
     const types = [type1, type2]
-    const calldata = "0x00000000000000000000000000000000000000000000000000000000000b611300000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000071a000000000000000000000000000000000000000000000000000000000000014d00000000000000000000000000000000000000000000000000000000008c3592";
-    const expectedValues = [ '745747', '0', '1818', '0', '333', '0', '9188754', '0' ]
+    const calldata =
+      '0x00000000000000000000000000000000000000000000000000000000000b611300000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000071a000000000000000000000000000000000000000000000000000000000000014d00000000000000000000000000000000000000000000000000000000008c3592'
+    const expectedValues = [
+      '745747',
+      '0',
+      '1818',
+      '0',
+      '333',
+      '0',
+      '9188754',
+      '0',
+    ]
     const decodedData = decodeCalldataWithFelt252Limit(types, calldata)
 
     expect(decodedData).toStrictEqual(expectedValues)
@@ -468,7 +481,7 @@ describe('Test calldata decoding with cairo type names', () => {
       isTuple: false,
       size: 256,
       solidityType: 'uint256',
-      cairoType: 'core::integer::u256'
+      cairoType: 'core::integer::u256',
     }
 
     const type2: CairoNamedConvertableType = {
@@ -477,11 +490,12 @@ describe('Test calldata decoding with cairo type names', () => {
       size: 256 + 128,
       solidityType: 'tuple(uint128, uint256)',
       tupleSizes: [128, 256],
-      cairoType: 'customstruct'
+      cairoType: 'customstruct',
     }
     const types = [type1, type2]
-    const calldata = "0x0000000000000000000000000000000000000000000000000000000000520372000000000000000000000000000000000000000000000000000000000012831e0000000000000000000000000000000000000000000000000000000002958cc7";
-    const expectedValues = [ '5374834', '0', '1213214', '43355335', '0']
+    const calldata =
+      '0x0000000000000000000000000000000000000000000000000000000000520372000000000000000000000000000000000000000000000000000000000012831e0000000000000000000000000000000000000000000000000000000002958cc7'
+    const expectedValues = ['5374834', '0', '1213214', '43355335', '0']
     const decodedData = decodeCalldataWithFelt252Limit(types, calldata)
     expect(decodedData).toStrictEqual(expectedValues)
   })
@@ -492,7 +506,7 @@ describe('Test calldata decoding with cairo type names', () => {
       isTuple: false,
       size: 256,
       solidityType: 'uint256',
-      cairoType: 'core::integer::u256'
+      cairoType: 'core::integer::u256',
     }
 
     const type2: CairoNamedConvertableType = {
@@ -501,18 +515,38 @@ describe('Test calldata decoding with cairo type names', () => {
       size: 256 + 128,
       solidityType: 'tuple(uint256, uint256)',
       tupleSizes: [256, 256],
-      cairoType: 'customstruct'
+      cairoType: 'customstruct',
     }
     const type3: CairoNamedConvertableType = {
       isDynamicSize: true,
       isTuple: false,
       size: 256,
       solidityType: 'uint256[]',
-      cairoType: 'core::array::Array::<core::integer::u256>'
+      cairoType: 'core::array::Array::<core::integer::u256>',
     }
     const types = [type2, type3, type1]
-    const calldata = "0x0000000000000000000000000000000000000000000000000000000000004706000000000000000000000000000000000000000000000000000000000001869f000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000001cf97787100000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000004fe74270000000000000000000000000000000000000000000000000000000000004a2500000000000000000000000000000000000000000000000000000000016c91ae000000000000000000000000000000000000000000000000000000000002c3de00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
-    const expectedValues = [ '18182', '0', '99999', '0', '83784743', '0', '18981', '0', '23892398', '0', '181214', '0', '0', '0', '0', '0', '7777777777', '0']
+    const calldata =
+      '0x0000000000000000000000000000000000000000000000000000000000004706000000000000000000000000000000000000000000000000000000000001869f000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000001cf97787100000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000004fe74270000000000000000000000000000000000000000000000000000000000004a2500000000000000000000000000000000000000000000000000000000016c91ae000000000000000000000000000000000000000000000000000000000002c3de00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+    const expectedValues = [
+      '18182',
+      '0',
+      '99999',
+      '0',
+      '83784743',
+      '0',
+      '18981',
+      '0',
+      '23892398',
+      '0',
+      '181214',
+      '0',
+      '0',
+      '0',
+      '0',
+      '0',
+      '7777777777',
+      '0',
+    ]
     const decodedData = decodeCalldataWithFelt252Limit(types, calldata)
     expect(decodedData).toStrictEqual(expectedValues)
   })
@@ -522,11 +556,12 @@ describe('Test calldata decoding with cairo type names', () => {
       isTuple: false,
       size: 2,
       solidityType: 'bool',
-      cairoType: 'core::integer::bool'
+      cairoType: 'core::integer::bool',
     }
     const types = [type1]
-    const calldata = "0x0000000000000000000000000000000000000000000000000000000000000001";
-    const expectedValues = [ '1' ]
+    const calldata =
+      '0x0000000000000000000000000000000000000000000000000000000000000001'
+    const expectedValues = ['1']
     const decodedData = decodeCalldataWithFelt252Limit(types, calldata)
     expect(decodedData).toStrictEqual(expectedValues)
   })

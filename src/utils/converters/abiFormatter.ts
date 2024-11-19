@@ -635,7 +635,7 @@ function getStructConvertableTypes(
       isDynamicSize: false,
       solidityType: tupledType,
       isTuple: true,
-      tupleSizes: tupleSizes
+      tupleSizes: tupleSizes,
     },
   ]
 
@@ -646,7 +646,7 @@ function getStructConvertableTypes(
       isDynamicSize: true,
       solidityType: `${tupledType}[]`,
       isTuple: true,
-      tupleSizes: tupleSizes
+      tupleSizes: tupleSizes,
     },
   ]
 
@@ -657,7 +657,7 @@ function getStructConvertableTypes(
       isDynamicSize: true,
       solidityType: `${tupledType}[]`,
       isTuple: true,
-      tupleSizes: tupleSizes
+      tupleSizes: tupleSizes,
     },
   ]
 
@@ -668,15 +668,15 @@ function getStructConvertableTypes(
       isDynamicSize: true,
       solidityType: `${tupledType}[]`,
       isTuple: true,
-      tupleSizes: tupleSizes
+      tupleSizes: tupleSizes,
     },
   ]
 
   return [basic, array, option, span]
 }
 
-export function isSolidityArray(type: string):boolean {
-  if(type.indexOf('[') > -1 || type.indexOf(']') > -1) {
+export function isSolidityArray(type: string): boolean {
+  if (type.indexOf('[') > -1 || type.indexOf(']') > -1) {
     return true
   }
   return false

@@ -64,7 +64,7 @@ export function getEthereumInputsCairoNamed(
       }
       return {
         ...type,
-        cairoType: input.type
+        cairoType: input.type,
       }
     } else {
       throw 'Type not found'

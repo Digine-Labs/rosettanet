@@ -209,7 +209,8 @@ export function decodeCalldataWithTypes(
     if (typeof elem === 'string') {
       return elem
     }
-    if (Array.isArray(elem)) { // Todo: Add support of tuple in tuples
+    if (Array.isArray(elem)) {
+      // Todo: Add support of tuple in tuples
       return elem.map(x => (typeof x === 'string' ? x : x.toString()))
     }
     return elem.toString()
@@ -219,66 +220,81 @@ export function decodeCalldataWithTypes(
 
 export function decodeCalldataWithFelt252Limit(
   types: Array<CairoNamedConvertableType>,
-  data:string
+  data: string,
 ): Array<string> {
   if (types.length == 0 || data.length == 0) {
     throw 'Calldata empty or wrong'
   }
 
   const decoder = new AbiCoder()
-  const solidityTypes = types.map(x => x.solidityType);
+  const solidityTypes = types.map(x => x.solidityType)
   const result = decoder.decode(solidityTypes, dataSlice(data, 0)).toArray()
 
-  const decodedValues: Array<string> = [];
+  const decodedValues: Array<string> = []
 
-  if(result.length != types.length) {
+  if (result.length != types.length) {
     throw 'Result & type length mismatch'
   }
 
-  for(let i = 0; i < result.length; i++) {
-    const currentType = types[i];
-    const currentData = result[i];
+  for (let i = 0; i < result.length; i++) {
+    const currentType = types[i]
+    const currentData = result[i]
 
-    if(currentType.isDynamicSize) {
+    if (currentType.isDynamicSize) {
       // array ise
-      if(!Array.isArray(currentData)) {
+      if (!Array.isArray(currentData)) {
         throw 'Cairo type is array but decoded type is not array'
       }
     }
 
-    if(currentType.isTuple) {
+    if (currentType.isTuple) {
       // tuple ise size bakma total size veriyor
       // TODO
-      if(typeof currentType.tupleSizes === 'undefined') {
+      if (typeof currentType.tupleSizes === 'undefined') {
         throw 'Tuple size property undefined'
       }
-      if(currentType.tupleSizes.length != currentData.length) {
+      if (currentType.tupleSizes.length != currentData.length) {
         throw 'Tuple size and decoded data length mismatch'
       }
 
-      for(let j = 0; j < currentType.tupleSizes.length; j++) {
-        if(currentType.tupleSizes[j] > 252) {
-          decodedValues.push(...typeof currentData[j] === 'string' ? BnToU256(BigInt(currentData[j])) : BnToU256(currentData[j].toString()))
+      for (let j = 0; j < currentType.tupleSizes.length; j++) {
+        if (currentType.tupleSizes[j] > 252) {
+          decodedValues.push(
+            ...(typeof currentData[j] === 'string'
+              ? BnToU256(BigInt(currentData[j]))
+              : BnToU256(currentData[j].toString())),
+          )
         } else {
-          decodedValues.push(typeof currentData[j] === 'string' ? currentData[j] : currentData[j].toString())
+          decodedValues.push(
+            typeof currentData[j] === 'string'
+              ? currentData[j]
+              : currentData[j].toString(),
+          )
         }
       }
-      continue;
+      continue
     }
-    if(currentType.size > 252) {
+    if (currentType.size > 252) {
       // u256 ise
-      if(currentType.isDynamicSize && Array.isArray(currentData)) {
+      if (currentType.isDynamicSize && Array.isArray(currentData)) {
         // u256 array ise
-        currentData.map(elem =>  {
-         const u256Converted = typeof elem === 'string' ? BnToU256(BigInt(elem)): BnToU256(elem.toString())
-         decodedValues.push(...u256Converted)
+        currentData.map(elem => {
+          const u256Converted =
+            typeof elem === 'string'
+              ? BnToU256(BigInt(elem))
+              : BnToU256(elem.toString())
+          decodedValues.push(...u256Converted)
         })
       } else {
-          decodedValues.push(...typeof currentData === 'string' ? BnToU256(BigInt(currentData)): BnToU256(currentData.toString()));
+        decodedValues.push(
+          ...(typeof currentData === 'string'
+            ? BnToU256(BigInt(currentData))
+            : BnToU256(currentData.toString())),
+        )
       }
-      continue;
+      continue
     }
-    
+
     decodedValues.push(formatBoolean(currentData.toString()))
 
     // Todo Contract address formatter
@@ -288,11 +304,11 @@ export function decodeCalldataWithFelt252Limit(
 }
 
 function formatBoolean(val: string): string {
-  if(val === 'true') {
-    return "1"
+  if (val === 'true') {
+    return '1'
   }
-  if(val === 'false') {
-    return "0"
+  if (val === 'false') {
+    return '0'
   }
   return val
 }
