@@ -6,9 +6,10 @@ export interface ConvertableType {
   isDynamicSize: boolean // true if array
   solidityType: string // uint256, etc. name used on function selector calc
   isTuple: boolean // true if struct or tuple
+  tupleSizes?: Array<number>
   formatter?: (value: string) => string | Promise<string>
 }
-
+// TODO: Sizeları starknet sizelarına göre updatele. mesela contract addres 252 gibi ve class hash. Onlar solidityde uint256 olarak girilecek ama size limit belli.
 const starknetElementaryTypes: Array<Array<string | ConvertableType>> = [
   [
     'core::felt252',
@@ -615,6 +616,7 @@ function getStructConvertableTypes(
 
   const tupledType = `(${membersSolidityTypes.join(',')})`
   let tupleSize = 0
+  const tupleSizes = []
 
   for (const mem of members) {
     const typeName = mem.type.replace('@', '')
@@ -623,6 +625,7 @@ function getStructConvertableTypes(
       throw 'typesnotfound'
     }
     tupleSize += val?.size
+    tupleSizes.push(val?.size)
   }
 
   const basic = [
@@ -632,6 +635,7 @@ function getStructConvertableTypes(
       isDynamicSize: false,
       solidityType: tupledType,
       isTuple: true,
+      tupleSizes: tupleSizes,
     },
   ]
 
@@ -642,6 +646,7 @@ function getStructConvertableTypes(
       isDynamicSize: true,
       solidityType: `${tupledType}[]`,
       isTuple: true,
+      tupleSizes: tupleSizes,
     },
   ]
 
@@ -652,6 +657,7 @@ function getStructConvertableTypes(
       isDynamicSize: true,
       solidityType: `${tupledType}[]`,
       isTuple: true,
+      tupleSizes: tupleSizes,
     },
   ]
 
@@ -662,8 +668,16 @@ function getStructConvertableTypes(
       isDynamicSize: true,
       solidityType: `${tupledType}[]`,
       isTuple: true,
+      tupleSizes: tupleSizes,
     },
   ]
 
   return [basic, array, option, span]
+}
+
+export function isSolidityArray(type: string): boolean {
+  if (type.indexOf('[') > -1 || type.indexOf(']') > -1) {
+    return true
+  }
+  return false
 }

@@ -16,9 +16,11 @@ import { getETHBalance } from '../../utils/callHelper'
 import { validateRawTransaction } from '../../utils/validations'
 import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 import {
+  CairoNamedConvertableType,
   generateEthereumFunctionSignatureFromTypeMapping,
   getContractsAbi,
   getContractsMethods,
+  getEthereumInputsCairoNamed,
   getEthereumInputTypesFromStarknetFunction,
 } from '../../utils/starknet'
 import {
@@ -30,6 +32,7 @@ import {
   matchStarknetFunctionWithEthereumSelector,
 } from '../../utils/match'
 import {
+  decodeCalldataWithFelt252Limit,
   decodeCalldataWithTypes,
   getFunctionSelectorFromCalldata,
 } from '../../utils/calldata'
@@ -186,7 +189,7 @@ export async function sendRawTransactionHandler(
       },
     }
   }
-  const starknetFunctionEthereumInputTypes =
+  /*const starknetFunctionEthereumInputTypes =
     getEthereumInputTypesFromStarknetFunction(
       targetStarknetFunction,
       contractTypeMapping,
@@ -195,8 +198,20 @@ export async function sendRawTransactionHandler(
 
   const decodedCalldata = decodeCalldataWithTypes(
     starknetFunctionEthereumInputTypes,
+    calldata, 
+  )*/
+
+  const starknetFunctionEthereumInputTypes: Array<CairoNamedConvertableType> =
+    getEthereumInputsCairoNamed(targetStarknetFunction, contractTypeMapping)
+  const calldata = tx.data.slice(10)
+  const decodedCalldata = decodeCalldataWithFelt252Limit(
+    starknetFunctionEthereumInputTypes,
     calldata,
-  ) // Array of all inputs
+  )
+  // calldata is now in felt range and can be passed directly as starknet calldata
+  // TODO: improve decoding tests and make this function async with address formatting
+
+  // Array of all inputs
   // TODO: decodeCalldataWithTypes fonksiyonuna parametreleri ethereum halini array olarak gönder [uint etc. etc.]
   // const decodedCalldata = decodeCalldataWithTypes(,calldata);
 
