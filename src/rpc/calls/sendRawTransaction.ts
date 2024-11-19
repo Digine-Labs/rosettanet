@@ -12,7 +12,7 @@ import {
   isRosettaAccountDeployed,
 } from '../../utils/rosettanet'
 import { convertHexIntoBytesArray } from '../../utils/felt'
-import { getETHBalance } from '../../utils/callHelper'
+import { getETHBalance, StarknetInvokeParams } from '../../utils/callHelper'
 import { validateRawTransaction } from '../../utils/validations'
 import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 import {
@@ -36,6 +36,9 @@ import {
   decodeCalldataWithTypes,
   getFunctionSelectorFromCalldata,
 } from '../../utils/calldata'
+import { prepareStarknetInvokeTransaction } from '../../utils/transaction'
+import { Uint256ToU256 } from '../../utils/converters/integer'
+import { StarknetInvokeTransaction } from '../../types/transactions.types'
 export async function sendRawTransactionHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
@@ -77,7 +80,7 @@ export async function sendRawTransactionHandler(
     }
   }
   // TODO: chainId check
-  const { from, to, data, value } = tx
+  const { from, to, data, value, nonce, chainId, signature } = tx
 
   if (typeof to !== 'string') {
     return {
@@ -100,6 +103,17 @@ export async function sendRawTransactionHandler(
       },
     }
   }
+
+  if (typeof signature === 'undefined' || signature === null) {
+    return {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Transaction is not signed',
+      },
+    }
+  }
   // Check if value is non-zero and data is empty it is ether transfer
   if (value.toString() !== '0') {
     // If data is zero and value is 0 then it is usual ether transfer
@@ -119,13 +133,13 @@ export async function sendRawTransactionHandler(
   }
 
   // Check if from address rosetta account
-  const senderAddress = await getRosettaAccountAddress(from)
-
+  // const senderAddress = await getRosettaAccountAddress(from) // Fix here
+  const senderAddress = '0x123123'
   // This is invoke transaction signature
-  const rawTransactionChunks: Array<string> =
-    convertHexIntoBytesArray(signedRawTransaction)
+  //const rawTransactionChunks: Array<string> =
+  //  convertHexIntoBytesArray(signedRawTransaction)
 
-  const callerETHBalance: string = await getETHBalance(senderAddress) // Maybe we can also check strk balance too
+  //const callerETHBalance: string = await getETHBalance(senderAddress) // Maybe we can also check strk balance too
 
   const isTxValid = validateRawTransaction(tx)
   if (!isTxValid) {
@@ -152,7 +166,6 @@ export async function sendRawTransactionHandler(
   }
 
   const contractAbi = await getContractsAbi(targetContract) // Todo: Optimize this get methods, one call enough, methods and custom structs can be derived from abi.
-
   const contractTypeMapping: Map<string, ConvertableType> =
     initializeStarknetAbi(contractAbi)
 
@@ -242,6 +255,22 @@ export async function sendRawTransactionHandler(
   // signature will be signed raw transaction hex, parsed into 252 bits
   // So calldata will be readen from signature in cairo
 
+  const rU256: Array<string> = Uint256ToU256(signature.r.replace('0x', ''))
+  const sU256: Array<string> = Uint256ToU256(signature.s.replace('0x', ''))
+  const starknetSignature: Array<string> = [
+    ...rU256,
+    ...sU256,
+    signature.yParity.toString(),
+  ] // Check is it correct
+
+  const invokeTransaction: StarknetInvokeTransaction =
+    prepareStarknetInvokeTransaction(
+      senderAddress,
+      decodedCalldata,
+      starknetSignature,
+      chainId.toString(),
+      nonce.toString(),
+    )
   return {
     jsonrpc: request.jsonrpc,
     id: request.id,
