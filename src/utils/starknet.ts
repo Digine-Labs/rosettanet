@@ -8,6 +8,10 @@ import { StarknetFunctionInput, StarknetFunction } from '../types/types'
 import { convertSnToEth } from './converters/typeConverters'
 import { ConvertableType } from './converters/abiFormatter'
 
+export interface CairoNamedConvertableType extends ConvertableType {
+  cairoType: string
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getContractsMethods(
   snAddress: string,
@@ -43,6 +47,31 @@ export async function getContractsMethods(
   ]
 
   return allEntrypoints
+}
+
+export function getEthereumInputsCairoNamed(
+  snFunction: StarknetFunction,
+  map: Map<string, ConvertableType>,
+): Array<CairoNamedConvertableType> {
+  if (!snFunction.inputs || snFunction.inputs.length == 0) {
+    return []
+  }
+  const inputs = snFunction.inputs.map(input => {
+    if (map.has(input.type)) {
+      const type = map.get(input.type)
+      if (typeof type === 'undefined') {
+        throw 'Type undefined'
+      }
+      return {
+        ...type,
+        cairoType: input.type
+      }
+    } else {
+      throw 'Type not found'
+    }
+  })
+
+  return inputs
 }
 
 export function getEthereumInputTypesFromStarknetFunction(
