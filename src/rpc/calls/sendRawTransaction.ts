@@ -263,6 +263,18 @@ export async function sendRawTransactionHandler(
     signature.yParity.toString(),
   ] // Check is it correct
 
+  /*
+  pub struct RosettanetCall {
+      to: EthAddress, // This has to be this account address for multicalls
+      nonce: u64,
+      max_priority_fee_per_gas: u128,
+      max_fee_per_gas: u128,
+      gas_limit: u64,
+      value: u256, // To be used future
+      calldata: Array<felt252>,
+      directives: Array<bool>, // We use this directives to figure out u256 splitting happened in element in same index For ex if 3rd element of this array is true, it means 3rd elem is low, 4th elem is high of u256
+  }
+  */
   const invokeTransaction: StarknetInvokeTransaction =
     prepareStarknetInvokeTransaction(
       senderAddress,
