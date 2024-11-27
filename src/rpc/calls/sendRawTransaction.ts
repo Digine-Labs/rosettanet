@@ -271,7 +271,7 @@ export async function sendRawTransactionHandler(
       max_fee_per_gas: u128,
       gas_limit: u64,
       value: u256, // To be used future
-      calldata: Array<felt252>,
+      calldata: Array<felt252>, // It also includes the function selector so first directive always zero
       directives: Array<bool>, // We use this directives to figure out u256 splitting happened in element in same index For ex if 3rd element of this array is true, it means 3rd elem is low, 4th elem is high of u256
   }
   */
