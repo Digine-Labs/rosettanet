@@ -37,7 +37,10 @@ import {
   decodeCalldataWithTypes,
   getFunctionSelectorFromCalldata,
 } from '../../utils/calldata'
-import { prepareSignature, prepareStarknetInvokeTransaction } from '../../utils/transaction'
+import {
+  prepareSignature,
+  prepareStarknetInvokeTransaction,
+} from '../../utils/transaction'
 import { Uint256ToU256 } from '../../utils/converters/integer'
 import { StarknetInvokeTransaction } from '../../types/transactions.types'
 import { getDirectivesForStarknetFunction } from '../../utils/directives'
@@ -70,7 +73,8 @@ export async function sendRawTransactionHandler(
 
   const tx = Transaction.from(signedRawTransaction)
 
-  if (tx.type != 2) { // Test with eip2930 and legacy
+  if (tx.type != 2) {
+    // Test with eip2930 and legacy
     // TODO: Alpha version only supports EIP1559
     return {
       jsonrpc: request.jsonrpc,
@@ -117,10 +121,10 @@ export async function sendRawTransactionHandler(
     }
   }
 
-  const deployedAccountAddress = await getRosettaAccountAddress(from);
-  if(deployedAccountAddress === '0x0') {
+  const deployedAccountAddress = await getRosettaAccountAddress(from)
+  if (deployedAccountAddress === '0x0') {
     // This means account is not registered on rosettanet registry. Lets deploy the address
-    await deployRosettanetAccount(from);
+    await deployRosettanetAccount(from)
   }
   // Check if value is non-zero and data is empty it is ether transfer
   if (value.toString() !== '0') {
@@ -199,7 +203,6 @@ export async function sendRawTransactionHandler(
     contractTypeMapping,
   )
 
-
   if (
     typeof targetStarknetFunction === 'undefined' ||
     typeof targetStarknetFunctionSelector === 'undefined'
@@ -213,7 +216,7 @@ export async function sendRawTransactionHandler(
       },
     }
   }
-  const directives = getDirectivesForStarknetFunction(targetStarknetFunction);
+  const directives = getDirectivesForStarknetFunction(targetStarknetFunction)
 
   const starknetFunctionEthereumInputTypes: Array<CairoNamedConvertableType> =
     getEthereumInputsCairoNamed(targetStarknetFunction, contractTypeMapping)
@@ -256,7 +259,12 @@ export async function sendRawTransactionHandler(
   // signature will be signed raw transaction hex, parsed into 252 bits
   // So calldata will be readen from signature in cairo
 
-  const rosettaSignature: Array<string> = prepareSignature(signature.r, signature.s, signature.v, value.toString());
+  const rosettaSignature: Array<string> = prepareSignature(
+    signature.r,
+    signature.s,
+    signature.v,
+    value.toString(),
+  )
   /*
   pub struct RosettanetCall {
       to: EthAddress, // This has to be this account address for multicalls

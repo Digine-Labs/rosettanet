@@ -75,11 +75,16 @@ export function prepareRosettanetCalldata(
   return finalCalldata
 }
 
-export function prepareSignature(r: string, s: string, v: number, value: string) : Array<string> {
+export function prepareSignature(
+  r: string,
+  s: string,
+  v: number,
+  value: string,
+): Array<string> {
   return [
-    ...Uint256ToU256(r.replace('0x','')),
-    ...Uint256ToU256(r.replace('0x','')),
+    ...Uint256ToU256(r.replace('0x', '')),
+    ...Uint256ToU256(r.replace('0x', '')),
     v.toString(16),
-    ...Uint256ToU256(value)
+    ...Uint256ToU256(value),
   ]
 }

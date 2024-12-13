@@ -29,9 +29,8 @@ export interface RPCResponse {
   }
   jsonrpc: string
   id: number
-  result:
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    | any
+  result: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  | any
     | string
     | number
     | boolean
