@@ -2,8 +2,8 @@
   "appName": "RosettaNet",
   "port": 3000,
   "rpcUrls": ["https://starknet-sepolia.public.blastapi.io"],
-  "factoryAddress": "",
-  "accountClass": "",
+  "accountClass": "0x039d1d17c86be50e996ecbd9614e1e907447951ea9f34be0c6ad710f8aea693f",
   "ethAddress": "",
-  "strkAddress": ""
+  "strkAddress": "",
+  "rosettanet": "0x07a1af0575e1291bd19b2e342241ceb2a1eac5c10543d82146216d56412337f7"
 }

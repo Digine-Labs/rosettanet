@@ -2,7 +2,7 @@ import { callStarknet } from './callHelper'
 import { RPCRequest, RPCResponse } from '../types/types'
 
 const CONTRACT_ADDRESS = {
-  sepolia: '0x055f17a002c440e850c7005180ae803c7d2752f554add2ef7f3a740a24fadfa6',
+  sepolia: '0x07a1af0575e1291bd19b2e342241ceb2a1eac5c10543d82146216d56412337f7',
   mainnet: '',
 }
 // 0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
@@ -10,9 +10,9 @@ const CONTRACT_ADDRESS = {
 
 const SELECTORS = {
   get_sn_address_from_eth_address:
-    '0x00cdb247d63cc9ddeb10d27644bf643e86af5b486d387bf5c3eb2dcba1d0d1fb',
+    '0x3e5d65a345b3857ca9d72edca702b8e56c1923c118867752345f710d595b3cf',
   get_eth_address_from_sn_address:
-    '0x00efa444af091f058c8529653de0c739370c8a5c251cc0c8288c9eea71eeafcc',
+    '0x1d5cede02897d15d9053653ef3e41f52394e444218efdfdec3dfaf529dcf5dd',
 }
 
 // Returns registered address in starknet address format

@@ -68,9 +68,9 @@ const starknetElementaryTypes: Array<Array<string | ConvertableType>> = [
     {
       size: 256,
       isDynamicSize: false,
-      solidityType: 'uint256',
+      solidityType: 'address',
       isTuple: false,
-    },
+    }, // TODO: Formatter or size diff???
   ],
   [
     'core::starknet::eth_address::EthAddress',
