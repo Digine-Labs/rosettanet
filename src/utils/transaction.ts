@@ -2,6 +2,7 @@ import { StarknetInvokeTransaction } from '../types/transactions.types'
 import { Uint256ToU256 } from './converters/integer'
 
 // Signature will be v,r,s
+// Deprecate this one
 export function prepareStarknetInvokeTransaction(
   caller: string,
   calldata: Array<string>,
@@ -12,7 +13,7 @@ export function prepareStarknetInvokeTransaction(
   const starknetTx: StarknetInvokeTransaction = {
     invoke_transaction: {
       calldata: calldata,
-      chain_id: chainId,
+      chain_id: chainId, // Will be constant, It can be different from starknet chain id
       fee_data_availability_mode: 'L1',
       nonce: nonce,
       nonce_data_availability_mode: 'L1',
@@ -72,4 +73,18 @@ export function prepareRosettanetCalldata(
   finalCalldata.push(...directives.map(d => (d ? `1` : `0`)))
 
   return finalCalldata
+}
+
+export function prepareSignature(
+  r: string,
+  s: string,
+  v: number,
+  value: string,
+): Array<string> {
+  return [
+    ...Uint256ToU256(r.replace('0x', '')),
+    ...Uint256ToU256(r.replace('0x', '')),
+    v.toString(16),
+    ...Uint256ToU256(value),
+  ]
 }

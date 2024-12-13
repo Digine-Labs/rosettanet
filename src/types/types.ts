@@ -7,7 +7,8 @@ export interface ParsedRequest extends Request {
 export interface RPCRequest {
   jsonrpc: string
   method: string
-  params: Array<string | number | boolean | object>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  params: Array<string | number | boolean | object> | any
   id: number
 }
 
@@ -28,7 +29,8 @@ export interface RPCResponse {
   }
   jsonrpc: string
   id: number
-  result:
+  result: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  | any
     | string
     | number
     | boolean

@@ -8,6 +8,7 @@ import {
 } from '../../types/types'
 import { Transaction } from 'ethers'
 import {
+  deployRosettanetAccount,
   getRosettaAccountAddress,
   isRosettaAccountDeployed,
 } from '../../utils/rosettanet'
@@ -36,9 +37,13 @@ import {
   decodeCalldataWithTypes,
   getFunctionSelectorFromCalldata,
 } from '../../utils/calldata'
-import { prepareStarknetInvokeTransaction } from '../../utils/transaction'
+import {
+  prepareSignature,
+  prepareStarknetInvokeTransaction,
+} from '../../utils/transaction'
 import { Uint256ToU256 } from '../../utils/converters/integer'
 import { StarknetInvokeTransaction } from '../../types/transactions.types'
+import { getDirectivesForStarknetFunction } from '../../utils/directives'
 export async function sendRawTransactionHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
@@ -69,6 +74,7 @@ export async function sendRawTransactionHandler(
   const tx = Transaction.from(signedRawTransaction)
 
   if (tx.type != 2) {
+    // Test with eip2930 and legacy
     // TODO: Alpha version only supports EIP1559
     return {
       jsonrpc: request.jsonrpc,
@@ -114,6 +120,12 @@ export async function sendRawTransactionHandler(
       },
     }
   }
+
+  const deployedAccountAddress = await getRosettaAccountAddress(from)
+  if (deployedAccountAddress === '0x0') {
+    // This means account is not registered on rosettanet registry. Lets deploy the address
+    await deployRosettanetAccount(from)
+  }
   // Check if value is non-zero and data is empty it is ether transfer
   if (value.toString() !== '0') {
     // If data is zero and value is 0 then it is usual ether transfer
@@ -154,7 +166,7 @@ export async function sendRawTransactionHandler(
   }
 
   const targetContract: string = await getSnAddressFromEthAddress(to)
-  if (targetContract === '0x0') {
+  if (targetContract === '0x0' || targetContract === '0') {
     return {
       jsonrpc: request.jsonrpc,
       id: request.id,
@@ -166,11 +178,13 @@ export async function sendRawTransactionHandler(
   }
 
   const contractAbi = await getContractsAbi(targetContract) // Todo: Optimize this get methods, one call enough, methods and custom structs can be derived from abi.
+
   const contractTypeMapping: Map<string, ConvertableType> =
     initializeStarknetAbi(contractAbi)
 
   const starknetCallableMethods: Array<StarknetFunction> =
     await getContractsMethods(targetContract)
+
   const starknetFunctionsEthereumSignatures = starknetCallableMethods.map(fn =>
     generateEthereumFunctionSignatureFromTypeMapping(fn, contractTypeMapping),
   )
@@ -202,17 +216,7 @@ export async function sendRawTransactionHandler(
       },
     }
   }
-  /*const starknetFunctionEthereumInputTypes =
-    getEthereumInputTypesFromStarknetFunction(
-      targetStarknetFunction,
-      contractTypeMapping,
-    )
-  const calldata = tx.data.slice(10)
-
-  const decodedCalldata = decodeCalldataWithTypes(
-    starknetFunctionEthereumInputTypes,
-    calldata, 
-  )*/
+  const directives = getDirectivesForStarknetFunction(targetStarknetFunction)
 
   const starknetFunctionEthereumInputTypes: Array<CairoNamedConvertableType> =
     getEthereumInputsCairoNamed(targetStarknetFunction, contractTypeMapping)
@@ -255,14 +259,12 @@ export async function sendRawTransactionHandler(
   // signature will be signed raw transaction hex, parsed into 252 bits
   // So calldata will be readen from signature in cairo
 
-  const rU256: Array<string> = Uint256ToU256(signature.r.replace('0x', ''))
-  const sU256: Array<string> = Uint256ToU256(signature.s.replace('0x', ''))
-  const starknetSignature: Array<string> = [
-    ...rU256,
-    ...sU256,
-    signature.yParity.toString(),
-  ] // Check is it correct
-
+  const rosettaSignature: Array<string> = prepareSignature(
+    signature.r,
+    signature.s,
+    signature.v,
+    value.toString(),
+  )
   /*
   pub struct RosettanetCall {
       to: EthAddress, // This has to be this account address for multicalls
@@ -279,7 +281,7 @@ export async function sendRawTransactionHandler(
     prepareStarknetInvokeTransaction(
       senderAddress,
       decodedCalldata,
-      starknetSignature,
+      rosettaSignature,
       chainId.toString(),
       nonce.toString(),
     )
