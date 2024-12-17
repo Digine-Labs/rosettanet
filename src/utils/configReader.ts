@@ -75,6 +75,11 @@ export function initConfig() {
       `Invalid or missing 'port' in configuration file: ${configPath}`,
     )
   }
+  if (!Array.isArray(config.rpcUrls)) {
+    throw new Error(
+      `Invalid or missing 'rpcUrls' in configuration file: ${configPath}`,
+    )
+  }
 
   configuration = config
 }
