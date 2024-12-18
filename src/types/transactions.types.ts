@@ -28,7 +28,6 @@ export interface StarknetInvokeTransaction {
   invoke_transaction: {
     account_deployment_data: Array<string>
     calldata: Array<string>
-    chain_id: string
     fee_data_availability_mode: string
     nonce: string
     nonce_data_availability_mode: string

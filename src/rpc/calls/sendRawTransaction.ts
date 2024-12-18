@@ -12,12 +12,11 @@ import {
   AccountDeployResult,
   deployRosettanetAccount,
   getRosettaAccountAddress,
-  isAccountDeployError,
   isRosettaAccountDeployed,
   RosettanetAccountResult,
 } from '../../utils/rosettanet'
 import { convertHexIntoBytesArray } from '../../utils/felt'
-import { getETHBalance, StarknetInvokeParams } from '../../utils/callHelper'
+import { callStarknetNew, getETHBalance, StarknetInvokeParams } from '../../utils/callHelper'
 import { validateRawTransaction } from '../../utils/validations'
 import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 import {
@@ -42,12 +41,14 @@ import {
   getFunctionSelectorFromCalldata,
 } from '../../utils/calldata'
 import {
+  prepareRosettanetCalldata,
   prepareSignature,
   prepareStarknetInvokeTransaction,
 } from '../../utils/transaction'
 import { Uint256ToU256 } from '../../utils/converters/integer'
 import { StarknetInvokeTransaction } from '../../types/transactions.types'
 import { getDirectivesForStarknetFunction } from '../../utils/directives'
+import { isAccountDeployError } from '../../types/typeGuards'
 export async function sendRawTransactionHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
@@ -77,18 +78,6 @@ export async function sendRawTransactionHandler(
 
   const tx = Transaction.from(signedRawTransaction)
 
-  if (tx.type != 2) {
-    // Test with eip2930 and legacy
-    // TODO: Alpha version only supports EIP1559
-    return {
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      error: {
-        code: -32603,
-        message: 'Only EIP1559 transactions are supported at the moment.',
-      },
-    }
-  }
   // TODO: chainId check
   const { from, to, data, value, nonce, chainId, signature } = tx
 
@@ -220,12 +209,16 @@ export async function sendRawTransactionHandler(
   const directives = getDirectivesForStarknetFunction(targetStarknetFunction)
   // burdan devam
 
+
+
   const starknetFunctionEthereumInputTypes: Array<CairoNamedConvertableType> =
     getEthereumInputsCairoNamed(targetStarknetFunction, contractTypeMapping)
+
   const calldata = tx.data.slice(10)
   const decodedCalldata = decodeCalldataWithFelt252Limit(
     starknetFunctionEthereumInputTypes,
     calldata,
+    targetFunctionSelector
   )
 
 
@@ -233,7 +226,7 @@ export async function sendRawTransactionHandler(
     signature.r,
     signature.s,
     signature.v,
-    value.toString(),
+    value,
   )
   /*
   pub struct RosettanetCall {
@@ -247,14 +240,24 @@ export async function sendRawTransactionHandler(
       directives: Array<bool>, // We use this directives to figure out u256 splitting happened in element in same index For ex if 3rd element of this array is true, it means 3rd elem is low, 4th elem is high of u256
   }
   */
+
+  const rosettanetCalldata = prepareRosettanetCalldata(to, nonce.toString(), tx.maxPriorityFeePerGas === null ? '0' : tx.maxPriorityFeePerGas.toString(), tx.maxFeePerGas === null ? '0' : tx.maxFeePerGas.toString(), tx.gasLimit.toString(), value.toString(), decodedCalldata, directives)
   const invokeTransaction: StarknetInvokeTransaction =
     prepareStarknetInvokeTransaction(
       senderAddress,
-      decodedCalldata,
+      rosettanetCalldata,
       rosettaSignature,
       chainId.toString(),
       nonce.toString(),
     )
+  console.log(invokeTransaction)
+  const response: RPCResponse | RPCError = await callStarknetNew(<RPCRequest>{
+    jsonrpc: request.jsonrpc,
+    id: request.id,
+    params: invokeTransaction,
+    method: 'starknet_addInvokeTransaction'
+  });
+  console.log(response)
   return {
     jsonrpc: request.jsonrpc,
     id: request.id,

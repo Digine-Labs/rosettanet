@@ -1,5 +1,6 @@
 import { StarknetInvokeTransaction } from '../types/transactions.types'
-import { Uint256ToU256 } from './converters/integer'
+import { BnToU256, Uint256ToU256 } from './converters/integer'
+import { addHexPrefix } from './padding'
 
 // Signature will be v,r,s
 // Deprecate this one
@@ -13,17 +14,21 @@ export function prepareStarknetInvokeTransaction(
   const starknetTx: StarknetInvokeTransaction = {
     invoke_transaction: {
       calldata: calldata,
-      chain_id: chainId, // Will be constant, It can be different from starknet chain id
       fee_data_availability_mode: 'L1',
       nonce: nonce,
       nonce_data_availability_mode: 'L1',
       paymaster_data: [],
       account_deployment_data: [],
       resource_bounds: {
-        // Copied from https://docs.infura.io/api/networks/starknet/json-rpc-methods/starknet_addinvoketransaction
-        l1_gas: '0x28ed6103d0000',
-        l2_gas: '0x28ed6103d0000',
-      },
+        l1_gas: {
+            max_amount: "0x100",
+            max_price_per_unit: "44963204502270"
+        },
+        l2_gas: {
+            max_amount: "0x0",
+            max_price_per_unit: "0x0"
+        }
+    },
       sender_address: caller,
       signature: signature,
       tip: '0x0',
@@ -44,21 +49,18 @@ export function prepareRosettanetCalldata(
   gas_limit: string,
   value: string,
   calldata: Array<string>,
-  directives: Array<boolean>,
+  directives: Array<number>,
 ): Array<string> {
   // TODO add final validations for parameters
-
-  if (calldata.length != directives.length) {
+  console.log(calldata.length, directives.length)
+  if (calldata.length -1 != directives.length) {
     throw `Directive and calldata array sanity fails`
   }
-
-  if (directives.length != 0 && directives[0]) {
-    throw `First directive must be false`
-  }
+  
   const finalCalldata: Array<string> = []
 
   finalCalldata.push(to)
-  finalCalldata.push(nonce)
+  finalCalldata.push('0x' + nonce)
   finalCalldata.push(max_priority_fee_per_gas)
   finalCalldata.push(max_fee_per_gas)
   finalCalldata.push(gas_limit)
@@ -70,7 +72,7 @@ export function prepareRosettanetCalldata(
   finalCalldata.push(...calldata)
 
   finalCalldata.push(directives.length.toString())
-  finalCalldata.push(...directives.map(d => (d ? `1` : `0`)))
+  finalCalldata.push(...directives.map(d => d.toString()))
 
   return finalCalldata
 }
@@ -79,12 +81,12 @@ export function prepareSignature(
   r: string,
   s: string,
   v: number,
-  value: string,
+  value: bigint,
 ): Array<string> {
   return [
-    ...Uint256ToU256(r.replace('0x', '')),
-    ...Uint256ToU256(r.replace('0x', '')),
+    ...Uint256ToU256(r.replace('0x', '')).map(rv => addHexPrefix(rv)),
+    ...Uint256ToU256(s.replace('0x', '')).map(sv => addHexPrefix(sv)),
     v.toString(16),
-    ...Uint256ToU256(value),
+    ...BnToU256(value),
   ]
 }

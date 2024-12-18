@@ -1,5 +1,5 @@
 import { getRpc } from './getRpc'
-import { RPCRequest, RPCResponse } from '../types/types'
+import { RPCError, RPCRequest, RPCResponse } from '../types/types'
 import { getConfigurationProperty } from './configReader'
 import { U256toUint256 } from './converters/integer'
 import axios from 'axios'
@@ -42,6 +42,45 @@ export interface StarknetInvokeParams {
     account_deployment_data: Array<string>
     nonce_data_availability_mode: string
     fee_data_availability_mode: string
+  }
+}
+
+export async function callStarknetNew(
+  request: RPCRequest
+): Promise<RPCResponse | RPCError> {
+  try {
+    const rpcUrl: string = getRpc()
+    const { data } = await axios.post<RPCResponse>(
+      rpcUrl,
+      JSON.stringify(request),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      },
+    )
+    return data
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return <RPCError> {
+        id: request.id,
+        jsonrpc: request.jsonrpc,
+        error: {
+          code: -32500,
+          message: error.message
+        }
+      }
+    } else {
+      return <RPCError> {
+        id: request.id,
+        jsonrpc: request.jsonrpc,
+        error: {
+          code: -32501,
+          message: 'Unexpected error occured'
+        }
+      }
+    }
   }
 }
 

@@ -25,7 +25,7 @@ export function U256toUint256(value: Array<string>): string {
 }
 
 export function BnToU256(value: bigint): Array<string> {
-  return Uint256ToU256(addHexPadding(value.toString(16), 64, false))
+  return Uint256ToU256(addHexPadding(value.toString(16), 64, false)).map(val => '0x' + val)
 }
 
 // TODO: support signed integers
