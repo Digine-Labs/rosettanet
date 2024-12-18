@@ -5,7 +5,7 @@ describe('Test sendRawTransaction handler', () => {
   it('Simple decoding', async () => {
     const testAccount = getTestAccount()
     const strkAddress = '0xbec5832bd3f642d090891b4991da42fa4d5d9e2d'
-
+    console.log(testAccount)
     const tx = {
       to: strkAddress,
       value: 0,

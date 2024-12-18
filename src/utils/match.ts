@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js'
 import { StarknetFunction } from '../types/types'
 import { generateEthereumFunctionSignatureFromTypeMapping } from './starknet'
 import { ConvertableType } from './converters/abiFormatter'
+import { addHexPadding } from './padding'
 
 export function matchStarknetFunctionWithEthereumSelector(
   snFunctions: Array<string>,
@@ -11,9 +12,10 @@ export function matchStarknetFunctionWithEthereumSelector(
   for (const func of snFunctions) {
     let hash = keccak256(func)
 
-    hash = new BigNumber(hash, 16).toString(16)
+    hash = addHexPadding(new BigNumber(hash, 16).toString(16),64,false) // Padding needed some function signatures has to start with zero
 
     const selector = `0x${hash.substring(0, 8)}`
+
     if (selector === ethSelector) {
       return func
     }
@@ -32,7 +34,8 @@ export function findStarknetFunctionWithEthereumSelector(
       generateEthereumFunctionSignatureFromTypeMapping(func, map)
 
     let hash = keccak256(snFunctionSignature)
-    hash = new BigNumber(hash, 16).toString(16)
+    hash = addHexPadding(new BigNumber(hash, 16).toString(16),64,false)
+
     const selector = `0x${hash.substring(0, 8)}`
     if (selector === ethSelector) {
       return func

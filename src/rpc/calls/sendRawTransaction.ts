@@ -8,9 +8,13 @@ import {
 } from '../../types/types'
 import { Transaction } from 'ethers'
 import {
+  AccountDeployError,
+  AccountDeployResult,
   deployRosettanetAccount,
   getRosettaAccountAddress,
+  isAccountDeployError,
   isRosettaAccountDeployed,
+  RosettanetAccountResult,
 } from '../../utils/rosettanet'
 import { convertHexIntoBytesArray } from '../../utils/felt'
 import { getETHBalance, StarknetInvokeParams } from '../../utils/callHelper'
@@ -121,32 +125,28 @@ export async function sendRawTransactionHandler(
     }
   }
 
-  const deployedAccountAddress = await getRosettaAccountAddress(from)
-  if (deployedAccountAddress === '0x0') {
+  const deployedAccountAddress: RosettanetAccountResult = await getRosettaAccountAddress(from)
+  if (!deployedAccountAddress.isDeployed) {
     // This means account is not registered on rosettanet registry. Lets deploy the address
-    await deployRosettanetAccount(from)
-  }
-  // Check if value is non-zero and data is empty it is ether transfer
-  if (value.toString() !== '0') {
-    // If data is zero and value is 0 then it is usual ether transfer
-    if (data !== '0x') {
-      // If data is non-zero it is payable function call. This will be supported at new version
+    const accountDeployResult: AccountDeployResult | AccountDeployError = await deployRosettanetAccount(from)
+    if(isAccountDeployError(accountDeployResult)) {
       return {
         jsonrpc: request.jsonrpc,
         id: request.id,
         error: {
-          code: -32603,
-          message: 'Payable function calls are not supported at the moment.',
+          code: accountDeployResult.code,
+          message: 'Error at account deployment : ' + accountDeployResult.message,
         },
       }
     }
-    // TODO: send ether transfer, approach might be similar, no need to call different function
-    // Send ether tx must be passed directly. Account contract will handles that.
+
+    // eslint-disable-next-line no-console
+    console.log(`Account Deployed ${accountDeployResult.contractAddress}`)
   }
 
   // Check if from address rosetta account
   // const senderAddress = await getRosettaAccountAddress(from) // Fix here
-  const senderAddress = '0x123123'
+  const senderAddress = deployedAccountAddress.contractAddress;
   // This is invoke transaction signature
   //const rawTransactionChunks: Array<string> =
   //  convertHexIntoBytesArray(signedRawTransaction)
@@ -189,6 +189,7 @@ export async function sendRawTransactionHandler(
     generateEthereumFunctionSignatureFromTypeMapping(fn, contractTypeMapping),
   )
 
+
   const targetFunctionSelector = getFunctionSelectorFromCalldata(tx.data) // Todo: check if zero
 
   const targetStarknetFunctionSelector =
@@ -197,7 +198,7 @@ export async function sendRawTransactionHandler(
       targetFunctionSelector,
     )
 
-  const targetStarknetFunction = findStarknetFunctionWithEthereumSelector(
+  const targetStarknetFunction: StarknetFunction | undefined = findStarknetFunctionWithEthereumSelector(
     starknetCallableMethods,
     targetFunctionSelector,
     contractTypeMapping,
@@ -217,6 +218,7 @@ export async function sendRawTransactionHandler(
     }
   }
   const directives = getDirectivesForStarknetFunction(targetStarknetFunction)
+  // burdan devam
 
   const starknetFunctionEthereumInputTypes: Array<CairoNamedConvertableType> =
     getEthereumInputsCairoNamed(targetStarknetFunction, contractTypeMapping)
@@ -225,39 +227,7 @@ export async function sendRawTransactionHandler(
     starknetFunctionEthereumInputTypes,
     calldata,
   )
-  // calldata is now in felt range and can be passed directly as starknet calldata
-  // TODO: improve decoding tests and make this function async with address formatting
 
-  // Array of all inputs
-  // TODO: decodeCalldataWithTypes fonksiyonuna parametreleri ethereum halini array olarak gönder [uint etc. etc.]
-  // const decodedCalldata = decodeCalldataWithTypes(,calldata);
-
-  // Find current account class.
-  // const isAccountDeployed = await isRosettaAccountDeployed(senderAddress) // Checks that class hash of given address is same with config
-
-  // If not deployed address -> check if there is a balance
-  // If there is a balance, try to deploy via factory or any from zero deployment
-  // If no balance then revert rpc call
-  // If deployed -> Check if it is rosetta account
-  // If it is rosetta account proceed this check
-  // If it is not rosetta account, revert rpc call
-  // Check if data is non empty
-  // If data empty, it is ether transfer, just proceed the call
-  // If data is non-empty parse calldata
-  // 1) Try to find target contract starknet address from lens
-  // If target contract is not registered on lens, revert rpc call
-  // If target contract is registered, try to find function with selector matching like we did in ethCall
-  // If no function matches, revert rpc call
-  // 2) Parse calldata according to bitsizes taken from starknet ABI
-  // If non supported type is exist, revert rpc call
-  // 3) Prepare a list of bit locations for parameters
-  // For example transfer(address,uint256) => [0, 160] or [160, 160+256]
-  // Also for arrays, each elements location has to be passed into this array too
-  // This array will be used to verify & prepare calldata on cairo contract
-  // 4) Prepare starknet transaction "addInvokeTransaction"
-  // calldata will be bit locations
-  // signature will be signed raw transaction hex, parsed into 252 bits
-  // So calldata will be readen from signature in cairo
 
   const rosettaSignature: Array<string> = prepareSignature(
     signature.r,

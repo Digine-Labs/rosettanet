@@ -1,4 +1,5 @@
 import { Abi } from 'starknet'
+import { StarknetFunction } from '../../types/types'
 
 // We will use this interface for both function selector calc and calldata slot calcs
 export interface ConvertableType {

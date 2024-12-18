@@ -4,18 +4,25 @@ import { RPCResponse } from '../types/types'
 import { getConfigurationProperty } from './configReader'
 
 // Calls starknet factory contract to precalculate starknet account address
+// TODO: add custom types like in deploy function
+export interface RosettanetAccountResult {
+  contractAddress: string
+  ethAddress: string
+  isDeployed: boolean
+}
+
 export async function getRosettaAccountAddress(
   ethAddress: string,
-): Promise<string> {
+): Promise<RosettanetAccountResult> {
   const rosettanet = getConfigurationProperty('rosettanet')
   const callParams = [
     {
-      calldata: [ethAddress], // Todo check is correct
+      calldata: [ethAddress],
       contract_address: rosettanet,
       entry_point_selector:
-        '0x3e5d65a345b3857ca9d72edca702b8e56c1923c118867752345f710d595b3cf',
+        '0x025356d5707a314336daf6636019fcd414e2403787a6dfb3eacc0c8450b341c8',
     },
-    'pending', // update to latest
+    'pending',
   ]
 
   const response: RPCResponse | string = await callStarknet({
@@ -27,10 +34,48 @@ export async function getRosettaAccountAddress(
   })
 
   if (typeof response === 'string') {
-    return '0x0'
+    return <RosettanetAccountResult> {
+      contractAddress: '',
+      ethAddress: ethAddress,
+      isDeployed: false
+    }
   }
 
-  return response.result.toString() // Todo format output to string
+  const precalculatedAddress = response.result[0].toString();
+
+  const classHashCall: RPCResponse | string = await callStarknet({
+    jsonrpc: '2.0',
+    method: 'starknet_getClassHashAt',
+    params: {
+      block_id: 'latest',
+      contract_address: precalculatedAddress
+    },
+    id: 2,
+  })
+
+  if(typeof classHashCall === 'string') {
+    return <RosettanetAccountResult> {
+      contractAddress: '',
+      ethAddress: ethAddress,
+      isDeployed: false
+    }
+  }
+
+  if(typeof classHashCall.result === 'undefined') {
+    return <RosettanetAccountResult> {
+      contractAddress: '',
+      ethAddress: ethAddress,
+      isDeployed: false
+    }
+  }
+
+
+  return <RosettanetAccountResult> {
+    contractAddress: precalculatedAddress,
+    ethAddress: ethAddress,
+    isDeployed: true
+  }
+
 }
 
 export async function isRosettaAccountDeployed(
@@ -54,9 +99,19 @@ export async function isRosettaAccountDeployed(
   return response.result === expectedClass
 }
 
+export interface AccountDeployResult {
+  transactionHash : string,
+  contractAddress: string
+}
+
+export interface AccountDeployError {
+  code: number,
+  message: string
+}
+
 export async function deployRosettanetAccount(
   ethAddress: string,
-): Promise<string> {
+): Promise<AccountDeployResult | AccountDeployError> {
   const rosettanet = getConfigurationProperty('rosettanet')
   const accountClass = getConfigurationProperty('accountClass')
   const response: RPCResponse | string = await callStarknet({
@@ -74,8 +129,8 @@ export async function deployRosettanetAccount(
         constructor_calldata: [ethAddress, rosettanet],
         resource_bounds: {
           l1_gas: {
-            max_amount: '1000',
-            max_price_per_unit: '63376703040606', // TODO: We need to find a way to get actual values for these
+            max_amount: '100',
+            max_price_per_unit: '1674663993390', // TODO: We need to find a way to get actual values for these
           },
           l2_gas: {
             max_amount: '0',
@@ -100,15 +155,50 @@ export async function deployRosettanetAccount(
     "id": 1
 }
  */
-  if (typeof response === 'string') {
-    return '0'
+
+  if(typeof response === 'string'){
+    return <AccountDeployError> {
+      code: -1,
+      message: 'Unknown return type from Starknet RPC'
+    }
   }
 
-  if (typeof response.result.contract_address === 'string') {
-    return response.result.contract_address
+  if(typeof response.error !== 'undefined') {
+    return <AccountDeployError> {
+      code: response.error.code,
+      message: response.error.message
+    }
   }
 
-  return '0'
+  if (typeof response.result['contract_address'] === 'string') {
+    return <AccountDeployResult> {
+      transactionHash: response.result.transaction_hash,
+      contractAddress: response.result.contract_address
+    }
+  }
+
+  return <AccountDeployError> {
+    code: -2,
+    message: 'Unhandled rpc response'
+  }
+}
+
+export function isAccountDeployError(value: unknown): value is AccountDeployError {
+  if (typeof value === "object" && value !== null) {
+    const obj = value as AccountDeployError;
+    // Here we use `typeof` to check property types
+    return typeof obj.code === "number" && typeof obj.message === "string";
+  }
+  return false;
+}
+
+export function isAccountDeployResult(value: unknown): value is AccountDeployResult {
+  if (typeof value === "object" && value !== null) {
+    const obj = value as AccountDeployResult;
+    // Here we use `typeof` to check property types
+    return typeof obj.transactionHash === "string" && typeof obj.contractAddress === "string";
+  }
+  return false;
 }
 
 export async function registerDeployedAccount() {
