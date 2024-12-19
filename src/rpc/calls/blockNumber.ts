@@ -1,10 +1,11 @@
+import { isRPCError } from '../../types/typeGuards'
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 
 export async function blockNumberHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  const response: RPCResponse | string = await callStarknet({
+  const response: RPCResponse | RPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_blockNumber',
     params: [],
@@ -12,18 +13,9 @@ export async function blockNumberHandler(
   })
 
   if (
-    typeof response === 'string' ||
-    response === null ||
-    typeof response === 'undefined'
+    isRPCError(response)
   ) {
-    return {
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      error: {
-        code: -32602,
-        message: response,
-      },
-    }
+    return response
   }
 
   const hexBlockNumber = '0x' + response.result.toString(16)

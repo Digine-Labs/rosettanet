@@ -1,11 +1,10 @@
+import { isRPCError } from '../../types/typeGuards'
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 
 export async function ethSyncingHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  const method = 'starknet_syncing'
-
   if (request.params.length != 0) {
     return {
       jsonrpc: request.jsonrpc,
@@ -17,25 +16,22 @@ export async function ethSyncingHandler(
     }
   }
 
-  const response: RPCResponse | string = await callStarknet({
+  const response: RPCResponse | RPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
-    method,
+    method: 'starknet_syncing',
     params: [],
     id: request.id,
   })
 
-  if (
-    typeof response === 'string' ||
-    response === null ||
-    typeof response === 'undefined'
-  ) {
+  if(isRPCError(response)) {
+    return response
+  }
+
+  if(response.result === 'false' || response.result == false) {
     return {
-      jsonrpc: request.jsonrpc,
+      jsonrpc: '2.0',
       id: request.id,
-      error: {
-        code: -32602,
-        message: response,
-      },
+      result: response.result
     }
   }
 

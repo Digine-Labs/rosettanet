@@ -1,3 +1,4 @@
+import { isRPCError } from '../../types/typeGuards'
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 
@@ -15,26 +16,15 @@ export async function web3clientVersionHandler(
     }
   }
 
-  const response: RPCResponse | string = await callStarknet({
+  const response: RPCResponse | RPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_specVersion',
     params: [],
     id: request.id,
   })
 
-  if (
-    typeof response === 'string' ||
-    response === null ||
-    typeof response === 'undefined'
-  ) {
-    return {
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      error: {
-        code: -32602,
-        message: response,
-      },
-    }
+  if(isRPCError(response)) {
+    return response
   }
 
   const result = response.result as string
