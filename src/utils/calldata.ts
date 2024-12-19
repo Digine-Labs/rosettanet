@@ -258,7 +258,7 @@ export function decodeEVMCalldata(
           continue;
         }
         decodedValues.push(addHexPrefix(currentData));
-        directives.push(0);
+        directives.push(currentType.solidityType === 'address' ? 2 : 0);
       }
     
       return <EVMDecodeResult> {
@@ -270,15 +270,4 @@ export function decodeEVMCalldata(
         message: (ex as Error).message
       }
     }
-  }
-
-
-function formatBoolean(val: string): string {
-  if (val === 'true') {
-    return '1'
-  }
-  if (val === 'false') {
-    return '0'
-  }
-  return val
 }
