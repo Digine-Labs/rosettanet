@@ -6,6 +6,6 @@ export async function maxPriorityFeePerGasHandler(): Promise<
   return {
     jsonrpc: '2.0',
     id: 1,
-    result: '0x0',
+    result: '0x1',
   }
 }
