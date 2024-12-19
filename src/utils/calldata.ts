@@ -1,5 +1,5 @@
 import { AbiCoder, dataSlice } from 'ethers'
-import { EthereumSlot } from '../types/types'
+import { EthereumSlot, EVMDecodeError, EVMDecodeResult } from '../types/types'
 import { BnToU256, Uint256ToU256 } from './converters/integer'
 import { getSnAddressFromEthAddress } from './wrapper'
 import { CairoNamedConvertableType } from './starknet'
@@ -186,14 +186,6 @@ function ethTypeBitLength(type: string): number {
   }
 }
 
-// Do not pass packed calldata, abi.encodepacked result wont work here idk why??
-// TODO: CALLDATALARDA PACKED HALINDEMI GONDERILIYOR YOKSA ABI.ENCODE GIBI PACKSIZ MI??
-/* 
-Example 
-
-Input: 0x08c6c91000000000000000000000000000000000000000000000000000000000000001bd0000000000000000000000000000000000000000000000000000000000000381
-Output: 0x000000000000000000000000000001bd00000000000000000000000000000381
-*/
 // Tuples also returned like array
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function decodeCalldataWithTypes(
@@ -220,40 +212,66 @@ export function decodeCalldataWithTypes(
   return stringifiedResult
 }
 
-export function decodeCalldataWithFelt252Limit(
+
+
+export function decodeEVMCalldata(  
   types: Array<CairoNamedConvertableType>,
   data: string,
-  selector: string
-): Array<string> {
-  if (types.length == 0 || data.length == 0) {
-    throw 'Calldata empty or wrong'
-  }
+  selector: string) : EVMDecodeResult | EVMDecodeError {
+    try {
+      if (types.length == 0 || data.length == 0) {
+        return <EVMDecodeError> {
+          code: -32700,
+          message: 'Types or data length is wrong on EVM calldata decoding'
+        }
+      }
 
-  const decoder = new AbiCoder()
-  const solidityTypes = types.map(x => x.solidityType)
-  const result = decoder.decode(solidityTypes, dataSlice('0x' + data, 0)).toArray()
+      if(selector.length != 10) {
+        return <EVMDecodeError> {
+          code: -32700,
+          message: 'Selector length must be 10 on EVM calldata decoding'
+        }
+      }
 
-  const decodedValues: Array<string> = []
-  decodedValues.push(selector)
+      const decoder = new AbiCoder()
+      const solidityTypes = types.map(x => x.solidityType)
+      const result = decoder.decode(solidityTypes, dataSlice('0x' + data, 0)).toArray()
+    
+      const decodedValues: Array<string> = [];
+      const directives: Array<number> = [];
+      decodedValues.push(selector)
 
-  if (result.length != types.length) {
-    throw 'Result & type length mismatch'
-  }
-
-  for (let i = 0; i < result.length; i++) {
-    const currentType = types[i]
-    const currentData = result[i]
-
-    if(currentType.solidityType === 'uint256') {
-      decodedValues.push(...BnToU256(currentData));
-      continue;
+      if (result.length != types.length) {
+        return <EVMDecodeError> {
+          code: -32700,
+          message: 'Decode result and length mismatch on EVM calldata decoding.'
+        }
+      }
+    
+      for (let i = 0; i < result.length; i++) {
+        const currentType = types[i]
+        const currentData = result[i]
+    
+        if(currentType.solidityType === 'uint256') {
+          decodedValues.push(...BnToU256(currentData));
+          directives.push(1,0);
+          continue;
+        }
+        decodedValues.push(addHexPrefix(currentData));
+        directives.push(0);
+      }
+    
+      return <EVMDecodeResult> {
+        directives, calldata: decodedValues
+      }
+    } catch (ex) {
+      return <EVMDecodeError> {
+        code: -1,
+        message: (ex as Error).message
+      }
     }
-    decodedValues.push(addHexPrefix((new BigNumber(currentData).toString(16))));
-
   }
 
-  return decodedValues
-}
 
 function formatBoolean(val: string): string {
   if (val === 'true') {

@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import {
+  EVMDecodeError,
+  EVMDecodeResult,
+  RosettanetSignature,
   RPCError,
   RPCRequest,
   RPCResponse,
@@ -16,7 +19,7 @@ import {
   RosettanetAccountResult,
 } from '../../utils/rosettanet'
 import { convertHexIntoBytesArray } from '../../utils/felt'
-import { callStarknetNew, getETHBalance, StarknetInvokeParams } from '../../utils/callHelper'
+import { callStarknet } from '../../utils/callHelper'
 import { validateRawTransaction } from '../../utils/validations'
 import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 import {
@@ -36,7 +39,7 @@ import {
   matchStarknetFunctionWithEthereumSelector,
 } from '../../utils/match'
 import {
-  decodeCalldataWithFelt252Limit,
+  decodeEVMCalldata,
   decodeCalldataWithTypes,
   getFunctionSelectorFromCalldata,
 } from '../../utils/calldata'
@@ -48,7 +51,8 @@ import {
 import { Uint256ToU256 } from '../../utils/converters/integer'
 import { StarknetInvokeTransaction } from '../../types/transactions.types'
 import { getDirectivesForStarknetFunction } from '../../utils/directives'
-import { isAccountDeployError } from '../../types/typeGuards'
+import { isAccountDeployError, isEVMDecodeError, isRPCError } from '../../types/typeGuards'
+import { createRosettanetSignature } from '../../utils/signature'
 export async function sendRawTransactionHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
@@ -133,14 +137,7 @@ export async function sendRawTransactionHandler(
     console.log(`Account Deployed ${accountDeployResult.contractAddress}`)
   }
 
-  // Check if from address rosetta account
-  // const senderAddress = await getRosettaAccountAddress(from) // Fix here
   const senderAddress = deployedAccountAddress.contractAddress;
-  // This is invoke transaction signature
-  //const rawTransactionChunks: Array<string> =
-  //  convertHexIntoBytesArray(signedRawTransaction)
-
-  //const callerETHBalance: string = await getETHBalance(senderAddress) // Maybe we can also check strk balance too
 
   const isTxValid = validateRawTransaction(tx)
   if (!isTxValid) {
@@ -154,14 +151,18 @@ export async function sendRawTransactionHandler(
     }
   }
 
-  const targetContract: string = await getSnAddressFromEthAddress(to)
-  if (targetContract === '0x0' || targetContract === '0') {
+  const targetContract: string | RPCError = await getSnAddressFromEthAddress(to)
+  if(isRPCError(targetContract)) {
+    return targetContract
+  }
+
+  if (targetContract === '0x0') {
     return {
       jsonrpc: request.jsonrpc,
       id: request.id,
       error: {
-        code: -32602,
-        message: 'Invalid argument, Ethereum address is not in Lens Contract.',
+        code: -32000,
+        message: 'Invalid argument, Target ethereum address not registered on Rosettanet registry.',
       },
     }
   }
@@ -206,28 +207,30 @@ export async function sendRawTransactionHandler(
       },
     }
   }
-  const directives = getDirectivesForStarknetFunction(targetStarknetFunction)
-  // burdan devam
-
 
 
   const starknetFunctionEthereumInputTypes: Array<CairoNamedConvertableType> =
     getEthereumInputsCairoNamed(targetStarknetFunction, contractTypeMapping)
 
   const calldata = tx.data.slice(10)
-  const decodedCalldata = decodeCalldataWithFelt252Limit(
+  const EVMCalldataDecode: EVMDecodeResult | EVMDecodeError = decodeEVMCalldata(
     starknetFunctionEthereumInputTypes,
     calldata,
     targetFunctionSelector
   )
 
+  if(isEVMDecodeError(EVMCalldataDecode)) {
+    return {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: EVMCalldataDecode.code,
+        message: EVMCalldataDecode.message,
+      },
+    }
+  }
 
-  const rosettaSignature: Array<string> = prepareSignature(
-    signature.r,
-    signature.s,
-    signature.v,
-    value,
-  )
+  const rosettaSignature: RosettanetSignature = createRosettanetSignature(signature,value)
   /*
 pub struct RosettanetCall {
     pub to: EthAddress, // This has to be this account address for multicalls
@@ -243,17 +246,17 @@ pub struct RosettanetCall {
 }
   */
 
-  const rosettanetCalldata = prepareRosettanetCalldata(to, nonce.toString(), tx.maxPriorityFeePerGas === null ? '0' : tx.maxPriorityFeePerGas.toString(), tx.maxFeePerGas === null ? '0' : tx.maxFeePerGas.toString(), tx.gasLimit.toString(), value.toString(), decodedCalldata, directives)
+  const rosettanetCalldata = prepareRosettanetCalldata(to, nonce.toString(), tx.maxPriorityFeePerGas === null ? '0' : tx.maxPriorityFeePerGas.toString(), tx.maxFeePerGas === null ? '0' : tx.maxFeePerGas.toString(), tx.gasLimit.toString(), value.toString(), EVMCalldataDecode.calldata, EVMCalldataDecode.directives)
   const invokeTransaction: StarknetInvokeTransaction =
     prepareStarknetInvokeTransaction(
       senderAddress,
       rosettanetCalldata,
-      rosettaSignature,
+      rosettaSignature.arrayified,
       chainId.toString(),
       nonce.toString(),
     )
   console.log(JSON.stringify(tx))
-  /*const response: RPCResponse | RPCError = await callStarknetNew(<RPCRequest>{
+  /*const response: RPCResponse | RPCError = await callStarknet(<RPCRequest>{
     jsonrpc: request.jsonrpc,
     id: request.id,
     params: invokeTransaction,

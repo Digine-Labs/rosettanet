@@ -74,3 +74,27 @@ export interface StarknetValue {
   value: string
   bitSize: number
 }
+// After refactor types
+
+export interface EVMDecodeResult {
+  calldata: Array<string>
+  directives: Array<number>
+}
+
+export interface EVMDecodeError {
+  code: number
+  message: string
+}
+
+export interface RosettanetSignature {
+  r: string
+  s: string
+  v: number
+  value: bigint
+  arrayified: Array<string>
+}
+
+export interface NativeBalance {
+  starknetFormat: Array<string>
+  ethereumFormat: string
+}

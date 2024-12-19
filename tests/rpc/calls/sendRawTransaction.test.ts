@@ -21,7 +21,7 @@ describe('Test sendRawTransaction handler', () => {
     }
 
     const signedTx = Transaction.from(await testAccount.signTransaction(tx))
-    console.log(signedTx.unsignedHash)
+
     const request = {
       jsonrpc: '2.0',
       method: 'eth_sendRawTransaction',
