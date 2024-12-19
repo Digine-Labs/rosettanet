@@ -1,8 +1,10 @@
 import { AbiCoder, dataSlice } from 'ethers'
-import { EthereumSlot } from '../types/types'
+import { EthereumSlot, EVMDecodeError, EVMDecodeResult } from '../types/types'
 import { BnToU256, Uint256ToU256 } from './converters/integer'
 import { getSnAddressFromEthAddress } from './wrapper'
 import { CairoNamedConvertableType } from './starknet'
+import BigNumber from 'bignumber.js'
+import { addHexPrefix } from './padding'
 
 export function getFunctionSelectorFromCalldata(calldata: string): string {
   // 0xa9059cbb
@@ -184,14 +186,6 @@ function ethTypeBitLength(type: string): number {
   }
 }
 
-// Do not pass packed calldata, abi.encodepacked result wont work here idk why??
-// TODO: CALLDATALARDA PACKED HALINDEMI GONDERILIYOR YOKSA ABI.ENCODE GIBI PACKSIZ MI??
-/* 
-Example 
-
-Input: 0x08c6c91000000000000000000000000000000000000000000000000000000000000001bd0000000000000000000000000000000000000000000000000000000000000381
-Output: 0x000000000000000000000000000001bd00000000000000000000000000000381
-*/
 // Tuples also returned like array
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function decodeCalldataWithTypes(
@@ -218,90 +212,66 @@ export function decodeCalldataWithTypes(
   return stringifiedResult
 }
 
-export function decodeCalldataWithFelt252Limit(
+
+
+export function decodeEVMCalldata(  
   types: Array<CairoNamedConvertableType>,
   data: string,
-): Array<string> {
-  if (types.length == 0 || data.length == 0) {
-    throw 'Calldata empty or wrong'
-  }
-
-  const decoder = new AbiCoder()
-  const solidityTypes = types.map(x => x.solidityType)
-  const result = decoder.decode(solidityTypes, dataSlice(data, 0)).toArray()
-
-  const decodedValues: Array<string> = []
-
-  if (result.length != types.length) {
-    throw 'Result & type length mismatch'
-  }
-
-  for (let i = 0; i < result.length; i++) {
-    const currentType = types[i]
-    const currentData = result[i]
-
-    if (currentType.isDynamicSize) {
-      // array ise
-      if (!Array.isArray(currentData)) {
-        throw 'Cairo type is array but decoded type is not array'
-      }
-    }
-
-    if (currentType.isTuple) {
-      // tuple ise size bakma total size veriyor
-      // TODO
-      if (typeof currentType.tupleSizes === 'undefined') {
-        throw 'Tuple size property undefined'
-      }
-      if (currentType.tupleSizes.length != currentData.length) {
-        throw 'Tuple size and decoded data length mismatch'
-      }
-
-      for (let j = 0; j < currentType.tupleSizes.length; j++) {
-        if (currentType.tupleSizes[j] > 252) {
-          decodedValues.push(
-            ...(typeof currentData[j] === 'string'
-              ? BnToU256(BigInt(currentData[j]))
-              : BnToU256(currentData[j].toString())),
-          )
-        } else {
-          decodedValues.push(
-            typeof currentData[j] === 'string'
-              ? currentData[j]
-              : currentData[j].toString(),
-          )
+  selector: string) : EVMDecodeResult | EVMDecodeError {
+    try {
+      if (types.length == 0 || data.length == 0) {
+        return <EVMDecodeError> {
+          code: -32700,
+          message: 'Types or data length is wrong on EVM calldata decoding'
         }
       }
-      continue
-    }
-    if (currentType.size > 252) {
-      // u256 ise
-      if (currentType.isDynamicSize && Array.isArray(currentData)) {
-        // u256 array ise
-        currentData.map(elem => {
-          const u256Converted =
-            typeof elem === 'string'
-              ? BnToU256(BigInt(elem))
-              : BnToU256(elem.toString())
-          decodedValues.push(...u256Converted)
-        })
-      } else {
-        decodedValues.push(
-          ...(typeof currentData === 'string'
-            ? BnToU256(BigInt(currentData))
-            : BnToU256(currentData.toString())),
-        )
+
+      if(selector.length != 10) {
+        return <EVMDecodeError> {
+          code: -32700,
+          message: 'Selector length must be 10 on EVM calldata decoding'
+        }
       }
-      continue
+
+      const decoder = new AbiCoder()
+      const solidityTypes = types.map(x => x.solidityType)
+      const result = decoder.decode(solidityTypes, dataSlice('0x' + data, 0)).toArray()
+    
+      const decodedValues: Array<string> = [];
+      const directives: Array<number> = [];
+      decodedValues.push(selector)
+
+      if (result.length != types.length) {
+        return <EVMDecodeError> {
+          code: -32700,
+          message: 'Decode result and length mismatch on EVM calldata decoding.'
+        }
+      }
+    
+      for (let i = 0; i < result.length; i++) {
+        const currentType = types[i]
+        const currentData = result[i]
+    
+        if(currentType.solidityType === 'uint256') {
+          decodedValues.push(...BnToU256(currentData));
+          directives.push(1,0);
+          continue;
+        }
+        decodedValues.push(addHexPrefix(currentData));
+        directives.push(0);
+      }
+    
+      return <EVMDecodeResult> {
+        directives, calldata: decodedValues
+      }
+    } catch (ex) {
+      return <EVMDecodeError> {
+        code: -1,
+        message: (ex as Error).message
+      }
     }
-
-    decodedValues.push(formatBoolean(currentData.toString()))
-
-    // Todo Contract address formatter
   }
 
-  return decodedValues
-}
 
 function formatBoolean(val: string): string {
   if (val === 'true') {

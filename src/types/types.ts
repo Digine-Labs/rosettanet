@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request } from 'express'
 
 export interface ParsedRequest extends Request {
@@ -7,8 +8,7 @@ export interface ParsedRequest extends Request {
 export interface RPCRequest {
   jsonrpc: string
   method: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  params: Array<string | number | boolean | object> | any
+  params: any
   id: number
 }
 
@@ -18,24 +18,14 @@ export interface RPCError {
   error: {
     code: number
     message: string
+    data?: any
   }
 }
 
 export interface RPCResponse {
-  error?: {
-    code?: number
-    message?: string
-    data?: object
-  }
   jsonrpc: string
   id: number
-  result: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  | any
-    | string
-    | number
-    | boolean
-    | object
-    | Array<string | number | boolean | object>
+  result: any
 }
 
 export interface ResponseHandler {
@@ -83,4 +73,28 @@ export interface EthereumBitSize {
 export interface StarknetValue {
   value: string
   bitSize: number
+}
+// After refactor types
+
+export interface EVMDecodeResult {
+  calldata: Array<string>
+  directives: Array<number>
+}
+
+export interface EVMDecodeError {
+  code: number
+  message: string
+}
+
+export interface RosettanetSignature {
+  r: string
+  s: string
+  v: number
+  value: bigint
+  arrayified: Array<string>
+}
+
+export interface NativeBalance {
+  starknetFormat: Array<string>
+  ethereumFormat: string
 }

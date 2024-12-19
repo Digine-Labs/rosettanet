@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import {
+  EVMDecodeError,
+  EVMDecodeResult,
+  RosettanetSignature,
   RPCError,
   RPCRequest,
   RPCResponse,
@@ -12,12 +15,11 @@ import {
   AccountDeployResult,
   deployRosettanetAccount,
   getRosettaAccountAddress,
-  isAccountDeployError,
   isRosettaAccountDeployed,
   RosettanetAccountResult,
 } from '../../utils/rosettanet'
 import { convertHexIntoBytesArray } from '../../utils/felt'
-import { getETHBalance, StarknetInvokeParams } from '../../utils/callHelper'
+import { callStarknet } from '../../utils/callHelper'
 import { validateRawTransaction } from '../../utils/validations'
 import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 import {
@@ -37,17 +39,20 @@ import {
   matchStarknetFunctionWithEthereumSelector,
 } from '../../utils/match'
 import {
-  decodeCalldataWithFelt252Limit,
+  decodeEVMCalldata,
   decodeCalldataWithTypes,
   getFunctionSelectorFromCalldata,
 } from '../../utils/calldata'
 import {
+  prepareRosettanetCalldata,
   prepareSignature,
   prepareStarknetInvokeTransaction,
 } from '../../utils/transaction'
 import { Uint256ToU256 } from '../../utils/converters/integer'
 import { StarknetInvokeTransaction } from '../../types/transactions.types'
 import { getDirectivesForStarknetFunction } from '../../utils/directives'
+import { isAccountDeployError, isEVMDecodeError, isRPCError } from '../../types/typeGuards'
+import { createRosettanetSignature } from '../../utils/signature'
 export async function sendRawTransactionHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
@@ -77,18 +82,6 @@ export async function sendRawTransactionHandler(
 
   const tx = Transaction.from(signedRawTransaction)
 
-  if (tx.type != 2) {
-    // Test with eip2930 and legacy
-    // TODO: Alpha version only supports EIP1559
-    return {
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      error: {
-        code: -32603,
-        message: 'Only EIP1559 transactions are supported at the moment.',
-      },
-    }
-  }
   // TODO: chainId check
   const { from, to, data, value, nonce, chainId, signature } = tx
 
@@ -144,14 +137,7 @@ export async function sendRawTransactionHandler(
     console.log(`Account Deployed ${accountDeployResult.contractAddress}`)
   }
 
-  // Check if from address rosetta account
-  // const senderAddress = await getRosettaAccountAddress(from) // Fix here
   const senderAddress = deployedAccountAddress.contractAddress;
-  // This is invoke transaction signature
-  //const rawTransactionChunks: Array<string> =
-  //  convertHexIntoBytesArray(signedRawTransaction)
-
-  //const callerETHBalance: string = await getETHBalance(senderAddress) // Maybe we can also check strk balance too
 
   const isTxValid = validateRawTransaction(tx)
   if (!isTxValid) {
@@ -165,14 +151,18 @@ export async function sendRawTransactionHandler(
     }
   }
 
-  const targetContract: string = await getSnAddressFromEthAddress(to)
-  if (targetContract === '0x0' || targetContract === '0') {
+  const targetContract: string | RPCError = await getSnAddressFromEthAddress(to)
+  if(isRPCError(targetContract)) {
+    return targetContract
+  }
+
+  if (targetContract === '0x0') {
     return {
       jsonrpc: request.jsonrpc,
       id: request.id,
       error: {
-        code: -32602,
-        message: 'Invalid argument, Ethereum address is not in Lens Contract.',
+        code: -32000,
+        message: 'Invalid argument, Target ethereum address not registered on Rosettanet registry.',
       },
     }
   }
@@ -217,44 +207,63 @@ export async function sendRawTransactionHandler(
       },
     }
   }
-  const directives = getDirectivesForStarknetFunction(targetStarknetFunction)
-  // burdan devam
+
 
   const starknetFunctionEthereumInputTypes: Array<CairoNamedConvertableType> =
     getEthereumInputsCairoNamed(targetStarknetFunction, contractTypeMapping)
+
   const calldata = tx.data.slice(10)
-  const decodedCalldata = decodeCalldataWithFelt252Limit(
+  const EVMCalldataDecode: EVMDecodeResult | EVMDecodeError = decodeEVMCalldata(
     starknetFunctionEthereumInputTypes,
     calldata,
+    targetFunctionSelector
   )
 
-
-  const rosettaSignature: Array<string> = prepareSignature(
-    signature.r,
-    signature.s,
-    signature.v,
-    value.toString(),
-  )
-  /*
-  pub struct RosettanetCall {
-      to: EthAddress, // This has to be this account address for multicalls
-      nonce: u64,
-      max_priority_fee_per_gas: u128,
-      max_fee_per_gas: u128,
-      gas_limit: u64,
-      value: u256, // To be used future
-      calldata: Array<felt252>, // It also includes the function selector so first directive always zero
-      directives: Array<bool>, // We use this directives to figure out u256 splitting happened in element in same index For ex if 3rd element of this array is true, it means 3rd elem is low, 4th elem is high of u256
+  if(isEVMDecodeError(EVMCalldataDecode)) {
+    return {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: EVMCalldataDecode.code,
+        message: EVMCalldataDecode.message,
+      },
+    }
   }
+
+  const rosettaSignature: RosettanetSignature = createRosettanetSignature(signature,value)
+  /*
+pub struct RosettanetCall {
+    pub to: EthAddress, // This has to be this account address for multicalls
+    pub nonce: u64,
+    pub max_priority_fee_per_gas: u128,
+    pub max_fee_per_gas: u128,
+    pub gas_limit: u64,
+    pub value: u256, // To be used future
+    pub calldata: Span<felt252>, // Calldata len must be +1 directive len
+    pub access_list: Span<AccessListItem>, // TODO: remove this. it always be empty array
+    pub directives: Span<u8>, // 0 -> do nothing, 1 -> u256, 2-> address
+    pub target_function: Span<felt252> // Function name and types to used to calculate eth func signature
+}
   */
+
+  const rosettanetCalldata = prepareRosettanetCalldata(to, nonce.toString(), tx.maxPriorityFeePerGas === null ? '0' : tx.maxPriorityFeePerGas.toString(), tx.maxFeePerGas === null ? '0' : tx.maxFeePerGas.toString(), tx.gasLimit.toString(), value.toString(), EVMCalldataDecode.calldata, EVMCalldataDecode.directives)
   const invokeTransaction: StarknetInvokeTransaction =
     prepareStarknetInvokeTransaction(
       senderAddress,
-      decodedCalldata,
-      rosettaSignature,
+      rosettanetCalldata,
+      rosettaSignature.arrayified,
       chainId.toString(),
       nonce.toString(),
     )
+  console.log(JSON.stringify(tx))
+  /*const response: RPCResponse | RPCError = await callStarknet(<RPCRequest>{
+    jsonrpc: request.jsonrpc,
+    id: request.id,
+    params: invokeTransaction,
+    method: 'starknet_addInvokeTransaction'
+  });*/
+
+  console.log(invokeTransaction)
   return {
     jsonrpc: request.jsonrpc,
     id: request.id,
