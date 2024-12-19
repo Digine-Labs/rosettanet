@@ -229,16 +229,18 @@ export async function sendRawTransactionHandler(
     value,
   )
   /*
-  pub struct RosettanetCall {
-      to: EthAddress, // This has to be this account address for multicalls
-      nonce: u64,
-      max_priority_fee_per_gas: u128,
-      max_fee_per_gas: u128,
-      gas_limit: u64,
-      value: u256, // To be used future
-      calldata: Array<felt252>, // It also includes the function selector so first directive always zero
-      directives: Array<bool>, // We use this directives to figure out u256 splitting happened in element in same index For ex if 3rd element of this array is true, it means 3rd elem is low, 4th elem is high of u256
-  }
+pub struct RosettanetCall {
+    pub to: EthAddress, // This has to be this account address for multicalls
+    pub nonce: u64,
+    pub max_priority_fee_per_gas: u128,
+    pub max_fee_per_gas: u128,
+    pub gas_limit: u64,
+    pub value: u256, // To be used future
+    pub calldata: Span<felt252>, // Calldata len must be +1 directive len
+    pub access_list: Span<AccessListItem>, // TODO: remove this. it always be empty array
+    pub directives: Span<u8>, // 0 -> do nothing, 1 -> u256, 2-> address
+    pub target_function: Span<felt252> // Function name and types to used to calculate eth func signature
+}
   */
 
   const rosettanetCalldata = prepareRosettanetCalldata(to, nonce.toString(), tx.maxPriorityFeePerGas === null ? '0' : tx.maxPriorityFeePerGas.toString(), tx.maxFeePerGas === null ? '0' : tx.maxFeePerGas.toString(), tx.gasLimit.toString(), value.toString(), decodedCalldata, directives)
@@ -250,14 +252,15 @@ export async function sendRawTransactionHandler(
       chainId.toString(),
       nonce.toString(),
     )
-  console.log(invokeTransaction)
-  const response: RPCResponse | RPCError = await callStarknetNew(<RPCRequest>{
+  console.log(JSON.stringify(tx))
+  /*const response: RPCResponse | RPCError = await callStarknetNew(<RPCRequest>{
     jsonrpc: request.jsonrpc,
     id: request.id,
     params: invokeTransaction,
     method: 'starknet_addInvokeTransaction'
-  });
-  console.log(response)
+  });*/
+
+  console.log(invokeTransaction)
   return {
     jsonrpc: request.jsonrpc,
     id: request.id,

@@ -52,7 +52,7 @@ export function prepareRosettanetCalldata(
   directives: Array<number>,
 ): Array<string> {
   // TODO add final validations for parameters
-  console.log(calldata.length, directives.length)
+
   if (calldata.length -1 != directives.length) {
     throw `Directive and calldata array sanity fails`
   }
