@@ -3,13 +3,16 @@ import { EthereumSlot, EVMDecodeError, EVMDecodeResult } from '../types/types'
 import { BnToU256, Uint256ToU256 } from './converters/integer'
 import { getSnAddressFromEthAddress } from './wrapper'
 import { CairoNamedConvertableType } from './starknet'
-import BigNumber from 'bignumber.js'
 import { addHexPrefix } from './padding'
 
-export function getFunctionSelectorFromCalldata(calldata: string): string {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getFunctionSelectorFromCalldata(calldata: any): string | null {
+  if(typeof calldata !== 'string') {
+    return null
+  }
   // 0xa9059cbb
   if (calldata.length < 10) {
-    return '0x0' // empty calldata
+    return null
   }
 
   return calldata.substring(0, 10)
@@ -28,7 +31,7 @@ export function convertUint256s(data: Array<string>): Array<string> {
 
   return split256Bits
 }
-
+/*
 export async function convertEthereumCalldataToParameters(
   fn: string,
   slots: Array<EthereumSlot>,
@@ -185,7 +188,7 @@ function ethTypeBitLength(type: string): number {
       return 0
   }
 }
-
+*/
 // Tuples also returned like array
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function decodeCalldataWithTypes(

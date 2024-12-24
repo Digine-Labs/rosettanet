@@ -1,10 +1,11 @@
 import { AccountDeployError, AccountDeployResult } from "../utils/rosettanet";
-import { EVMDecodeError, EVMDecodeResult, RosettanetSignature, RPCError, RPCResponse } from "./types";
+import { EVMDecodeError, EVMDecodeResult, RosettanetSignature, RPCError, RPCResponse, SignedRawTransaction, StarknetContract, ValidationError } from "./types";
 
 export function isRPCError(value: unknown): value is RPCError {
     if (typeof value === "object" && value !== null) {
         const obj = value as RPCError;
-        return typeof obj.id === "number" && typeof obj.jsonrpc === "string"  && typeof obj.error === "object"  && obj.error !== null && typeof obj.error.code === 'number' && typeof obj.error.message === 'string';
+        return typeof obj.id === "number" && typeof obj.jsonrpc === "string"  && typeof obj.error === "object"  && obj.error !== null 
+        && typeof obj.error.code === 'number' && typeof obj.error.message === 'string';
     }
     return false;
 }
@@ -53,6 +54,33 @@ export function isRosettanetSignature(value: unknown): value is RosettanetSignat
     if (typeof value === "object" && value !== null) {
         const obj = value as RosettanetSignature;
         return typeof obj.r === 'string' && typeof obj.s === 'string' && typeof obj.v === 'number' && typeof obj.value === 'bigint' && Array.isArray(obj.arrayified) && obj.arrayified.length == 7
+    }
+    return false;
+}
+
+export function isSignedRawTransaction(value: unknown): value is SignedRawTransaction {
+    // TODO: doesnt works
+    if (typeof value === "object" && value !== null) {
+        const obj = value as SignedRawTransaction;
+        return typeof obj.from === 'string' && typeof obj.to === 'string' && typeof obj.chainId === 'bigint' 
+        && typeof obj.nonce === 'number' && typeof obj.data === 'string' && typeof obj.value === 'bigint' && isRosettanetSignature(obj.signature)
+        && typeof obj.gasLimit === 'bigint' && typeof obj.maxFeePerGas === 'bigint' && typeof obj.maxPriorityFeePerGas === 'bigint';
+    }
+    return false; 
+}
+
+export function isValidationError(value: unknown): value is ValidationError {
+    if (typeof value === "object" && value !== null) {
+        const obj = value as ValidationError;
+        return typeof obj.message === 'string'
+    }
+    return false;
+}
+
+export function isStarknetContract(value: unknown): value is StarknetContract {
+    if (typeof value === "object" && value !== null) {
+        const obj = value as StarknetContract;
+        return Array.isArray(obj.abi) && Array.isArray(obj.methods);
     }
     return false;
 }

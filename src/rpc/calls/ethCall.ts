@@ -1,28 +1,47 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { isEVMDecodeError, isRPCError, isStarknetContract } from '../../types/typeGuards'
 import {
   EthereumSlot,
+  EVMDecodeError,
+  EVMDecodeResult,
   RPCError,
   RPCRequest,
   RPCResponse,
+  StarknetContract,
+  StarknetContractReadError,
   StarknetFunction,
 } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import {
   convertEthereumCalldataToParameters,
   convertUint256s,
+  decodeEVMCalldata,
   getCalldataByteSize,
   getFunctionSelectorFromCalldata,
 } from '../../utils/calldata'
+import { ConvertableType, initializeStarknetAbi } from '../../utils/converters/abiFormatter'
 import { Uint256ToU256 } from '../../utils/converters/integer'
 import { formatStarknetResponse } from '../../utils/formatters'
-import { matchStarknetFunctionWithEthereumSelector } from '../../utils/match'
+import { findStarknetCallableMethod, matchStarknetFunctionWithEthereumSelector, StarknetCallableMethod } from '../../utils/match'
 import { snKeccak } from '../../utils/sn_keccak'
 import {
+  CairoNamedConvertableType,
   generateEthereumFunctionSignature,
+  getContractAbiAndMethods,
   getContractsMethods,
+  getEthereumInputsCairoNamed,
 } from '../../utils/starknet'
 import { validateEthAddress } from '../../utils/validations'
 import { getSnAddressFromEthAddress } from '../../utils/wrapper'
+
+export interface EthCallParameters {
+  from?: string
+  to: string
+  gas?: string| number| bigint
+  gasPrice?: string| number| bigint
+  value?: string| number| bigint
+  data?: string
+}
 
 interface CallParameterObject {
   from?: string
@@ -33,7 +52,155 @@ interface CallParameterObject {
   data?: string
 }
 
-export async function ethCallHandler(
+export function isEthCallParameters(value: unknown): value is EthCallParameters {
+  // We can improve these validations
+  if (typeof value === "object" && value !== null) {
+      const obj = value as EthCallParameters;
+      return typeof obj.to === 'string'
+  }
+  return false;
+}
+
+export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse | RPCError> {
+  if (Array.isArray(request.params) && request.params.length != 2) {
+    return <RPCError> {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, Parameter length should be 2.',
+      },
+    }
+  }
+
+  const parameters = request.params[0]; // What happens if they pass object or array?? TODO
+  if(!isEthCallParameters(parameters)) {
+    return <RPCError> {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, First parameter must be object',
+      },
+    }
+  }
+
+  if (!validateEthAddress(parameters.to)) {
+    return {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, "to" field is not valid Ethereum address',
+      },
+    }
+  }
+
+  if (parameters.from && validateEthAddress(parameters.from)) {
+    return {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, "from" field is not valid Ethereum address',
+      },
+    }
+  }
+  const targetFunctionSelector: string | null = getFunctionSelectorFromCalldata(parameters.data);
+
+  if(targetFunctionSelector == null || typeof parameters.data === 'undefined') {
+    return {
+      jsonrpc: '2.0',
+      id: request.id,
+      result: '0x',
+    }
+  }
+
+  const targetContractAddress: string | RPCError = await getSnAddressFromEthAddress(parameters.to);
+  if(isRPCError(targetContractAddress)) {
+    return targetContractAddress
+  }
+
+  const targetContract: StarknetContract | StarknetContractReadError = await getContractAbiAndMethods(targetContractAddress);
+  if(!isStarknetContract(targetContract)) {
+    return <RPCError> {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: targetContract.code,
+        message: 'Error at reading starknet contract abi: ' + targetContract.message,
+      }
+    }
+  }
+
+  const contractTypeMapping: Map<string, ConvertableType> =
+  initializeStarknetAbi(targetContract.abi)
+
+  const starknetFunction: StarknetCallableMethod | undefined = findStarknetCallableMethod(targetFunctionSelector, targetContract.methods, contractTypeMapping);
+  if(typeof starknetFunction === 'undefined') {
+    return <RPCError> {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32708,
+        message: 'Target function is not found in starknet contract.',
+      }
+    }
+  }
+
+  const starknetFunctionEthereumInputTypes: Array<CairoNamedConvertableType> =
+  getEthereumInputsCairoNamed(starknetFunction.snFunction, contractTypeMapping)
+
+  const calldata = parameters.data.slice(10)
+  const EVMCalldataDecode: EVMDecodeResult | EVMDecodeError = decodeEVMCalldata(
+    starknetFunctionEthereumInputTypes,
+    calldata,
+    targetFunctionSelector
+  );
+
+  if(isEVMDecodeError(EVMCalldataDecode)) {
+    return {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: EVMCalldataDecode.code,
+        message: EVMCalldataDecode.message,
+      },
+    }
+  }
+
+  const starknetSelector = snKeccak(starknetFunction.name.split('(')[0])
+  const starknetCallParams = [
+    {
+      calldata: EVMCalldataDecode.calldata,
+      contract_address: targetContractAddress,
+      entry_point_selector: starknetSelector,
+    },
+    'pending', // update to latest
+  ]
+
+  const snResponse: RPCResponse | RPCError = await callStarknet({
+    jsonrpc: request.jsonrpc,
+    method: 'starknet_call',
+    params: starknetCallParams,
+    id: request.id,
+  })
+
+  if(isRPCError(snResponse)) {
+    return snResponse
+  }
+
+  console.log(snResponse)
+
+  return {
+    jsonrpc: '2.0',
+    id: request.id,
+    result: 'todo',
+  }
+}
+
+/*
+export async function ethCallHandlerx(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
   // TODO response
@@ -66,22 +233,6 @@ export async function ethCallHandler(
   }
 
   const blockId: string | number = request.params[1]
-  // integer block number, or the string "latest", "earliest" or "pending" on eth
-  // block_id  -  Expected one of block_number, block_hash, latest, pending. on starknet
-  /* if (typeof blockId === 'string') {
-    if (blockId !== 'latest' && blockId !== 'pending') {
-      // TODO: Support earliest
-      return {
-        jsonrpc: request.jsonrpc,
-        id: request.id,
-        error: {
-          code: -32602,
-          message:
-            'Invalid argument, Only "pending" and "latest" block id supported',
-        },
-      }
-    }
-  } */
 
   if (
     typeof request.params[0] !== 'object' &&
@@ -146,7 +297,7 @@ export async function ethCallHandler(
   //    5) Calculate ethereum function signatures
   //    6) Try to match signatures to find which function to call on starknet
 
-  const functionSelector: string =
+  const functionSelector: string | null =
     typeof parameters.data === 'string'
       ? getFunctionSelectorFromCalldata(parameters.data)
       : '0x0'
@@ -280,3 +431,4 @@ export async function ethCallHandler(
     result: formattedResponse,
   }
 }
+*/

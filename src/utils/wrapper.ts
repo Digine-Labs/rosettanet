@@ -74,6 +74,18 @@ export async function getSnAddressFromEthAddress(
   }
 
   if (Array.isArray(response.result) && response.result.length == 1) {
+    const address = response.result[0];
+
+    if(address === '0x0') {
+      return <RPCError> {
+        jsonrpc: '2.0',
+        id: 1,
+        error: {
+          code: -32700,
+          message: 'Target not registered on registry.'
+        }
+      }
+    }
     return response.result[0]
   } else {
     return <RPCError> {

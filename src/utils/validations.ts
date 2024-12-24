@@ -1,5 +1,9 @@
 import { isHexString, Transaction } from 'ethers'
 import { addHexPrefix, removeHexPrefix } from './padding'
+import { SignedRawTransaction, ValidationError } from '../types/types'
+import { createRosettanetSignature } from './signature'
+import { isRosettanetSignature } from '../types/typeGuards'
+
 export function validateEthAddress(ethAddress: string): boolean {
   if (!ethAddress) {
     return false
@@ -61,14 +65,36 @@ export function validateBlockNumber(value: string | number): boolean {
   }
 }
 
-export function validateRawTransaction(tx: Transaction): boolean {
-  // Add more sync validations
 
-  const calldata = tx.data
 
-  if (calldata.length < 10) {
-    return false // Empty calldata
+export function validateRawTransaction(tx: Transaction): SignedRawTransaction | ValidationError {
+
+  const { from, to, data, value, nonce, chainId, signature, gasLimit, maxFeePerGas, maxPriorityFeePerGas } = tx
+
+  if (to === null) {
+    return <ValidationError> {
+      message: 'To address can not be null'
+    }
   }
 
-  return true
+  if (from === null) {
+    return <ValidationError> {
+      message: 'From address can not be null'
+    }
+  }
+
+  if (typeof signature === 'undefined' || signature === null) {
+    return <ValidationError> {
+      message: 'Transaction is not signed'
+    }
+  }
+
+  const rosettanetSignature = createRosettanetSignature(signature, value)
+  
+  return <SignedRawTransaction> {
+    from, to, data, value, nonce, chainId, 
+    signature: rosettanetSignature, gasLimit,
+    maxFeePerGas: maxFeePerGas === null ? BigInt(0) : maxFeePerGas, 
+    maxPriorityFeePerGas: maxPriorityFeePerGas === null ? BigInt(0): maxPriorityFeePerGas
+  }
 }

@@ -22,7 +22,7 @@ export function prepareStarknetInvokeTransaction(
       resource_bounds: {
         l1_gas: {
             max_amount: "0x100",
-            max_price_per_unit: "44963204502270"
+            max_price_per_unit: "34963204502270"
         },
         l2_gas: {
             max_amount: "0x0",
@@ -43,11 +43,11 @@ export function prepareStarknetInvokeTransaction(
 // First calldata element must be function selector
 export function prepareRosettanetCalldata(
   to: string,
-  nonce: string,
-  max_priority_fee_per_gas: string,
-  max_fee_per_gas: string,
-  gas_limit: string,
-  value: string,
+  nonce: number,
+  max_priority_fee_per_gas: bigint,
+  max_fee_per_gas: bigint,
+  gas_limit: bigint,
+  value: bigint,
   calldata: Array<string>,
   directives: Array<number>,
 ): Array<string> {
@@ -60,19 +60,19 @@ export function prepareRosettanetCalldata(
   const finalCalldata: Array<string> = []
 
   finalCalldata.push(to)
-  finalCalldata.push('0x' + nonce)
-  finalCalldata.push(max_priority_fee_per_gas)
-  finalCalldata.push(max_fee_per_gas)
-  finalCalldata.push(gas_limit)
+  finalCalldata.push(addHexPrefix(nonce.toString(16)))
+  finalCalldata.push(addHexPrefix(max_priority_fee_per_gas.toString(16)))
+  finalCalldata.push(addHexPrefix(max_fee_per_gas.toString(16)))
+  finalCalldata.push(addHexPrefix(gas_limit.toString(16)))
 
-  const value_u256 = Uint256ToU256(value)
-  finalCalldata.push(...value_u256)
+  const value_u256 = Uint256ToU256(value.toString())
+  finalCalldata.push(...(value_u256.map(v => addHexPrefix(v))))
 
-  finalCalldata.push(calldata.length.toString())
+  finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
   finalCalldata.push(...calldata)
 
-  finalCalldata.push(directives.length.toString())
-  finalCalldata.push(...directives.map(d => d.toString()))
+  finalCalldata.push(addHexPrefix(directives.length.toString(16)))
+  finalCalldata.push(...directives.map(d => addHexPrefix(d.toString(16))))
 
   return finalCalldata
 }

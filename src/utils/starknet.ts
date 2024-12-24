@@ -4,12 +4,56 @@ import { RpcProvider, constants, Abi, FunctionAbi } from 'starknet'
 import { snKeccak } from '../../src/utils/sn_keccak'
 import { validateSnAddress } from './validations'
 import { getRpc } from './getRpc'
-import { StarknetFunctionInput, StarknetFunction } from '../types/types'
+import { StarknetFunctionInput, StarknetFunction, RPCError, StarknetContract, StarknetContractReadError } from '../types/types'
 import { convertSnToEth } from './converters/typeConverters'
 import { ConvertableType } from './converters/abiFormatter'
 
 export interface CairoNamedConvertableType extends ConvertableType {
   cairoType: string
+}
+
+export async function getContractAbiAndMethods(snAddress: string): Promise<StarknetContract | StarknetContractReadError> {
+  if(!validateSnAddress(snAddress)) {
+    return <StarknetContractReadError> {
+      code: -32700,
+      message: 'Contract address can not be validated.'
+    }
+  }
+  const rpcUrl: string = getRpc()
+  const provider = new RpcProvider({ nodeUrl: rpcUrl })
+
+  let contractAbi: Abi = []
+  try {
+    const compressedContract = await provider.getClassAt(snAddress)
+    contractAbi = compressedContract.abi
+  } catch (e) {
+    return <StarknetContractReadError> {
+      code: -32701,
+      message: 'Error at starknet RPC getClassAt method call'
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const directFunctions = contractAbi.filter(
+    item =>
+      item.type === 'function' &&
+      (item.state_mutability === 'external' ||
+        item.state_mutability === 'view'),
+  )
+  const interfaces = contractAbi.filter(item => item.type === 'interface')
+  const callableFunctionsInterface = interfaces.map(item => item.items)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const flattenedCallableFunctionsInterface = callableFunctionsInterface.flat(1)
+
+  const allEntrypoints = [
+    ...flattenedCallableFunctionsInterface,
+    ...directFunctions,
+  ]
+
+  return <StarknetContract> {
+    abi: contractAbi,
+    methods: allEntrypoints
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

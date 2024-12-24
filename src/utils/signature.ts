@@ -7,7 +7,7 @@ export function createRosettanetSignature(evmSignature: Signature, value: bigint
     const arr: Array<string> = [
         ...Uint256ToU256(evmSignature.r.replace('0x', '')).map(rv => addHexPrefix(rv)),
         ...Uint256ToU256(evmSignature.s.replace('0x', '')).map(sv => addHexPrefix(sv)),
-        evmSignature.v.toString(16),
+        addHexPrefix(evmSignature.v.toString(16)),
         ...BnToU256(value),
         ]
     return <RosettanetSignature> {

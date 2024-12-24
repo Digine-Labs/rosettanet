@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request } from 'express'
+import { Abi } from 'starknet'
 
 export interface ParsedRequest extends Request {
   rpcRequest?: RPCRequest
@@ -97,4 +98,32 @@ export interface RosettanetSignature {
 export interface NativeBalance {
   starknetFormat: Array<string>
   ethereumFormat: string
+}
+
+export interface SignedRawTransaction {
+  from: string
+  to: string
+  data: string
+  value: bigint
+  nonce: number
+  chainId: bigint
+  type: number
+  signature: RosettanetSignature
+  gasLimit: bigint
+  maxFeePerGas: bigint
+  maxPriorityFeePerGas: bigint
+}
+
+export interface ValidationError {
+  message: string
+}
+
+export interface StarknetContract {
+  abi: Abi,
+  methods: Array<StarknetFunction>
+}
+
+export interface StarknetContractReadError {
+  code: number
+  message: string
 }
