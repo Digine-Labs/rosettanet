@@ -1,5 +1,5 @@
 import { StarknetInvokeTransaction } from '../types/transactions.types'
-import { SignedRawTransaction, StarknetFunction } from '../types/types'
+import { SignedRawTransaction } from '../types/types'
 import { BnToU256, safeUint256ToU256, Uint256ToU256 } from './converters/integer'
 import { asciiToHex } from './encoding'
 import { convertHexChunkIntoFeltArray } from './felt'
