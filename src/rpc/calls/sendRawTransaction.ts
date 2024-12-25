@@ -3,14 +3,12 @@
 import {
   EVMDecodeError,
   EVMDecodeResult,
-  RosettanetSignature,
   RPCError,
   RPCRequest,
   RPCResponse,
   SignedRawTransaction,
   StarknetContract,
   StarknetContractReadError,
-  StarknetFunction,
   ValidationError,
 } from '../../types/types'
 import { Transaction } from 'ethers'
@@ -19,21 +17,15 @@ import {
   AccountDeployResult,
   deployRosettanetAccount,
   getRosettaAccountAddress,
-  isRosettaAccountDeployed,
   RosettanetAccountResult,
 } from '../../utils/rosettanet'
-import { convertHexIntoBytesArray } from '../../utils/felt'
 import { callStarknet } from '../../utils/callHelper'
 import { validateRawTransaction } from '../../utils/validations'
 import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 import {
   CairoNamedConvertableType,
-  generateEthereumFunctionSignatureFromTypeMapping,
   getContractAbiAndMethods,
-  getContractsAbi,
-  getContractsMethods,
   getEthereumInputsCairoNamed,
-  getEthereumInputTypesFromStarknetFunction,
 } from '../../utils/starknet'
 import {
   ConvertableType,
@@ -41,25 +33,20 @@ import {
 } from '../../utils/converters/abiFormatter'
 import {
   findStarknetCallableMethod,
-  findStarknetFunctionWithEthereumSelector,
-  matchStarknetFunctionWithEthereumSelector,
   StarknetCallableMethod,
 } from '../../utils/match'
 import {
   decodeEVMCalldata,
-  decodeCalldataWithTypes,
   getFunctionSelectorFromCalldata,
 } from '../../utils/calldata'
 import {
   prepareRosettanetCalldata,
-  prepareSignature,
   prepareStarknetInvokeTransaction,
 } from '../../utils/transaction'
-import { Uint256ToU256 } from '../../utils/converters/integer'
 import { StarknetInvokeTransaction } from '../../types/transactions.types'
-import { getDirectivesForStarknetFunction } from '../../utils/directives'
+
 import { isAccountDeployError, isEVMDecodeError, isRPCError, isSignedRawTransaction, isStarknetContract } from '../../types/typeGuards'
-import { createRosettanetSignature } from '../../utils/signature'
+
 export async function sendRawTransactionHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
@@ -130,13 +117,19 @@ export async function sendRawTransactionHandler(
 
   const targetFunctionSelector: string | null = getFunctionSelectorFromCalldata(signedValidRawTransaction.data)
   if(targetFunctionSelector === null) {
+
     // Early exit. there is no function call only strk transfer
-    broadcastTransaction();
-    return {
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      result: 'todo',
-    }
+    const rosettanetCalldata = prepareRosettanetCalldata(signedValidRawTransaction.to,signedValidRawTransaction.nonce, 
+      signedValidRawTransaction.maxPriorityFeePerGas, signedValidRawTransaction.maxFeePerGas, 
+      signedValidRawTransaction.gasLimit, signedValidRawTransaction.value,[],[]);
+    const invokeTransaction: StarknetInvokeTransaction =
+    prepareStarknetInvokeTransaction(
+      starknetAccountAddress,
+      rosettanetCalldata,
+      signedValidRawTransaction.signature.arrayified,
+      signedValidRawTransaction
+    )
+    return await broadcastTransaction(request, invokeTransaction);
   }
 
   const targetContract: StarknetContract | StarknetContractReadError = await getContractAbiAndMethods(targetContractAddress);
@@ -166,37 +159,6 @@ export async function sendRawTransactionHandler(
       }
     }
   }
-  /*
-  const starknetFunctionsEthereumSignatures = targetContract.methods.map(fn =>
-    generateEthereumFunctionSignatureFromTypeMapping(fn, contractTypeMapping),
-  )
-
-  const targetStarknetFunctionSelector: string | undefined =
-    matchStarknetFunctionWithEthereumSelector(
-      starknetFunctionsEthereumSignatures,
-      targetFunctionSelector,
-    )
-
-  const targetStarknetFunction: StarknetFunction | undefined = findStarknetFunctionWithEthereumSelector(
-    targetContract.methods,
-    targetFunctionSelector,
-    contractTypeMapping,
-  )
-
-  if (
-    typeof targetStarknetFunction === 'undefined' ||
-    typeof targetStarknetFunctionSelector === 'undefined'
-  ) {
-    return {
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      error: {
-        code: -32602,
-        message: 'Invalid argument, Target Starknet Function is not found.',
-      },
-    }
-  }
- */
 
   const starknetFunctionEthereumInputTypes: Array<CairoNamedConvertableType> =
     getEthereumInputsCairoNamed(starknetFunction.snFunction, contractTypeMapping)
@@ -219,44 +181,28 @@ export async function sendRawTransactionHandler(
     }
   }
 
-  /*
-pub struct RosettanetCall {
-    pub to: EthAddress, // This has to be this account address for multicalls
-    pub nonce: u64,
-    pub max_priority_fee_per_gas: u128,
-    pub max_fee_per_gas: u128,
-    pub gas_limit: u64,
-    pub value: u256, // To be used future
-    pub calldata: Span<felt252>, // Calldata len must be +1 directive len
-    pub access_list: Span<AccessListItem>, // TODO: remove this. it always be empty array
-    pub directives: Span<u8>, // 0 -> do nothing, 1 -> u256, 2-> address
-    pub target_function: Span<felt252> // Function name and types to used to calculate eth func signature
-}
-  */
-
   const rosettanetCalldata = prepareRosettanetCalldata(signedValidRawTransaction.to, signedValidRawTransaction.nonce, 
                                                         signedValidRawTransaction.maxPriorityFeePerGas, signedValidRawTransaction.maxFeePerGas, 
                                                         signedValidRawTransaction.gasLimit, signedValidRawTransaction.value, 
-                                                        EVMCalldataDecode.calldata, EVMCalldataDecode.directives);
+                                                        EVMCalldataDecode.calldata, EVMCalldataDecode.directives, starknetFunction);
   const invokeTransaction: StarknetInvokeTransaction =
     prepareStarknetInvokeTransaction(
       starknetAccountAddress,
       rosettanetCalldata,
       signedValidRawTransaction.signature.arrayified,
-      signedValidRawTransaction.chainId.toString(),
-      signedValidRawTransaction.nonce.toString(),
+      signedValidRawTransaction
     )
-  console.log(signedValidRawTransaction)
-  const snResponse: RPCResponse | RPCError = await callStarknet(<RPCRequest>{
-    jsonrpc: request.jsonrpc,
-    id: request.id,
-    params: invokeTransaction,
-    method: 'starknet_addInvokeTransaction'
-  });
 
-  return snResponse
+  return broadcastTransaction(request, invokeTransaction)
 }
 
-async function broadcastTransaction() {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function broadcastTransaction(request: RPCRequest, params: any): Promise<RPCResponse | RPCError> {
 
+  return await callStarknet(<RPCRequest>{
+    jsonrpc: request.jsonrpc,
+    id: request.id,
+    params: params,
+    method: 'starknet_addInvokeTransaction'
+  });
 }

@@ -13,11 +13,11 @@ describe('Test Eth call request testnet', () => {
       params: [
         {
           from: '',
-          to: '0xd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
+          to: '0xbec5832bd3f642d090891b4991da42fa4d5d9e2d',
           gas: '',
           gasPrice: '',
           value: '',
-          data: '0x70a082310000000000000000000000000cffa77df7a5592cbb3fe1c65a14a84c195e4dbe', // balanceOf
+          data: '0x70a08231000000000000000000000000bc75b6c9f34232628bef76c6b74d6b78a99933b5', // balanceOf
         },
         'latest',
       ],
@@ -25,8 +25,10 @@ describe('Test Eth call request testnet', () => {
     }
     // TODO: update test variables
     const result: RPCResponse = <RPCResponse>await ethCallHandler(request)
+    
+    // We have to make it more dynamic. this test has to read actual balance before running it.
     expect(result.result).toBe(
-      '0x000000000000000000000000000000000000000000000000016345785d8a0000',
+      '0x00000000000000000000000000000000000000000000002a1ea2b650b1605ba6',
     )
   }, 50000)
 
@@ -37,7 +39,7 @@ describe('Test Eth call request testnet', () => {
       params: [
         {
           from: '',
-          to: '0xd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
+          to: '0xbec5832bd3f642d090891b4991da42fa4d5d9e2d',
           gas: '',
           gasPrice: '',
           value: '',
@@ -48,6 +50,7 @@ describe('Test Eth call request testnet', () => {
       id: 1,
     }
     const result: RPCResponse = <RPCResponse>await ethCallHandler(request)
+
     expect(result.result).toBe(
       '0x0000000000000000000000000000000000000000000000000000000000000012',
     )

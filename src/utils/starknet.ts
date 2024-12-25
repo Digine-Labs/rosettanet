@@ -93,6 +93,31 @@ export async function getContractsMethods(
   return allEntrypoints
 }
 
+export function getEthereumOutputsCairoNamed(
+  snFunction: StarknetFunction,
+  map: Map<string, ConvertableType>
+): Array<CairoNamedConvertableType> {
+  if (!snFunction.outputs || snFunction.outputs.length == 0) {
+    return []
+  }
+  const inputs = snFunction.outputs.map(output => {
+    if (map.has(output.type)) {
+      const type = map.get(output.type)
+      if (typeof type === 'undefined') {
+        throw 'Type undefined'
+      }
+      return {
+        ...type,
+        cairoType: output.type,
+      }
+    } else {
+      throw 'Type not found'
+    }
+  })
+
+  return inputs
+}
+
 export function getEthereumInputsCairoNamed(
   snFunction: StarknetFunction,
   map: Map<string, ConvertableType>,

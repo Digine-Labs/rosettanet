@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AbiCoder, dataSlice } from 'ethers'
-import { EthereumSlot, EVMDecodeError, EVMDecodeResult } from '../types/types'
-import { BnToU256, Uint256ToU256 } from './converters/integer'
+import { EthereumSlot, EVMDecodeError, EVMDecodeResult, EVMEncodeError, EVMEncodeResult, RPCError } from '../types/types'
+import { BnToU256, safeU256ToUint256, U256toUint256, Uint256ToU256 } from './converters/integer'
 import { getSnAddressFromEthAddress } from './wrapper'
 import { CairoNamedConvertableType } from './starknet'
 import { addHexPrefix } from './padding'
+import { isRPCError } from '../types/typeGuards'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getFunctionSelectorFromCalldata(calldata: any): string | null {
@@ -215,7 +217,156 @@ export function decodeCalldataWithTypes(
   return stringifiedResult
 }
 
+export function mergeSlots(  
+  types: Array<CairoNamedConvertableType>,
+  data: Array<string>
+): Array<any> {
 
+  const encodedValues: Array<any> = [];
+  let typeIndex = 0;
+  for (let i = 0; i < data.length; i++) {
+    const currentType = types[typeIndex];
+
+    if(currentType.solidityType === 'uint256') {
+      const mergedUint256 = safeU256ToUint256([data[i], data[i+1]]);
+      encodedValues.push(addHexPrefix(mergedUint256))
+      i++;
+      typeIndex++;
+      continue;
+    }
+
+    if(currentType.solidityType === 'uint256[]') {
+      const elementCount = Number(data[i]);
+      const insideArray = [];
+      //encodedValues.push(addHexPrefix(elementCount.toString(16)));
+      for(let j = 0; j < elementCount; j++) {
+        const currentUint256 = safeU256ToUint256([data[i+1], data[i+2]]);
+        insideArray.push(addHexPrefix(currentUint256))
+        i +=2
+      }
+      encodedValues.push(insideArray)
+      typeIndex++;
+      continue;
+    }
+
+    if(currentType.isDynamicSize) {
+      const insideArray = [];
+      const elementCount = Number(data[i]);
+      for(let j = 0; j < elementCount; j++) {
+        insideArray.push(addHexPrefix(data[i + 1]))
+        i++
+      }
+      encodedValues.push(insideArray)
+      typeIndex++;
+      continue;
+    }
+
+    encodedValues.push(data[i]);
+    typeIndex++;
+  }
+
+  return encodedValues
+}
+
+export function encodeStarknetData(
+  types: Array<CairoNamedConvertableType>,
+  data: Array<string>
+): EVMEncodeResult | EVMEncodeError {
+  try {
+    if(data.length == 0) {
+      return <EVMEncodeResult> {
+        data: '0x' // 0x or empty??
+      }
+    }
+
+    const encoder = new AbiCoder();
+    const solidityTypes = types.map(x => x.solidityType)
+
+    const mergedCalldata = mergeSlots(types, data);
+
+    const encodedResult = encoder.encode(solidityTypes, mergedCalldata)
+
+    return <EVMEncodeResult> {
+      data : encodedResult
+    }
+  } catch (ex) {
+    return <EVMEncodeError> {
+      code: -1,
+      message: (ex as Error).message
+    }
+  }
+}
+
+// This one used in ethCall, we need address conversion here. Also we dont need directives
+// Maybe we can change interface of this function returns.
+export async function decodeEVMCalldataWithAddressConversion(  
+  types: Array<CairoNamedConvertableType>,
+  data: string,
+  selector: string): Promise<EVMDecodeResult | EVMDecodeError> {
+    try {
+      if (types.length == 0 && data.length == 0) {
+        return <EVMDecodeResult> {
+          directives: [], calldata: [selector]
+        }
+      }
+
+      if(selector.length != 10) {
+        return <EVMDecodeError> {
+          code: -32700,
+          message: 'Selector length must be 10 on EVM calldata decoding'
+        }
+      }
+
+      const decoder = new AbiCoder()
+      const solidityTypes = types.map(x => x.solidityType)
+      const result = decoder.decode(solidityTypes, dataSlice('0x' + data, 0)).toArray()
+    
+      const decodedValues: Array<string> = [];
+      const directives: Array<number> = [];
+      decodedValues.push(selector)
+
+      if (result.length != types.length) {
+        return <EVMDecodeError> {
+          code: -32700,
+          message: 'Decode result and length mismatch on EVM calldata decoding.'
+        }
+      }
+    
+      for (let i = 0; i < result.length; i++) {
+        const currentType = types[i]
+        const currentData = result[i]
+    
+        if(currentType.solidityType === 'uint256') {
+          decodedValues.push(...BnToU256(currentData));
+          directives.push(1,0);
+          continue;
+        }
+        if(currentType.solidityType === 'address') {
+          const snAddress: string | RPCError = await getSnAddressFromEthAddress(currentData)
+          if(isRPCError(snAddress)) {
+            return <EVMDecodeError> {
+              code: -32500,
+              message: 'Error at reading starknet address from registry to convert calldata.'
+            }
+          }
+          decodedValues.push(snAddress);
+          directives.push(2);
+          continue
+        }
+        decodedValues.push(addHexPrefix(currentData));
+
+      }
+    
+      return <EVMDecodeResult> {
+        directives, calldata: decodedValues
+      }
+    } catch (ex) {
+      return <EVMDecodeError> {
+        code: -1,
+        message: (ex as Error).message
+      }
+    }
+  }
 
 export function decodeEVMCalldata(  
   types: Array<CairoNamedConvertableType>,
