@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AbiCoder, dataSlice } from 'ethers'
-import { EthereumSlot, EVMDecodeError, EVMDecodeResult, EVMEncodeError, EVMEncodeResult, RPCError } from '../types/types'
-import { BnToU256, safeU256ToUint256, U256toUint256, Uint256ToU256 } from './converters/integer'
+import { EVMDecodeError, EVMDecodeResult, EVMEncodeError, EVMEncodeResult, RPCError } from '../types/types'
+import { BnToU256, safeU256ToUint256, Uint256ToU256 } from './converters/integer'
 import { getSnAddressFromEthAddress } from './wrapper'
 import { CairoNamedConvertableType } from './starknet'
 import { addHexPrefix } from './padding'
