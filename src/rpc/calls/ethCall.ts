@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { isEVMDecodeError, isRPCError, isStarknetContract } from '../../types/typeGuards'
+import { isEVMDecodeError, isEVMEncodeResult, isRPCError, isStarknetContract } from '../../types/typeGuards'
 import {
   EthereumSlot,
   EVMDecodeError,
   EVMDecodeResult,
+  EVMEncodeError,
+  EVMEncodeResult,
   RPCError,
   RPCRequest,
   RPCResponse,
@@ -13,10 +15,10 @@ import {
 } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import {
-  convertEthereumCalldataToParameters,
   convertUint256s,
   decodeEVMCalldata,
-  getCalldataByteSize,
+  decodeEVMCalldataWithAddressConversion,
+  encodeStarknetData,
   getFunctionSelectorFromCalldata,
 } from '../../utils/calldata'
 import { ConvertableType, initializeStarknetAbi } from '../../utils/converters/abiFormatter'
@@ -153,7 +155,7 @@ export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse 
   getEthereumInputsCairoNamed(starknetFunction.snFunction, contractTypeMapping)
 
   const calldata = parameters.data.slice(10)
-  const EVMCalldataDecode: EVMDecodeResult | EVMDecodeError = decodeEVMCalldata(
+  const EVMCalldataDecode: EVMDecodeResult | EVMDecodeError = await decodeEVMCalldataWithAddressConversion(
     starknetFunctionEthereumInputTypes,
     calldata,
     targetFunctionSelector
@@ -169,6 +171,8 @@ export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse 
       },
     }
   }
+
+  EVMCalldataDecode.calldata.shift(); // Remove first item, it is function selector
 
   const starknetSelector = snKeccak(starknetFunction.name.split('(')[0])
   const starknetCallParams = [
@@ -191,16 +195,26 @@ export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse 
     return snResponse
   }
 
-  console.log(snResponse)
 
   const starknetFunctionEthereumOutputTypes: Array<CairoNamedConvertableType> = getEthereumOutputsCairoNamed(starknetFunction.snFunction, contractTypeMapping);
 
-  
+  const formattedStarknetOutput: EVMEncodeResult | EVMEncodeError = encodeStarknetData(starknetFunctionEthereumOutputTypes, snResponse.result)
+
+  if(!isEVMEncodeResult(formattedStarknetOutput)) {
+    return <RPCError> {
+      jsonrpc: '2.0',
+      id: request.id,
+      error: {
+        code: -32705,
+        message: formattedStarknetOutput.message
+      }
+    }
+  }
 
   return {
     jsonrpc: '2.0',
     id: request.id,
-    result: 'todo',
+    result: formattedStarknetOutput.data,
   }
 }
 
