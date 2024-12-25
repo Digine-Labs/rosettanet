@@ -2,7 +2,6 @@ import { isHexString, Transaction } from 'ethers'
 import { addHexPrefix, removeHexPrefix } from './padding'
 import { SignedRawTransaction, ValidationError } from '../types/types'
 import { createRosettanetSignature } from './signature'
-import { isRosettanetSignature } from '../types/typeGuards'
 
 export function validateEthAddress(ethAddress: string): boolean {
   if (!ethAddress) {
