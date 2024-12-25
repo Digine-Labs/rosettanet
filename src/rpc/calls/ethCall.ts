@@ -30,6 +30,7 @@ import {
   getContractAbiAndMethods,
   getContractsMethods,
   getEthereumInputsCairoNamed,
+  getEthereumOutputsCairoNamed,
 } from '../../utils/starknet'
 import { validateEthAddress } from '../../utils/validations'
 import { getSnAddressFromEthAddress } from '../../utils/wrapper'
@@ -191,6 +192,10 @@ export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse 
   }
 
   console.log(snResponse)
+
+  const starknetFunctionEthereumOutputTypes: Array<CairoNamedConvertableType> = getEthereumOutputsCairoNamed(starknetFunction.snFunction, contractTypeMapping);
+
+  
 
   return {
     jsonrpc: '2.0',

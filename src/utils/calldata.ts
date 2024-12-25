@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AbiCoder, dataSlice } from 'ethers'
-import { EthereumSlot, EVMDecodeError, EVMDecodeResult } from '../types/types'
-import { BnToU256, Uint256ToU256 } from './converters/integer'
+import { EthereumSlot, EVMDecodeError, EVMDecodeResult, EVMEncodeError, EVMEncodeResult } from '../types/types'
+import { BnToU256, safeU256ToUint256, U256toUint256, Uint256ToU256 } from './converters/integer'
 import { getSnAddressFromEthAddress } from './wrapper'
 import { CairoNamedConvertableType } from './starknet'
 import { addHexPrefix } from './padding'
@@ -215,7 +216,87 @@ export function decodeCalldataWithTypes(
   return stringifiedResult
 }
 
+export function mergeUint256s(  
+  types: Array<CairoNamedConvertableType>,
+  data: Array<string>
+): Array<any> {
 
+  const encodedValues: Array<any> = [];
+  let typeIndex = 0;
+  for (let i = 0; i < data.length; i++) {
+    const currentType = types[typeIndex];
+
+    if(currentType.solidityType === 'uint256') {
+      const mergedUint256 = safeU256ToUint256([data[i], data[i+1]]);
+      encodedValues.push(addHexPrefix(mergedUint256))
+      i++;
+      typeIndex++;
+      continue;
+    }
+
+    if(currentType.solidityType === 'uint256[]') {
+      const elementCount = Number(data[i]);
+      const insideArray = [];
+      //encodedValues.push(addHexPrefix(elementCount.toString(16)));
+      for(let j = 0; j < elementCount; j++) {
+        const currentUint256 = safeU256ToUint256([data[i+1], data[i+2]]);
+        insideArray.push(addHexPrefix(currentUint256))
+        i +=2
+      }
+      encodedValues.push(insideArray)
+      typeIndex++;
+      continue;
+    }
+
+    if(currentType.isDynamicSize) {
+      const insideArray = [];
+      const elementCount = Number(data[i]);
+      i++
+      for(let j = 0; j < elementCount; j++) {
+        insideArray.push(addHexPrefix(data[i]))
+        i++
+      }
+      encodedValues.push(insideArray)
+      typeIndex++;
+      continue;
+    }
+
+    encodedValues.push(data[i]);
+    typeIndex++;
+  }
+
+  return encodedValues
+}
+
+export function encodeStarknetData(
+  types: Array<CairoNamedConvertableType>,
+  data: Array<string>
+): EVMEncodeResult | EVMEncodeError {
+  try {
+    if(data.length == 0) {
+      return <EVMEncodeResult> {
+        data: '0x' // 0x or empty??
+      }
+    }
+
+    const encoder = new AbiCoder();
+    const solidityTypes = types.map(x => x.solidityType)
+
+    const mergedCalldata = mergeUint256s(types, data);
+    console.log(mergedCalldata)
+
+    const encodedResult = encoder.encode(solidityTypes, mergedCalldata)
+
+    return <EVMEncodeResult> {
+      data : encodedResult
+    }
+  } catch (ex) {
+    return <EVMEncodeError> {
+      code: -1,
+      message: (ex as Error).message
+    }
+  }
+}
 
 export function decodeEVMCalldata(  
   types: Array<CairoNamedConvertableType>,

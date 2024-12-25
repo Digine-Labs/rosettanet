@@ -87,6 +87,12 @@ export interface EVMDecodeError {
   message: string
 }
 
+export type EVMEncodeError = EVMDecodeError;
+
+export interface EVMEncodeResult {
+  data: string
+}
+
 export interface RosettanetSignature {
   r: string
   s: string
