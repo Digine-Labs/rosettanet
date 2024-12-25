@@ -297,6 +297,8 @@ export function encodeStarknetData(
   }
 }
 
+// This one used in ethCall, we need address conversion here. Also we dont need directives
+// Maybe we can change interface of this function returns.
 export async function decodeEVMCalldataWithAddressConversion(  
   types: Array<CairoNamedConvertableType>,
   data: string,
