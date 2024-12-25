@@ -39,6 +39,7 @@ import { getUncleCountByBlockHashHandler } from './calls/getUncleCountByBlockHas
 import { unsubscribeHandler } from './calls/unsubscribe'
 import { getFilterChangesHandler } from './calls/getFilterChanges'
 import { sendRawTransactionHandler } from './calls/sendRawTransaction'
+import { createAccessListHandler } from './calls/createAccessList'
 
 const router: Router = Router()
 
@@ -226,6 +227,11 @@ Methods.set('eth_getFilterChanges', {
 Methods.set('eth_sendRawTransaction', {
   method: 'eth_sendRawTransaction',
   handler: sendRawTransactionHandler,
+})
+
+Methods.set('eth_createAccessList', {
+  method: 'eth_createAccessList',
+  handler: createAccessListHandler
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
