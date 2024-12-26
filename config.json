@@ -2,7 +2,7 @@
   "appName": "RosettaNet",
   "port": 3000,
   "rpcUrls": ["https://starknet-sepolia.public.blastapi.io"],
-  "chainId": "1",
+  "chainId": "0x52535453",
   "accountClass": "0x077cfdd4b41e712a329ae921c5aba960b9ee5a1a8297b00e8543446e49ac2282",
   "ethAddress": "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
   "strkAddress": "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
