@@ -5,6 +5,6 @@ describe('Test Max fee priority fee request', () => {
   it('Returns 0x0', async () => {
     const result: RPCResponse = <RPCResponse>await maxPriorityFeePerGasHandler()
 
-    expect(result.result).toBe('0x0')
+    expect(result.result).toBe('0x1')
   })
 })

@@ -1,4 +1,5 @@
-import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import { isStarknetRPCError } from '../../types/typeGuards'
+import { RPCError, RPCRequest, RPCResponse, StarknetRPCError } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateBlockHash } from '../../utils/validations'
 
@@ -33,25 +34,18 @@ export async function getTransactionsByHashHandler(
     }
   }
 
-  const response: RPCResponse | string = await callStarknet({
+  const response: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: method,
     params: [txHash],
     id: request.id,
   })
 
-  if (
-    typeof response === 'string' ||
-    response === null ||
-    typeof response === 'undefined'
-  ) {
-    return {
+  if(isStarknetRPCError(response)) {
+    return <RPCError> {
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: {
-        code: -32602,
-        message: response,
-      },
+      error: response
     }
   }
 
@@ -68,25 +62,18 @@ export async function getTransactionsByHashHandler(
   }
 
   // Get the transaction recipt of this transaction
-  const transactionReceipt: RPCResponse | string = await callStarknet({
+  const transactionReceipt: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_getTransactionReceipt',
     params: [txHash],
     id: request.id,
   })
 
-  if (
-    typeof transactionReceipt === 'string' ||
-    transactionReceipt == null ||
-    transactionReceipt == undefined
-  ) {
-    return {
+  if(isStarknetRPCError(transactionReceipt)) {
+    return <RPCError> {
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: {
-        code: -32602,
-        message: transactionReceipt,
-      },
+      error: transactionReceipt
     }
   }
 

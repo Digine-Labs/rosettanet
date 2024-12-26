@@ -1,4 +1,5 @@
-import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import { isStarknetRPCError } from '../../types/typeGuards'
+import { RPCError, RPCRequest, RPCResponse, StarknetRPCError } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { getEthAddressFromSnAddress } from '../../utils/wrapper'
 
@@ -21,25 +22,18 @@ export async function getTransactionReceiptHandler(
 
   const transactionHash = request.params[0] as string
 
-  const response1: RPCResponse | string = await callStarknet({
+  const response1: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_getTransactionReceipt',
     params: [transactionHash],
     id: request.id,
   })
 
-  if (
-    typeof response1 == 'string' ||
-    response1 == null ||
-    response1 == undefined
-  ) {
-    return {
+  if(isStarknetRPCError(response1)) {
+    return <RPCError> {
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: {
-        code: -32602,
-        message: response1,
-      },
+      error: response1
     }
   }
 
@@ -61,25 +55,18 @@ export async function getTransactionReceiptHandler(
     }
   }
 
-  const response2 = await callStarknet({
+  const response2: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_getBlockWithTxs',
     params: [{ block_number: result1.block_number! }],
     id: request.id,
   })
 
-  if (
-    typeof response2 == 'string' ||
-    response2 == null ||
-    response2 == undefined
-  ) {
-    return {
+  if(isStarknetRPCError(response2)) {
+    return <RPCError> {
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: {
-        code: -32602,
-        message: response2,
-      },
+      error: response2
     }
   }
 

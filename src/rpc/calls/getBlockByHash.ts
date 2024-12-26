@@ -1,4 +1,5 @@
-import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import { isStarknetRPCError } from '../../types/typeGuards'
+import { RPCError, RPCRequest, RPCResponse, StarknetRPCError } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateBlockHash } from '../../utils/validations'
 
@@ -52,26 +53,18 @@ export async function getBlockByHashHandler(
   if (isFullTxObjectRequested == true) {
     const method = 'starknet_getBlockWithTxs'
 
-    const response: RPCResponse | string = await callStarknet({
+    const response: RPCResponse | StarknetRPCError = await callStarknet({
       jsonrpc: request.jsonrpc,
       method,
       params: [{ block_hash: blockHash }],
       id: request.id,
     })
 
-    // Check response
-    if (
-      typeof response == 'string' ||
-      response == null ||
-      response == undefined
-    ) {
-      return {
+    if(isStarknetRPCError(response)) {
+      return <RPCError> {
         jsonrpc: request.jsonrpc,
         id: request.id,
-        error: {
-          code: -32602,
-          message: response,
-        },
+        error: response
       }
     }
 
@@ -168,26 +161,18 @@ export async function getBlockByHashHandler(
   } else {
     const method = 'starknet_getBlockWithTxHashes'
 
-    const response: RPCResponse | string = await callStarknet({
+    const response: RPCResponse | StarknetRPCError = await callStarknet({
       jsonrpc: request.jsonrpc,
       method,
       params: [{ block_hash: blockHash }],
       id: request.id,
     })
 
-    // Check response
-    if (
-      typeof response == 'string' ||
-      response == null ||
-      response == undefined
-    ) {
-      return {
+    if(isStarknetRPCError(response)) {
+      return <RPCError> {
         jsonrpc: request.jsonrpc,
         id: request.id,
-        error: {
-          code: -32602,
-          message: response,
-        },
+        error: response
       }
     }
 

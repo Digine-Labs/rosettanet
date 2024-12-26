@@ -1,8 +1,8 @@
-import { NativeBalance, RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import { NativeBalance, RPCError, RPCRequest, RPCResponse, StarknetRPCError } from '../../types/types'
 import { getSTRKBalance } from '../../utils/callHelper'
 import { validateEthAddress } from '../../utils/validations'
 import { getSnAddressFromEthAddress } from '../../utils/wrapper'
-import { isRPCError } from '../../types/typeGuards'
+import { isStarknetRPCError } from '../../types/typeGuards'
 
 export async function getBalanceHandler(
   request: RPCRequest,
@@ -32,16 +32,24 @@ export async function getBalanceHandler(
     }
   }
 
-  const snAddress: string | RPCError = await getSnAddressFromEthAddress(ethAddress)
+  const snAddress: string | StarknetRPCError = await getSnAddressFromEthAddress(ethAddress)
 
-  if (isRPCError(snAddress)) {
-    return snAddress
+  if (isStarknetRPCError(snAddress)) {
+    return <RPCError> {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: snAddress
+    }
   }
 
-  const balance : NativeBalance | RPCError = await getSTRKBalance(snAddress);
+  const balance : NativeBalance | StarknetRPCError = await getSTRKBalance(snAddress);
 
-  if(isRPCError(balance)) {
-    return balance
+  if(isStarknetRPCError(balance)) {
+    return <RPCError> {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: balance
+    }
   }
 
   return {
