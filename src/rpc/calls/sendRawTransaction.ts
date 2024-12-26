@@ -9,6 +9,7 @@ import {
   SignedRawTransaction,
   StarknetContract,
   StarknetContractReadError,
+  StarknetRPCError,
   ValidationError,
 } from '../../types/types'
 import { Transaction } from 'ethers'
@@ -45,7 +46,7 @@ import {
 } from '../../utils/transaction'
 import { StarknetInvokeTransaction } from '../../types/transactions.types'
 
-import { isAccountDeployError, isEVMDecodeError, isRPCError, isSignedRawTransaction, isStarknetContract } from '../../types/typeGuards'
+import { isAccountDeployError, isEVMDecodeError, isRPCError, isSignedRawTransaction, isStarknetContract, isStarknetRPCError } from '../../types/typeGuards'
 
 export async function sendRawTransactionHandler(
   request: RPCRequest,
@@ -110,9 +111,13 @@ export async function sendRawTransactionHandler(
 
   const starknetAccountAddress = deployedAccountAddress.contractAddress;
 
-  const targetContractAddress: string | RPCError = await getSnAddressFromEthAddress(signedValidRawTransaction.to)
-  if(isRPCError(targetContractAddress)) {
-    return targetContractAddress
+  const targetContractAddress: string | StarknetRPCError = await getSnAddressFromEthAddress(signedValidRawTransaction.to)
+  if(isStarknetRPCError(targetContractAddress)) {
+    return <RPCError> {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error : targetContractAddress
+    }
   }
 
   const targetFunctionSelector: string | null = getFunctionSelectorFromCalldata(signedValidRawTransaction.data)
@@ -198,11 +203,18 @@ export async function sendRawTransactionHandler(
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function broadcastTransaction(request: RPCRequest, params: any): Promise<RPCResponse | RPCError> {
-
-  return await callStarknet(<RPCRequest>{
+  const response : RPCResponse | StarknetRPCError = await callStarknet(<RPCRequest>{
     jsonrpc: request.jsonrpc,
     id: request.id,
     params: params,
     method: 'starknet_addInvokeTransaction'
   });
+  if(isStarknetRPCError(response)) {
+    return <RPCError> {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: response
+    }
+  }
+  return response
 }

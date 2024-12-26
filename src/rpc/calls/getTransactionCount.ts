@@ -1,4 +1,5 @@
-import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import { isStarknetRPCError } from '../../types/typeGuards'
+import { RPCError, RPCRequest, RPCResponse, StarknetRPCError } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateEthAddress } from '../../utils/validations'
 import { getSnAddressFromEthAddress } from '../../utils/wrapper'
@@ -46,25 +47,18 @@ export async function getTransactionCountHandler(
     }
   }
 
-  const response: RPCResponse | string = await callStarknet({
+  const response: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: method,
     params: ['latest', snAddress],
     id: request.id,
   })
 
-  if (
-    typeof response === 'string' ||
-    response === null ||
-    typeof response === 'undefined'
-  ) {
-    return {
+  if(isStarknetRPCError(response)) {
+    return <RPCError> {
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: {
-        code: -32602,
-        message: response,
-      },
+      error: response
     }
   }
 

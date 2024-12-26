@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { isEVMDecodeError, isEVMEncodeResult, isRPCError, isStarknetContract } from '../../types/typeGuards'
+import { isEVMDecodeError, isEVMEncodeResult, isRPCError, isStarknetContract, isStarknetRPCError } from '../../types/typeGuards'
 import {
   EVMDecodeError,
   EVMDecodeResult,
@@ -10,6 +10,7 @@ import {
   RPCResponse,
   StarknetContract,
   StarknetContractReadError,
+  StarknetRPCError,
 } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import {
@@ -97,15 +98,19 @@ export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse 
 
   if(targetFunctionSelector == null || typeof parameters.data === 'undefined') {
     return {
-      jsonrpc: '2.0',
+      jsonrpc: request.jsonrpc,
       id: request.id,
       result: '0x',
     }
   }
 
-  const targetContractAddress: string | RPCError = await getSnAddressFromEthAddress(parameters.to);
-  if(isRPCError(targetContractAddress)) {
-    return targetContractAddress
+  const targetContractAddress: string | StarknetRPCError = await getSnAddressFromEthAddress(parameters.to);
+  if(isStarknetRPCError(targetContractAddress)) {
+    return <RPCError> {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: targetContractAddress
+    }
   }
 
   const targetContract: StarknetContract | StarknetContractReadError = await getContractAbiAndMethods(targetContractAddress);
@@ -168,15 +173,19 @@ export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse 
     'pending', // update to latest
   ]
 
-  const snResponse: RPCResponse | RPCError = await callStarknet({
+  const snResponse: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_call',
     params: starknetCallParams,
     id: request.id,
   })
 
-  if(isRPCError(snResponse)) {
-    return snResponse
+  if(isStarknetRPCError(snResponse)) {
+    return <RPCError> {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: snResponse
+    }
   }
 
 
@@ -186,7 +195,7 @@ export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse 
 
   if(!isEVMEncodeResult(formattedStarknetOutput)) {
     return <RPCError> {
-      jsonrpc: '2.0',
+      jsonrpc: request.jsonrpc,
       id: request.id,
       error: {
         code: -32705,
@@ -196,7 +205,7 @@ export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse 
   }
 
   return {
-    jsonrpc: '2.0',
+    jsonrpc: request.jsonrpc,
     id: request.id,
     result: formattedStarknetOutput.data,
   }

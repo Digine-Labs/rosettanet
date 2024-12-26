@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 import { callStarknet } from './callHelper'
-import { RPCError, RPCResponse } from '../types/types'
+import { RPCResponse, StarknetRPCError } from '../types/types'
 import { getConfigurationProperty } from './configReader'
-import { isRPCError } from '../types/typeGuards'
+import { isStarknetRPCError } from '../types/typeGuards'
 
 // Calls starknet factory contract to precalculate starknet account address
 // TODO: add custom types like in deploy function
@@ -26,7 +26,7 @@ export async function getRosettaAccountAddress(
     'pending',
   ]
 
-  const response: RPCResponse | RPCError = await callStarknet({
+  const response: RPCResponse | StarknetRPCError = await callStarknet({
     // todo handle error if string
     jsonrpc: '2.0',
     method: 'starknet_call',
@@ -34,7 +34,7 @@ export async function getRosettaAccountAddress(
     id: 1,
   })
 
-  if (isRPCError(response)) {
+  if (isStarknetRPCError(response)) {
     return <RosettanetAccountResult> {
       contractAddress: '',
       ethAddress: ethAddress,
@@ -44,7 +44,7 @@ export async function getRosettaAccountAddress(
 
   const precalculatedAddress = response.result[0].toString();
 
-  const classHashCall: RPCResponse | RPCError = await callStarknet({
+  const classHashCall: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: '2.0',
     method: 'starknet_getClassHashAt',
     params: {
@@ -54,7 +54,7 @@ export async function getRosettaAccountAddress(
     id: 2,
   })
 
-  if(isRPCError(classHashCall) || typeof classHashCall.result === 'undefined') {
+  if(isStarknetRPCError(classHashCall) || typeof classHashCall.result === 'undefined') {
     return <RosettanetAccountResult> {
       contractAddress: '',
       ethAddress: ethAddress,
@@ -74,7 +74,7 @@ export async function isRosettaAccountDeployed(
   snAddress: string,
   expectedClass: string,
 ): Promise<boolean> {
-  const response: RPCResponse | RPCError = await callStarknet({
+  const response: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: '2.0',
     id: 1,
     method: 'starknet_getClassHashAt',
@@ -84,7 +84,7 @@ export async function isRosettaAccountDeployed(
     },
   })
 
-  if(isRPCError(response)) {
+  if(isStarknetRPCError(response)) {
     return false
   }
 
@@ -106,7 +106,7 @@ export async function deployRosettanetAccount(
 ): Promise<AccountDeployResult | AccountDeployError> {
   const rosettanet = getConfigurationProperty('rosettanet')
   const accountClass = getConfigurationProperty('accountClass')
-  const response: RPCResponse | RPCError = await callStarknet({
+  const response: RPCResponse | StarknetRPCError = await callStarknet({
     // todo handle error if string
     jsonrpc: '2.0',
     method: 'starknet_addDeployAccountTransaction',
@@ -148,11 +148,8 @@ export async function deployRosettanetAccount(
 }
  */
 
-  if(isRPCError(response)) {
-    return <AccountDeployError> {
-      code: response.error.code,
-      message: response.error.message
-    }
+  if(isStarknetRPCError(response)) {
+    return response
   }
 
   if (typeof response.result['contract_address'] === 'string' && typeof response.result['transaction_hash'] === 'string') {

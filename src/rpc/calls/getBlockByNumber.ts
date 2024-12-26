@@ -1,7 +1,8 @@
 import { isHexString } from 'ethers'
-import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import { RPCError, RPCRequest, RPCResponse, StarknetRPCError } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateBlockNumber } from '../../utils/validations'
+import { isStarknetRPCError } from '../../types/typeGuards'
 export async function getBlockByNumberHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
@@ -35,27 +36,18 @@ export async function getBlockByNumberHandler(
     }
   }
 
-  const currentLiveBlockNumber = await callStarknet({
+  const currentLiveBlockNumber: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_blockNumber',
     params: [],
     id: request.id,
   })
 
-  if (
-    typeof currentLiveBlockNumber !== 'string' &&
-    typeof currentLiveBlockNumber.result === 'number'
-  ) {
-    if (parseInt(blockNumber, 16) > currentLiveBlockNumber.result) {
-      return {
-        jsonrpc: request.jsonrpc,
-        id: request.id,
-        error: {
-          code: -32602,
-          message:
-            'Invalid argument, Parameter "block_number" can not be higher than current live block number of network.',
-        },
-      }
+  if(isStarknetRPCError(currentLiveBlockNumber)) {
+    return <RPCError> {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: currentLiveBlockNumber
     }
   }
 
@@ -81,26 +73,18 @@ export async function getBlockByNumberHandler(
   if (isFullTxObjectRequested == true) {
     const method = 'starknet_getBlockWithTxs'
 
-    const response: RPCResponse | string = await callStarknet({
+    const response: RPCResponse | StarknetRPCError = await callStarknet({
       jsonrpc: request.jsonrpc,
       method,
       params,
       id: request.id,
     })
 
-    // Check response
-    if (
-      typeof response == 'string' ||
-      response == null ||
-      response == undefined
-    ) {
-      return {
+    if(isStarknetRPCError(response)) {
+      return <RPCError> {
         jsonrpc: request.jsonrpc,
         id: request.id,
-        error: {
-          code: -32602,
-          message: response,
-        },
+        error: response
       }
     }
 
@@ -197,26 +181,18 @@ export async function getBlockByNumberHandler(
   } else {
     const method = 'starknet_getBlockWithTxHashes'
 
-    const response: RPCResponse | string = await callStarknet({
+    const response: RPCResponse | StarknetRPCError = await callStarknet({
       jsonrpc: request.jsonrpc,
       method,
       params,
       id: request.id,
     })
 
-    // Check response
-    if (
-      typeof response == 'string' ||
-      response == null ||
-      response == undefined
-    ) {
-      return {
+    if(isStarknetRPCError(response)) {
+      return <RPCError> {
         jsonrpc: request.jsonrpc,
         id: request.id,
-        error: {
-          code: -32602,
-          message: response,
-        },
+        error: response
       }
     }
 

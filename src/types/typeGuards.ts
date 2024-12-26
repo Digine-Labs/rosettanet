@@ -1,5 +1,5 @@
 import { AccountDeployError, AccountDeployResult } from "../utils/rosettanet";
-import { EVMDecodeError, EVMDecodeResult, EVMEncodeResult, RosettanetSignature, RPCError, RPCResponse, SignedRawTransaction, StarknetContract, ValidationError } from "./types";
+import { EVMDecodeError, EVMDecodeResult, EVMEncodeResult, RosettanetSignature, RPCError, RPCResponse, SignedRawTransaction, StarknetContract, StarknetRPCError, ValidationError } from "./types";
 
 export function isRPCError(value: unknown): value is RPCError {
     if (typeof value === "object" && value !== null) {
@@ -89,6 +89,14 @@ export function isStarknetContract(value: unknown): value is StarknetContract {
     if (typeof value === "object" && value !== null) {
         const obj = value as StarknetContract;
         return Array.isArray(obj.abi) && Array.isArray(obj.methods);
+    }
+    return false;
+}
+
+export function isStarknetRPCError(value: unknown): value is StarknetRPCError {
+    if (typeof value === "object" && value !== null) {
+        const obj = value as StarknetRPCError;
+        return typeof obj.code === 'number' && typeof obj.message === 'string';
     }
     return false;
 }

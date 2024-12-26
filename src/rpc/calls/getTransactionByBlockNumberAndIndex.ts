@@ -1,7 +1,8 @@
 import { isHexString } from 'ethers'
-import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import { RPCError, RPCRequest, RPCResponse, StarknetRPCError } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateBlockNumber } from '../../utils/validations'
+import { isStarknetRPCError } from '../../types/typeGuards'
 
 export async function getTransactionsByBlockNumberAndIndexHandler(
   request: RPCRequest,
@@ -33,27 +34,18 @@ export async function getTransactionsByBlockNumberAndIndexHandler(
     }
   }
 
-  const currentLiveBlockNumber = await callStarknet({
+  const currentLiveBlockNumber: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_blockNumber',
     params: [],
     id: request.id,
   })
 
-  if (
-    typeof currentLiveBlockNumber !== 'string' &&
-    typeof currentLiveBlockNumber.result === 'number'
-  ) {
-    if (parseInt(blockNumber, 16) > currentLiveBlockNumber.result) {
-      return {
-        jsonrpc: request.jsonrpc,
-        id: request.id,
-        error: {
-          code: -32602,
-          message:
-            'Invalid argument, Parameter "block_number" can not be higher than current live block number of network.',
-        },
-      }
+  if(isStarknetRPCError(currentLiveBlockNumber)) {
+    return <RPCError> {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: currentLiveBlockNumber
     }
   }
 
@@ -61,25 +53,18 @@ export async function getTransactionsByBlockNumberAndIndexHandler(
     ? [{ block_number: parseInt(blockNumber, 16) }]
     : [{ block_number: blockNumber }]
 
-  const response: RPCResponse | string = await callStarknet({
+  const response: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_getBlockWithTxs',
     params,
     id: request.id,
   })
 
-  if (
-    typeof response === 'string' ||
-    response === null ||
-    typeof response === 'undefined'
-  ) {
-    return {
+  if(isStarknetRPCError(response)) {
+    return <RPCError> {
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: {
-        code: -32602,
-        message: response,
-      },
+      error: response
     }
   }
 
@@ -149,25 +134,18 @@ export async function getTransactionsByBlockNumberAndIndexHandler(
   }
 
   // Retrieve transaction receipt using transaction hash
-  const transactionRes: RPCResponse | string = await callStarknet({
+  const transactionRes: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_getTransactionReceipt',
     params: [transaction.transaction_hash],
     id: request.id,
   })
 
-  if (
-    typeof transactionRes === 'string' ||
-    transactionRes == null ||
-    transactionRes == undefined
-  ) {
-    return {
+  if(isStarknetRPCError(transactionRes)) {
+    return <RPCError> {
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: {
-        code: -32602,
-        message: transactionRes,
-      },
+      error: transactionRes
     }
   }
 

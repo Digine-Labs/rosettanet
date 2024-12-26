@@ -1,7 +1,7 @@
 import { callStarknet } from './callHelper'
-import { RPCError, RPCRequest, RPCResponse } from '../types/types'
+import { RPCRequest, RPCResponse, StarknetRPCError } from '../types/types'
 import { getConfigurationProperty } from './configReader'
-import { isRPCError } from '../types/typeGuards'
+import { isStarknetRPCError } from '../types/typeGuards'
 
 const SELECTORS = {
   get_sn_address_from_eth_address:
@@ -15,7 +15,7 @@ const SELECTORS = {
 // Returns starknet address, if error returns 0
 export async function getEthAddressFromSnAddress(
   snAddress: string,
-): Promise<string | RPCError> {
+): Promise<string | StarknetRPCError> {
   const rosettanetContract = getConfigurationProperty('rosettanet');
   const request: RPCRequest = {
     jsonrpc: '2.0',
@@ -30,29 +30,25 @@ export async function getEthAddressFromSnAddress(
     ],
     id: 1,
   }
-  const response: RPCResponse | RPCError = await callStarknet(request)
+  const response: RPCResponse | StarknetRPCError = await callStarknet(request)
 
-  if (isRPCError(response)) {
+  if (isStarknetRPCError(response)) {
     return response
   }
 
   if (Array.isArray(response.result) && response.result.length == 1) {
     return response.result[0]
   } else {
-    return <RPCError> {
-      jsonrpc: '2.0',
-      id: 1,
-      error: {
+    return <StarknetRPCError> {
         code: -32700,
         message: 'Reading ethereum address from Rosettanet contract fails. Starknet rpc resulted with different type then expected.'
-      }
     }
   }
 }
 
 export async function getSnAddressFromEthAddress(
   ethAddress: string,
-): Promise<string | RPCError> {
+): Promise<string | StarknetRPCError> {
   const rosettanetContract = getConfigurationProperty('rosettanet');
   const request: RPCRequest = {
     jsonrpc: '2.0',
@@ -67,9 +63,9 @@ export async function getSnAddressFromEthAddress(
     ],
     id: 1,
   }
-  const response: RPCResponse | RPCError = await callStarknet(request)
+  const response: RPCResponse | StarknetRPCError = await callStarknet(request)
 
-  if (isRPCError(response)) {
+  if (isStarknetRPCError(response)) {
     return response
   }
 
@@ -77,24 +73,16 @@ export async function getSnAddressFromEthAddress(
     const address = response.result[0];
 
     if(address === '0x0') {
-      return <RPCError> {
-        jsonrpc: '2.0',
-        id: 1,
-        error: {
+      return <StarknetRPCError> {
           code: -32700,
           message: 'Target not registered on registry.'
-        }
       }
     }
     return response.result[0]
   } else {
-    return <RPCError> {
-      jsonrpc: '2.0',
-      id: 1,
-      error: {
+    return <StarknetRPCError> {
         code: -32700,
         message: 'Reading starknet address from Rosettanet contract fails. Starknet rpc resulted with different type then expected.'
-      }
     }
   }
 }

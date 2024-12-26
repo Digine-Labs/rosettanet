@@ -1,5 +1,5 @@
-import { isRPCError } from '../../types/typeGuards'
-import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import { isStarknetRPCError } from '../../types/typeGuards'
+import { RPCError, RPCRequest, RPCResponse, StarknetRPCError } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 
 export async function protocolVersionHandler(
@@ -16,15 +16,19 @@ export async function protocolVersionHandler(
     }
   }
 
-  const response: RPCResponse | RPCError = await callStarknet({
+  const response: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_specVersion',
     params: [],
     id: request.id,
   })
 
-  if(isRPCError(response)) {
-    return response
+  if(isStarknetRPCError(response)) {
+    return <RPCError> {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: response
+    }
   }
 
   const result = response.result as string

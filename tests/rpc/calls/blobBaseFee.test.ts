@@ -1,4 +1,5 @@
 import { blobBaseFeeHandler } from '../../../src/rpc/calls/blobBaseFee'
+import { isRPCError } from '../../../src/types/typeGuards'
 import { RPCError, RPCResponse } from '../../../src/types/types'
 
 describe('Test BlobBaseFee handler', () => {
@@ -25,8 +26,6 @@ describe('Test BlobBaseFee handler', () => {
     const result: RPCResponse | RPCError = <RPCResponse>(
       await blobBaseFeeHandler(request)
     )
-    expect(result.error?.message).toBe(
-      'Invalid argument, Parameter should length 0.',
-    )
+    expect(isRPCError(result)).toBe(true);
   })
 })

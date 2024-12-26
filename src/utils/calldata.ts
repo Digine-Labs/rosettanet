@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AbiCoder, dataSlice } from 'ethers'
-import { EVMDecodeError, EVMDecodeResult, EVMEncodeError, EVMEncodeResult, RPCError } from '../types/types'
+import { EVMDecodeError, EVMDecodeResult, EVMEncodeError, EVMEncodeResult, RPCError, StarknetRPCError } from '../types/types'
 import { BnToU256, safeU256ToUint256, Uint256ToU256 } from './converters/integer'
 import { getSnAddressFromEthAddress } from './wrapper'
 import { CairoNamedConvertableType } from './starknet'
 import { addHexPrefix } from './padding'
-import { isRPCError } from '../types/typeGuards'
+import { isRPCError, isStarknetRPCError } from '../types/typeGuards'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getFunctionSelectorFromCalldata(calldata: any): string | null {
@@ -342,12 +342,9 @@ export async function decodeEVMCalldataWithAddressConversion(
           continue;
         }
         if(currentType.solidityType === 'address') {
-          const snAddress: string | RPCError = await getSnAddressFromEthAddress(currentData)
-          if(isRPCError(snAddress)) {
-            return <EVMDecodeError> {
-              code: -32500,
-              message: 'Error at reading starknet address from registry to convert calldata.'
-            }
+          const snAddress: string | StarknetRPCError = await getSnAddressFromEthAddress(currentData)
+          if(isStarknetRPCError(snAddress)) {
+            return snAddress
           }
           decodedValues.push(snAddress);
           directives.push(2);

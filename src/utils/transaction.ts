@@ -43,6 +43,7 @@ export function prepareStarknetInvokeTransaction(
   return starknetTx
 }
 
+
 // First calldata element must be function selector
 export function prepareRosettanetCalldata(
   to: string,
@@ -67,7 +68,6 @@ export function prepareRosettanetCalldata(
     finalCalldata.push(addHexPrefix(gas_limit.toString(16)))
 
     const value_u256 = safeUint256ToU256(value)
-    console.log(value_u256)
     finalCalldata.push(...(value_u256.map(v => addHexPrefix(v))))
 
     finalCalldata.push(addHexPrefix(calldata.length.toString(16)))

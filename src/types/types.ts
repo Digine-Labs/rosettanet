@@ -133,3 +133,8 @@ export interface StarknetContractReadError {
   code: number
   message: string
 }
+
+export interface StarknetRPCError {
+  code: number
+  message: string
+}
