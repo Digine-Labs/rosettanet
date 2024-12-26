@@ -7,7 +7,7 @@ import { isStarknetRPCError } from '../../types/typeGuards'
 export async function getBalanceHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  if (request.params.length != 0) {
+  if (request.params.length == 0) {
     return {
       jsonrpc: request.jsonrpc,
       id: request.id,

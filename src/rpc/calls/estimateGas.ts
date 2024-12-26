@@ -29,12 +29,12 @@ import { findStarknetCallableMethod, StarknetCallableMethod } from '../../utils/
 interface EstimateGasParameters {
   from: string
   to: string
-  gas: string
+  gas?: string
   gasPrice?: string
   value?: string
   data?: string
-  maxPriorityFeePerGas: string
-  maxFeePerGas: string
+  maxPriorityFeePerGas?: string
+  maxFeePerGas?: string
 }
 
 export function isEstimateGasParameters(value: unknown): value is EstimateGasParameters {
@@ -149,11 +149,12 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
       }
     }
     const rosettanetCalldata = prepareRosettanetCalldata(parameters.to, Number(accountNonce), 
-      BigInt(parameters.maxPriorityFeePerGas), BigInt(parameters.maxFeePerGas), 
-      BigInt(parameters.gas), BigInt(parameters.value),[],[]);
+      BigInt(typeof parameters.maxPriorityFeePerGas === 'undefined' ? 0 : parameters.maxPriorityFeePerGas), 
+      BigInt(typeof parameters.maxFeePerGas === 'undefined' ? 0 : parameters.maxFeePerGas), 
+      BigInt(typeof parameters.gas === 'undefined' ? 0 : parameters.gas), BigInt(parameters.value),[],[]);
 
 
-    const estimatedFee: RPCResponse | StarknetRPCError = await callStarknetEstimateFee(parameters.from, rosettanetCalldata, accountNonce);
+    const estimatedFee: RPCResponse | StarknetRPCError = await callStarknetEstimateFee(snFromAddress, rosettanetCalldata, accountNonce);
     if(isStarknetRPCError(estimatedFee)) {
       return <RPCError> {
         jsonrpc: request.jsonrpc,
@@ -163,6 +164,8 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
     }
 
     const result = estimatedFee.result[0];
+
+
     if(typeof result.gas_consumed === 'undefined' || typeof result.data_gas_consumed === 'undefined') {
       return <RPCError> {
         jsonrpc: request.jsonrpc,
@@ -232,11 +235,12 @@ if(typeof starknetFunction === 'undefined') {
   }
 
   const rosettanetCalldata = prepareRosettanetCalldata(parameters.to, Number(accountNonce), 
-                BigInt(parameters.maxPriorityFeePerGas), BigInt(parameters.maxFeePerGas), 
-                BigInt(parameters.gas), BigInt(typeof parameters.value === 'undefined' ? 0 : parameters.value), 
-                                                        EVMCalldataDecode.calldata, EVMCalldataDecode.directives, starknetFunction);
+              BigInt(typeof parameters.maxPriorityFeePerGas === 'undefined' ? 0 : parameters.maxPriorityFeePerGas), 
+              BigInt(typeof parameters.maxFeePerGas === 'undefined' ? 0 : parameters.maxFeePerGas), 
+              BigInt(typeof parameters.gas === 'undefined' ? 0 : parameters.gas), BigInt(typeof parameters.value === 'undefined' ? 0 : parameters.value), 
+                  EVMCalldataDecode.calldata, EVMCalldataDecode.directives, starknetFunction);
 
-  const estimatedFee: RPCResponse | StarknetRPCError = await callStarknetEstimateFee(parameters.from, rosettanetCalldata, accountNonce);
+  const estimatedFee: RPCResponse | StarknetRPCError = await callStarknetEstimateFee(snFromAddress, rosettanetCalldata, accountNonce);
   if(isStarknetRPCError(estimatedFee)) {
     return <RPCError> {
       jsonrpc: request.jsonrpc,

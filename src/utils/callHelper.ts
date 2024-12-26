@@ -88,16 +88,17 @@ export async function getSTRKBalance(snAddress: string): Promise<NativeBalance |
 }
 
 export async function callStarknetEstimateFee(sender: string, calldata: Array<string>, nonce: string): Promise<RPCResponse | StarknetRPCError> {
+  console.log(sender, nonce)
+  console.log(calldata)
   const response: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: '2.0',
     method: 'starknet_estimateFee',
     params: {
       request: [{
         type: "INVOKE",
-        max_fee: "0x0",
         version: "0x3",
         signature: [
-          "0x0", "0x0", "0x0", "0x0", "0x0", 'VALLOW', 'VALHIGH'
+          "0x0", "0x0", "0x0", "0x0", "0x0", '0x0', '0x0'
         ],
         sender_address: sender,
         calldata: calldata,
@@ -123,6 +124,6 @@ export async function callStarknetEstimateFee(sender: string, calldata: Array<st
     },
     id: 1
   });
-
+  console.log(response)
   return response
 }
