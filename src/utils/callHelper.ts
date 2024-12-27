@@ -1,9 +1,10 @@
 import { getRpc } from './getRpc'
 import { NativeBalance, RPCRequest, RPCResponse, StarknetRPCError } from '../types/types'
 import { getConfigurationProperty } from './configReader'
-import { U256toUint256 } from './converters/integer'
+import { safeUint256ToU256, U256toUint256 } from './converters/integer'
 import axios from 'axios'
 import { isStarknetRPCError } from '../types/typeGuards'
+import { addHexPrefix } from './padding'
 
 export async function callStarknet(
   request: RPCRequest
@@ -87,9 +88,10 @@ export async function getSTRKBalance(snAddress: string): Promise<NativeBalance |
   } 
 }
 
-export async function callStarknetEstimateFee(sender: string, calldata: Array<string>, nonce: string): Promise<RPCResponse | StarknetRPCError> {
-  console.log(sender, nonce)
-  console.log(calldata)
+export async function callStarknetEstimateFee(sender: string, calldata: Array<string>, nonce: string, value: bigint): Promise<RPCResponse | StarknetRPCError> {
+
+  const value_u256 = safeUint256ToU256(value).map(v => addHexPrefix(v));
+  
   const response: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: '2.0',
     method: 'starknet_estimateFee',
@@ -98,7 +100,7 @@ export async function callStarknetEstimateFee(sender: string, calldata: Array<st
         type: "INVOKE",
         version: "0x3",
         signature: [
-          "0x0", "0x0", "0x0", "0x0", "0x0", '0x0', '0x0'
+          "0x0", "0x0", "0x0", "0x0", "0x0", ...value_u256
         ],
         sender_address: sender,
         calldata: calldata,
@@ -124,6 +126,5 @@ export async function callStarknetEstimateFee(sender: string, calldata: Array<st
     },
     id: 1
   });
-  console.log(response)
   return response
 }

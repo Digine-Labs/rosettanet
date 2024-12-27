@@ -154,7 +154,8 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
       BigInt(typeof parameters.gas === 'undefined' ? 0 : parameters.gas), BigInt(parameters.value),[],[]);
 
 
-    const estimatedFee: RPCResponse | StarknetRPCError = await callStarknetEstimateFee(snFromAddress, rosettanetCalldata, accountNonce);
+    const estimatedFee: RPCResponse | StarknetRPCError = await callStarknetEstimateFee(snFromAddress, rosettanetCalldata, accountNonce, 
+                  BigInt(typeof parameters.value === 'undefined' ? 0 : parameters.value));
     if(isStarknetRPCError(estimatedFee)) {
       return <RPCError> {
         jsonrpc: request.jsonrpc,
@@ -240,7 +241,8 @@ if(typeof starknetFunction === 'undefined') {
               BigInt(typeof parameters.gas === 'undefined' ? 0 : parameters.gas), BigInt(typeof parameters.value === 'undefined' ? 0 : parameters.value), 
                   EVMCalldataDecode.calldata, EVMCalldataDecode.directives, starknetFunction);
 
-  const estimatedFee: RPCResponse | StarknetRPCError = await callStarknetEstimateFee(snFromAddress, rosettanetCalldata, accountNonce);
+  const estimatedFee: RPCResponse | StarknetRPCError = await callStarknetEstimateFee(snFromAddress, rosettanetCalldata, accountNonce, 
+                BigInt(typeof parameters.value === 'undefined' ? 0 : parameters.value));
   if(isStarknetRPCError(estimatedFee)) {
     return <RPCError> {
       jsonrpc: request.jsonrpc,
