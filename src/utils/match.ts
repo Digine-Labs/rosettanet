@@ -18,9 +18,11 @@ export function findStarknetCallableMethod(
   map: Map<string, ConvertableType>,
 ): StarknetCallableMethod | undefined {
   for(const func of snFunctions) {
-    const ethereumName =
+    const ethereumName: string | undefined =
     generateEthereumFunctionSignatureFromTypeMapping(func, map)
-
+    if(typeof ethereumName === 'undefined') {
+      return ethereumName
+    }
     let hash = keccak256(ethereumName)
     hash = addHexPadding(new BigNumber(hash, 16).toString(16),64,false)
 

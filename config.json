@@ -1,7 +1,7 @@
 {
   "appName": "RosettaNet",
   "port": 3000,
-  "rpcUrls": ["https://free-rpc.nethermind.io/sepolia-juno"],
+  "rpcUrls": [ "https://starknet-sepolia.public.blastapi.io"],
   "chainId": "0x52535453",
   "accountClass": "0x0762a134cd04ef7066cbad3c50c7134224ba57e562d812575d0522dcb530067f",
   "ethAddress": "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",

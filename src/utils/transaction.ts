@@ -22,16 +22,7 @@ export function prepareStarknetInvokeTransaction(
       nonce_data_availability_mode: 'L1',
       paymaster_data: [],
       account_deployment_data: [],
-      resource_bounds: {
-        l1_gas: {
-            max_amount: addHexPrefix(signedRawTransaction.gasLimit.toString(16)),
-            max_price_per_unit: addHexPrefix(signedRawTransaction.maxFeePerGas.toString(16))
-        },
-        l2_gas: {
-            max_amount: "0x0",
-            max_price_per_unit: "0x0"
-        }
-    },
+      resource_bounds: getGasObject(signedRawTransaction),
       sender_address: caller,
       signature: signature,
       tip: '0x0',
@@ -43,6 +34,23 @@ export function prepareStarknetInvokeTransaction(
   return starknetTx
 }
 
+function getGasObject(txn: SignedRawTransaction) {
+  console.log(txn.gasPrice)
+  console.log(txn.maxFeePerGas)
+  return {
+        resource_bounds: {
+          l1_gas: {
+              max_amount: addHexPrefix(txn.gasLimit.toString(16)),
+              max_price_per_unit: txn.maxFeePerGas == null ? addHexPrefix(txn.gasPrice.toString(16)) : addHexPrefix(txn.maxFeePerGas.toString(16))
+          },
+          l2_gas: {
+              max_amount: "0x0",
+              max_price_per_unit: "0x0"
+          }
+    } 
+  }
+
+}
 
 // First calldata element must be function selector
 export function prepareRosettanetCalldata(

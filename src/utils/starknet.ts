@@ -158,7 +158,7 @@ export function getEthereumInputTypesFromStarknetFunction(
       }
       return type.solidityType
     } else {
-      throw 'Type not found'
+      throw 'Type not found' // Todo return undefined
     }
   })
 
@@ -168,23 +168,26 @@ export function getEthereumInputTypesFromStarknetFunction(
 export function generateEthereumFunctionSignatureFromTypeMapping(
   snFunction: StarknetFunction,
   map: Map<string, ConvertableType>,
-): string {
+): string | undefined {
   if (!snFunction.inputs || snFunction.inputs.length == 0) {
     return `${snFunction.name}()`
   }
-  const inputTypes = getFunctionInputTypesFromMap(map, snFunction.inputs)
+  const inputTypes: string | undefined = getFunctionInputTypesFromMap(map, snFunction.inputs)
+  if(typeof inputTypes === 'undefined') {
+    return
+  }
   return `${snFunction.name}(${inputTypes})`
 }
 
 function getFunctionInputTypesFromMap(
   map: Map<string, ConvertableType>,
   inputs: Array<StarknetFunctionInput>,
-): string {
+): string | undefined {
   const inputTypes = inputs.map(input => {
     if (map.has(input.type)) {
       return map.get(input.type)?.solidityType
     } else {
-      throw 'Type not found'
+      return 
     }
   })
   return inputTypes.toString()

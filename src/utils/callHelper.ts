@@ -122,7 +122,7 @@ export async function callStarknetEstimateFee(sender: string, calldata: Array<st
         account_deployment_data: []
       }],
       block_id: 'latest',
-      simulation_flags: ['SKIP_VALIDATE', 'SKIP_FEE_CHARGE']
+      simulation_flags: ['SKIP_VALIDATE']
     },
     id: 1
   });

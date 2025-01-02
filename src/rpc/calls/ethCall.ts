@@ -103,13 +103,14 @@ export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse 
       result: '0x',
     }
   }
-
+  // ETH CALL BAZEN from field bos geliyor.
+  // to ise registered degilse result 0x donmeli
   const targetContractAddress: string | StarknetRPCError = await getSnAddressFromEthAddress(parameters.to);
   if(isStarknetRPCError(targetContractAddress)) {
-    return <RPCError> {
+    return {
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: targetContractAddress
+      result: '0x',
     }
   }
 
@@ -129,14 +130,12 @@ export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse 
   initializeStarknetAbi(targetContract.abi)
 
   const starknetFunction: StarknetCallableMethod | undefined = findStarknetCallableMethod(targetFunctionSelector, targetContract.methods, contractTypeMapping);
+  // It tries to find starknet method in target contract without throwin error.
   if(typeof starknetFunction === 'undefined') {
-    return <RPCError> {
+    return <RPCResponse>{
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: {
-        code: -32708,
-        message: 'Target function is not found in starknet contract.',
-      }
+      result: '0x',
     }
   }
 

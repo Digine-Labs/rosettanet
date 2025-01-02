@@ -25,6 +25,7 @@ import { prepareRosettanetCalldata } from '../../utils/transaction'
 import BigNumber from 'bignumber.js'
 import { ConvertableType, initializeStarknetAbi } from '../../utils/converters/abiFormatter'
 import { findStarknetCallableMethod, StarknetCallableMethod } from '../../utils/match'
+import { addHexPrefix } from '../../utils/padding'
 
 interface EstimateGasParameters {
   from: string
@@ -64,7 +65,7 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
       id: request.id,
       error: {
         code: -32700,
-        message: 'param length must be 1'
+        message: 'Params length must be 1'
       }
     }
   }
@@ -136,7 +137,8 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
 
   const targetFunctionSelector: string | null = getFunctionSelectorFromCalldata(parameters.data)
 
-  if(typeof parameters.data === 'undefined' || parameters.data.length == 0 || targetFunctionSelector == null) {
+  if(typeof parameters.data === 'undefined' || parameters.data.length < 3 || targetFunctionSelector == null) {
+    console.log('it is value transfer')
     // Value transfer
     if(typeof parameters.value === 'undefined') {
       return <RPCError> {
@@ -163,11 +165,10 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
         error: estimatedFee
       }
     }
-
+    console.log(estimatedFee)
     const result = estimatedFee.result[0];
-
-
-    if(typeof result.gas_consumed === 'undefined' || typeof result.data_gas_consumed === 'undefined') {
+ 
+    if(typeof result.gas_consumed === 'undefined' || typeof result.gas_price === 'undefined' || typeof result.overall_fee === 'undefined') {
       return <RPCError> {
         jsonrpc: request.jsonrpc,
         id: request.id,
@@ -177,8 +178,9 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
         }
       }
     }
+      // Fee cok dusuk olunca metamask devam etmiyor
+    const totalFee = addHexPrefix(new BigNumber(result.gas_consumed).plus(500000).toString(16))
 
-    const totalFee = new BigNumber(result.gas_consumed).plus(new BigNumber(result.data_gas_consumed)).toString(16)
     return <RPCResponse> {
       jsonrpc: request.jsonrpc,
       id: request.id,
@@ -204,6 +206,7 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
 
 const starknetFunction: StarknetCallableMethod | undefined = findStarknetCallableMethod(targetFunctionSelector, targetContract.methods, contractTypeMapping);
 if(typeof starknetFunction === 'undefined') {
+  // TODO: maybe we need to return 0x instead of error?
   return <RPCError> {
     jsonrpc: request.jsonrpc,
     id: request.id,
@@ -243,6 +246,7 @@ if(typeof starknetFunction === 'undefined') {
 
   const estimatedFee: RPCResponse | StarknetRPCError = await callStarknetEstimateFee(snFromAddress, rosettanetCalldata, accountNonce, 
                 BigInt(typeof parameters.value === 'undefined' ? 0 : parameters.value));
+
   if(isStarknetRPCError(estimatedFee)) {
     return <RPCError> {
       jsonrpc: request.jsonrpc,
@@ -250,9 +254,10 @@ if(typeof starknetFunction === 'undefined') {
       error: estimatedFee
     }
   }
-
+  console.log(estimatedFee)
   const result = estimatedFee.result[0];
-  if(typeof result.gas_consumed === 'undefined' || typeof result.data_gas_consumed === 'undefined') {
+
+  if(typeof result.gas_consumed === 'undefined' || typeof result.gas_price === 'undefined') {
     return <RPCError> {
       jsonrpc: request.jsonrpc,
       id: request.id,
@@ -263,7 +268,7 @@ if(typeof starknetFunction === 'undefined') {
     }
   }
 
-  const totalFee = new BigNumber(result.gas_consumed).plus(new BigNumber(result.data_gas_consumed)).toString(16)
+  const totalFee = addHexPrefix(new BigNumber(result.gas_consumed).plus(5000).toString(16))
   return <RPCResponse> {
     jsonrpc: request.jsonrpc,
     id: request.id,
