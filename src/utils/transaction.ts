@@ -35,13 +35,13 @@ export function prepareStarknetInvokeTransaction(
 }
 
 function getGasObject(txn: SignedRawTransaction) {
-  console.log(txn.gasPrice)
+  //console.log(txn.gasPrice)
   console.log(txn.maxFeePerGas)
   return {
         resource_bounds: {
           l1_gas: {
               max_amount: addHexPrefix(txn.gasLimit.toString(16)),
-              max_price_per_unit: txn.maxFeePerGas == null ? addHexPrefix(txn.gasPrice.toString(16)) : addHexPrefix(txn.maxFeePerGas.toString(16))
+              max_price_per_unit:  '0x0'//txn.maxFeePerGas == null ? addHexPrefix(txn.gasPrice.toString(16)) : addHexPrefix(txn.maxFeePerGas.toString(16))
           },
           l2_gas: {
               max_amount: "0x0",
