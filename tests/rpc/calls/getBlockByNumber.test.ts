@@ -84,6 +84,7 @@ describe('Test getBlockByNumber', () => {
       id: 0,
       result: {
         number: '0x400',
+        baseFeePerGas: '0x13f5345',
         difficulty: '0x0',
         extraData: '0x0',
         gasLimit: '0x0',
@@ -197,6 +198,7 @@ describe('Test getBlockByNumber', () => {
       id: 0,
       result: {
         number: '0x400',
+        baseFeePerGas: '0x13f5345',
         difficulty: '0x0',
         extraData: '0x0',
         gasLimit: '0x0',

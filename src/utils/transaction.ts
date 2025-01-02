@@ -1,5 +1,5 @@
 import { StarknetInvokeTransaction } from '../types/transactions.types'
-import { PrepareCalldataError, SignedRawTransaction } from '../types/types'
+import { PrepareCalldataError, RawTransaction, SignedRawTransaction } from '../types/types'
 import { BnToU256, safeUint256ToU256, Uint256ToU256 } from './converters/integer'
 import { asciiToHex } from './encoding'
 import { convertHexChunkIntoFeltArray } from './felt'
@@ -132,7 +132,64 @@ function prepareRosettanetCalldataLegacy() {
 
 }
 
+export function prepareRosettanetCalldataForEstimateTransaction(rawTransaction: RawTransaction, calldata: Array<string>, directives: Array<number>, targetFunction?: StarknetCallableMethod): Array<string> {
+  if(calldata.length == 0 && directives.length == 0) {
+      
+    const finalCalldata: Array<string> = []
 
+    finalCalldata.push(rawTransaction.to)
+    finalCalldata.push('0x0')
+    finalCalldata.push('0x0')
+    finalCalldata.push('0x0')
+    finalCalldata.push('0x0')
+
+    const value_u256 = safeUint256ToU256(rawTransaction.value == null ? BigInt(0) : BigInt(rawTransaction.value))
+    finalCalldata.push(...(value_u256.map(v => addHexPrefix(v))))
+
+    finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
+    finalCalldata.push(addHexPrefix('0')) // Access list length
+
+    finalCalldata.push(addHexPrefix(directives.length.toString(16)))
+
+    finalCalldata.push(addHexPrefix('0')) // Target function length
+    return finalCalldata
+  }
+
+  if (calldata.length -1 != directives.length) {
+    throw `Directive and calldata array sanity fails`
+  }
+
+  if(typeof targetFunction === 'undefined') {
+    throw 'Target function not empty but calldata and directives are empty'
+  }
+  
+  const finalCalldata: Array<string> = []
+
+  finalCalldata.push(rawTransaction.to)
+  finalCalldata.push('0x0')
+  finalCalldata.push('0x0')
+  finalCalldata.push('0x0')
+  finalCalldata.push('0x0')
+
+  const value_u256 = safeUint256ToU256(rawTransaction.value == null ? BigInt(0) : BigInt(rawTransaction.value))
+  finalCalldata.push(...(value_u256.map(v => addHexPrefix(v))))
+
+  finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
+  finalCalldata.push(...calldata)
+  
+  finalCalldata.push(addHexPrefix('0')) // Access list length
+
+  finalCalldata.push(addHexPrefix(directives.length.toString(16)))
+  finalCalldata.push(...directives.map(d => addHexPrefix(d.toString(16))))
+
+  const targetFunctionName: string = asciiToHex(targetFunction.ethereumTypedName);
+  const functionNameChunks: Array<string> = convertHexChunkIntoFeltArray(targetFunctionName);
+
+  finalCalldata.push(addHexPrefix(functionNameChunks.length.toString(16)))
+  finalCalldata.push(...functionNameChunks.map(n => addHexPrefix(n)))
+
+  return finalCalldata
+}
 // First calldata element must be function selector
 export function prepareRosettanetCalldata(
   signedTransaction: SignedRawTransaction,

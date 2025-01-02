@@ -157,6 +157,7 @@ export async function getBlockByNumberHandler(
       id: request.id,
       result: {
         number: '0x' + result.block_number.toString(16), // 'number' is the block number in hex format
+        baseFeePerGas: '0x13f5345', // This is needed to web3 wallet decides it is eip1559 tx
         difficulty: '0x0', // StarkNet does not work in PoW
         extraData: '0x0', // StarkNet does not work in PoW
         gasLimit: '0x0', // Gas metrics in StarkNet are more focused on individual transactions
@@ -217,6 +218,7 @@ export async function getBlockByNumberHandler(
       id: request.id,
       result: {
         number: '0x' + result.block_number.toString(16), // 'number' is the block number in hex format
+        baseFeePerGas: '0x13f5345', // This is needed to web3 wallet decides it is eip1559 tx
         difficulty: '0x0', // StarkNet does not work in PoW
         extraData: '0x0', // StarkNet does not work in PoW
         gasLimit: '0x0', // Gas metrics in StarkNet are more focused on individual transactions

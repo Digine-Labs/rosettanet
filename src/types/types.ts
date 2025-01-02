@@ -106,6 +106,15 @@ export interface NativeBalance {
   ethereumFormat: string
 }
 
+export interface RawTransaction {
+  from: string
+  to: string
+  gas: string
+  gasPrice: string
+  value: string | null
+  data: string | null
+}
+
 export interface SignedRawTransaction {
   from: string
   to: string
