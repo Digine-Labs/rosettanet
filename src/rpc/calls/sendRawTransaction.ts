@@ -77,7 +77,7 @@ export async function sendRawTransactionHandler(
   const tx = Transaction.from(rawTxn)
 
   const signedValidRawTransaction: SignedRawTransaction | ValidationError  = validateRawTransaction(tx)
-
+  // todo improve validations calcualte gas according to tx type https://docs.ethers.org/v5/api/utils/transactions/
   if (!isSignedRawTransaction(signedValidRawTransaction)) {
     return {
       jsonrpc: request.jsonrpc,
