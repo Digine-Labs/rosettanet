@@ -14,7 +14,7 @@ export function snifferOutput(
 
 export function writeLog(severity: number, text: string) {
   const startArguments = process.argv.slice(2)
-  if (startArguments.indexOf('--enable-logs') == -1) {
+  if (startArguments.indexOf('--enable-logs') == -1 && severity < 2) {
     // logging disabled
     return
   }

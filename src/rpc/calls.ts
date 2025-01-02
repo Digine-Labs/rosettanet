@@ -247,19 +247,41 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
   if (request?.method && request?.params && Methods.has(request.method)) {
     const handler: ResponseHandler | undefined = Methods.get(request.method)
     if (handler) {
-      const result = await handler.handler(request)
-      if (isSnifferActive()) {
-        const logMsg = snifferOutput(request, result)
-        // TODO: improve error handling
-        // eslint-disable-next-line no-prototype-builtins
-        if (result.hasOwnProperty('code') && result.hasOwnProperty('message')) {
-          writeLog(1, logMsg)
-        } else {
-          writeLog(0, logMsg)
+      try {
+        const result = await handler.handler(request)
+        if (isSnifferActive()) {
+          const logMsg = snifferOutput(request, result)
+          // TODO: improve error handling
+          // eslint-disable-next-line no-prototype-builtins
+          if (result.hasOwnProperty('code') && result.hasOwnProperty('message')) {
+            writeLog(1, logMsg)
+          } else {
+            writeLog(0, logMsg)
+          }
+  
+          if(request.method === 'eth_estimateGas') {
+            writeLog(2, snifferOutput(request, result))
+          }
         }
+        res.send(result)
+        return
+      } catch(ex) {
+        const errorMessage = `Error at method ${request.method}`
+        writeLog(2, JSON.stringify({
+          title: errorMessage,
+          message: (ex as Error).message,
+          request: request
+        }))
+        res.send({
+          jsonrpc: '2.0',
+          id: req.body.id,
+          error: {
+            code: -32500,
+            message: 'Internal server error'
+          },
+        })
       }
-      res.send(result)
-      return
+
     }
   } else {
     const error: RPCError = {

@@ -130,13 +130,10 @@ export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse 
 
   const starknetFunction: StarknetCallableMethod | undefined = findStarknetCallableMethod(targetFunctionSelector, targetContract.methods, contractTypeMapping);
   if(typeof starknetFunction === 'undefined') {
-    return <RPCError> {
+    return <RPCResponse>{
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: {
-        code: -32708,
-        message: 'Target function is not found in starknet contract.',
-      }
+      result: '0x',
     }
   }
 

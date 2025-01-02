@@ -25,6 +25,7 @@ import { prepareRosettanetCalldata } from '../../utils/transaction'
 import BigNumber from 'bignumber.js'
 import { ConvertableType, initializeStarknetAbi } from '../../utils/converters/abiFormatter'
 import { findStarknetCallableMethod, StarknetCallableMethod } from '../../utils/match'
+import { addHexPrefix } from '../../utils/padding'
 
 interface EstimateGasParameters {
   from: string
@@ -136,7 +137,7 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
 
   const targetFunctionSelector: string | null = getFunctionSelectorFromCalldata(parameters.data)
 
-  if(typeof parameters.data === 'undefined' || parameters.data.length == 0 || targetFunctionSelector == null) {
+  if(typeof parameters.data === 'undefined' || parameters.data.length < 3 || targetFunctionSelector == null) {
     // Value transfer
     if(typeof parameters.value === 'undefined') {
       return <RPCError> {
@@ -156,6 +157,7 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
 
     const estimatedFee: RPCResponse | StarknetRPCError = await callStarknetEstimateFee(snFromAddress, rosettanetCalldata, accountNonce, 
                   BigInt(typeof parameters.value === 'undefined' ? 0 : parameters.value));
+      console.log('dfvhjdfjhdfg')
     if(isStarknetRPCError(estimatedFee)) {
       return <RPCError> {
         jsonrpc: request.jsonrpc,
@@ -177,8 +179,9 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
         }
       }
     }
+      // Fee cok dusuk olunca metamask devam etmiyor
+    const totalFee = addHexPrefix(new BigNumber(result.gas_consumed).multipliedBy(1000).plus(new BigNumber(result.data_gas_consumed)).toString(16))
 
-    const totalFee = new BigNumber(result.gas_consumed).plus(new BigNumber(result.data_gas_consumed)).toString(16)
     return <RPCResponse> {
       jsonrpc: request.jsonrpc,
       id: request.id,
@@ -243,6 +246,7 @@ if(typeof starknetFunction === 'undefined') {
 
   const estimatedFee: RPCResponse | StarknetRPCError = await callStarknetEstimateFee(snFromAddress, rosettanetCalldata, accountNonce, 
                 BigInt(typeof parameters.value === 'undefined' ? 0 : parameters.value));
+
   if(isStarknetRPCError(estimatedFee)) {
     return <RPCError> {
       jsonrpc: request.jsonrpc,
@@ -263,7 +267,7 @@ if(typeof starknetFunction === 'undefined') {
     }
   }
 
-  const totalFee = new BigNumber(result.gas_consumed).plus(new BigNumber(result.data_gas_consumed)).toString(16)
+  const totalFee = addHexPrefix(new BigNumber(result.gas_consumed).plus(new BigNumber(result.data_gas_consumed)).toString(16))
   return <RPCResponse> {
     jsonrpc: request.jsonrpc,
     id: request.id,
