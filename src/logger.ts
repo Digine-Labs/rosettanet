@@ -87,7 +87,7 @@ function appendLog(
   }
   if (logType === 'console') {
     // eslint-disable-next-line no-console
-    console.log(logMessage)
+    console.log(getConsoleColor(severity), logMessage)
     return
   }
 
@@ -97,6 +97,19 @@ function appendLog(
     stream.once('open', function (fd) {
       stream.write(logMessage + '\r\n')
     })
+  }
+}
+
+function getConsoleColor(severity: number) {
+  switch (severity) {
+    case 0:
+      return '\x1b[37m%s\x1b[0m'
+    case 1:
+      return '\x1b[33m%s\x1b[0m'
+    case 2:
+      return '\x1b[31m%s\x1b[0m'
+    default:
+      return `white`
   }
 }
 

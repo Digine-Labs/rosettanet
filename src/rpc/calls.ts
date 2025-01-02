@@ -1,5 +1,5 @@
 import { Router, Response } from 'express'
-import { ParsedRequest, ResponseHandler, RPCError } from '../types/types'
+import { ParsedRequest, ResponseHandler, RPCError, RPCResponse } from '../types/types'
 import { chainIdHandler } from './calls/chainId'
 import { maxPriorityFeePerGasHandler } from './calls/maxPriorityFeePerGas'
 import { gasPriceHandler } from './calls/gasPrice'
@@ -40,6 +40,7 @@ import { unsubscribeHandler } from './calls/unsubscribe'
 import { getFilterChangesHandler } from './calls/getFilterChanges'
 import { sendRawTransactionHandler } from './calls/sendRawTransaction'
 import { createAccessListHandler } from './calls/createAccessList'
+import { isRPCError } from '../types/typeGuards'
 
 const router: Router = Router()
 
@@ -248,13 +249,13 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
     const handler: ResponseHandler | undefined = Methods.get(request.method)
     if (handler) {
       try {
-        const result = await handler.handler(request)
+        const result: RPCResponse | RPCError = await handler.handler(request)
         if (isSnifferActive()) {
           const logMsg = snifferOutput(request, result)
           // TODO: improve error handling
           // eslint-disable-next-line no-prototype-builtins
-          if (result.hasOwnProperty('code') && result.hasOwnProperty('message')) {
-            writeLog(1, logMsg)
+          if (isRPCError(result)) {
+            writeLog(2, logMsg)
           } else {
             writeLog(0, logMsg)
           }
@@ -265,7 +266,7 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
         const errorMessage = `Error at method ${request.method}`
         writeLog(2, JSON.stringify({
           title: errorMessage,
-          message: ex,
+          message: (ex as Error).message,
           request: request
         }))
         res.send({
