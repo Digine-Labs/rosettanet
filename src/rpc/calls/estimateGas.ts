@@ -157,7 +157,6 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
 
     const estimatedFee: RPCResponse | StarknetRPCError = await callStarknetEstimateFee(snFromAddress, rosettanetCalldata, accountNonce, 
                   BigInt(typeof parameters.value === 'undefined' ? 0 : parameters.value));
-      console.log('dfvhjdfjhdfg')
     if(isStarknetRPCError(estimatedFee)) {
       return <RPCError> {
         jsonrpc: request.jsonrpc,

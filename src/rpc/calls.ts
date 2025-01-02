@@ -258,10 +258,6 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
           } else {
             writeLog(0, logMsg)
           }
-  
-          if(request.method === 'eth_estimateGas') {
-            writeLog(2, snifferOutput(request, result))
-          }
         }
         res.send(result)
         return
