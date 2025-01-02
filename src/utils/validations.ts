@@ -68,7 +68,7 @@ export function validateBlockNumber(value: string | number): boolean {
 
 export function validateRawTransaction(tx: Transaction): SignedRawTransaction | ValidationError {
 
-  const { from, to, data, value, nonce, chainId, signature, gasLimit, maxFeePerGas, maxPriorityFeePerGas } = tx
+  const { from, to, data, value, nonce, chainId, signature, gasLimit, maxFeePerGas, maxPriorityFeePerGas, gasPrice, type } = tx
 
   if (to === null) {
     return <ValidationError> {
@@ -88,12 +88,17 @@ export function validateRawTransaction(tx: Transaction): SignedRawTransaction | 
     }
   }
 
+  if((maxFeePerGas == null && gasPrice == null) || (maxPriorityFeePerGas == null && gasPrice == null)) {
+    return <ValidationError> {
+      message: 'maxFeePerGas and gas price or maxPriorityFeePerGas and gasPrice null at the same time'
+    }
+  }
+
   const rosettanetSignature = createRosettanetSignature(signature, value)
   
   return <SignedRawTransaction> {
     from, to, data, value, nonce, chainId, 
-    signature: rosettanetSignature, gasLimit,
-    maxFeePerGas: maxFeePerGas === null ? BigInt(0) : maxFeePerGas, 
-    maxPriorityFeePerGas: maxPriorityFeePerGas === null ? BigInt(0): maxPriorityFeePerGas
+    signature: rosettanetSignature, gasLimit, 
+    maxFeePerGas, maxPriorityFeePerGas, gasPrice, type
   }
 }

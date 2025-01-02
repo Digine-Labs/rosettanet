@@ -113,14 +113,19 @@ export interface SignedRawTransaction {
   value: bigint
   nonce: number
   chainId: bigint
-  type: number
+  type: number | null
   signature: RosettanetSignature
   gasLimit: bigint
-  maxFeePerGas: bigint
-  maxPriorityFeePerGas: bigint
+  maxFeePerGas: bigint | null
+  maxPriorityFeePerGas: bigint | null
+  gasPrice: bigint | null
 }
 
 export interface ValidationError {
+  message: string
+}
+
+export interface PrepareCalldataError {
   message: string
 }
 

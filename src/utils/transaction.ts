@@ -1,5 +1,5 @@
 import { StarknetInvokeTransaction } from '../types/transactions.types'
-import { SignedRawTransaction } from '../types/types'
+import { PrepareCalldataError, SignedRawTransaction } from '../types/types'
 import { BnToU256, safeUint256ToU256, Uint256ToU256 } from './converters/integer'
 import { asciiToHex } from './encoding'
 import { convertHexChunkIntoFeltArray } from './felt'
@@ -36,7 +36,7 @@ export function prepareStarknetInvokeTransaction(
 
 function getGasObject(txn: SignedRawTransaction) {
   //console.log(txn.gasPrice)
-  console.log(txn.maxFeePerGas)
+  //console.log(txn.maxFeePerGas)
   return {
         resource_bounds: {
           l1_gas: {
@@ -52,8 +52,7 @@ function getGasObject(txn: SignedRawTransaction) {
 
 }
 
-// First calldata element must be function selector
-export function prepareRosettanetCalldata(
+function prepareRosettanetCalldataEip1559(
   to: string,
   nonce: number,
   max_priority_fee_per_gas: bigint,
@@ -121,6 +120,40 @@ export function prepareRosettanetCalldata(
   finalCalldata.push(...functionNameChunks.map(n => addHexPrefix(n)))
 
   return finalCalldata
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function prepareRosettanetCalldataEip2930() {
+
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function prepareRosettanetCalldataLegacy() {
+
+}
+
+
+// First calldata element must be function selector
+export function prepareRosettanetCalldata(
+  signedTransaction: SignedRawTransaction,
+  calldata: Array<string>,
+  directives: Array<number>,
+  targetFunction?: StarknetCallableMethod
+): Array<string> | PrepareCalldataError  {
+  if(signedTransaction.type == 2) {
+    // Eip-1559
+    const { to, nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, value} = signedTransaction;
+    if(maxPriorityFeePerGas == null || maxFeePerGas == null) {
+      return <PrepareCalldataError> {
+        message: 'maxPriorityFeePerGas or maxFeePerGas fields are null on Eip1559 transaction'
+      }
+    }
+    return prepareRosettanetCalldataEip1559(to,nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, value, calldata,directives, targetFunction)
+  } else {
+    return <PrepareCalldataError> {
+      message: 'Only Eip1559 transactions supported at the moment'
+    }
+  }
 }
 
 export function prepareSignature(
