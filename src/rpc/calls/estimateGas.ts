@@ -207,6 +207,7 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
 
 const starknetFunction: StarknetCallableMethod | undefined = findStarknetCallableMethod(targetFunctionSelector, targetContract.methods, contractTypeMapping);
 if(typeof starknetFunction === 'undefined') {
+  // TODO: maybe we need to return 0x instead of error?
   return <RPCError> {
     jsonrpc: request.jsonrpc,
     id: request.id,

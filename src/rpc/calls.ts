@@ -269,7 +269,7 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
         const errorMessage = `Error at method ${request.method}`
         writeLog(2, JSON.stringify({
           title: errorMessage,
-          message: (ex as Error).message,
+          message: ex,
           request: request
         }))
         res.send({
