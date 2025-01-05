@@ -3,6 +3,7 @@
 import {
   EVMDecodeError,
   EVMDecodeResult,
+  PrepareCalldataError,
   RPCError,
   RPCRequest,
   RPCResponse,
@@ -46,7 +47,7 @@ import {
 } from '../../utils/transaction'
 import { StarknetInvokeTransaction } from '../../types/transactions.types'
 
-import { isAccountDeployError, isEVMDecodeError, isRPCError, isSignedRawTransaction, isStarknetContract, isStarknetRPCError } from '../../types/typeGuards'
+import { isAccountDeployError, isEVMDecodeError, isPrepareCalldataError, isRPCError, isSignedRawTransaction, isStarknetContract, isStarknetRPCError } from '../../types/typeGuards'
 
 export async function sendRawTransactionHandler(
   request: RPCRequest,
@@ -75,6 +76,8 @@ export async function sendRawTransactionHandler(
 
   const rawTxn: string = request.params[0]
   const tx = Transaction.from(rawTxn)
+
+  console.log(tx.toJSON())
 
   const signedValidRawTransaction: SignedRawTransaction | ValidationError  = validateRawTransaction(tx)
   // todo improve validations calcualte gas according to tx type https://docs.ethers.org/v5/api/utils/transactions/
@@ -124,9 +127,19 @@ export async function sendRawTransactionHandler(
   if(targetFunctionSelector === null) {
 
     // Early exit. there is no function call only strk transfer
-    const rosettanetCalldata = prepareRosettanetCalldata(signedValidRawTransaction.to,signedValidRawTransaction.nonce, 
-      signedValidRawTransaction.maxPriorityFeePerGas, signedValidRawTransaction.maxFeePerGas, 
-      signedValidRawTransaction.gasLimit, signedValidRawTransaction.value,[],[]);
+    const rosettanetCalldata: Array<string> | PrepareCalldataError = prepareRosettanetCalldata(signedValidRawTransaction,[],[]);
+    
+    if(isPrepareCalldataError(rosettanetCalldata)) {
+      return <RPCError> {
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: -32708,
+          message: rosettanetCalldata.message,
+        }
+      }
+    }
+
     const invokeTransaction: StarknetInvokeTransaction =
     prepareStarknetInvokeTransaction(
       starknetAccountAddress,
@@ -168,10 +181,10 @@ export async function sendRawTransactionHandler(
   const starknetFunctionEthereumInputTypes: Array<CairoNamedConvertableType> =
     getEthereumInputsCairoNamed(starknetFunction.snFunction, contractTypeMapping)
 
-  const calldata = signedValidRawTransaction.data.slice(10)
+  const ethCalldata = signedValidRawTransaction.data.slice(10)
   const EVMCalldataDecode: EVMDecodeResult | EVMDecodeError = decodeEVMCalldata(
     starknetFunctionEthereumInputTypes,
-    calldata,
+    ethCalldata,
     targetFunctionSelector
   )
 
@@ -186,10 +199,19 @@ export async function sendRawTransactionHandler(
     }
   }
 
-  const rosettanetCalldata = prepareRosettanetCalldata(signedValidRawTransaction.to, signedValidRawTransaction.nonce, 
-                                                        signedValidRawTransaction.maxPriorityFeePerGas, signedValidRawTransaction.maxFeePerGas, 
-                                                        signedValidRawTransaction.gasLimit, signedValidRawTransaction.value, 
-                                                        EVMCalldataDecode.calldata, EVMCalldataDecode.directives, starknetFunction);
+  const { calldata, directives } = EVMCalldataDecode;
+
+  const rosettanetCalldata: Array<string> | PrepareCalldataError = prepareRosettanetCalldata(signedValidRawTransaction, calldata, directives, starknetFunction);
+  if(isPrepareCalldataError(rosettanetCalldata)) {
+    return <RPCError> {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32708,
+        message: rosettanetCalldata.message,
+      }
+    }
+  }
   const invokeTransaction: StarknetInvokeTransaction =
     prepareStarknetInvokeTransaction(
       starknetAccountAddress,

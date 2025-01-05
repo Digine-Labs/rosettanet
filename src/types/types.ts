@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request } from 'express'
 import { Abi } from 'starknet'
+import { StarknetCallableMethod } from '../utils/match'
 
 export interface ParsedRequest extends Request {
   rpcRequest?: RPCRequest
@@ -106,6 +107,40 @@ export interface NativeBalance {
   ethereumFormat: string
 }
 
+export interface RawTransaction {
+  from: string
+  to: string
+  gas: string
+  gasPrice: string
+  value: string | null
+  data: string | null
+}
+
+export interface SimulateTransaction {
+  from: string | null
+  to: string // We use to address as sender_address in case from is null
+  gas: string | null
+  gasPrice: string | null
+  maxPriorityFeePerGas: string | null
+  maxFeePerGas: string | null
+  value: string | null
+  data: string | null
+  gasLimit: string | null
+}
+
+export interface EstimateFeeTransaction {
+  from: string
+  to: string
+  maxAmountGas: string
+  maxGasPricePerUnit: string
+  nonce: string
+  value: bigint
+  signature : string[]
+  calldata: string[]
+  directives: number[]
+  targetFunction: StarknetCallableMethod | undefined
+}
+
 export interface SignedRawTransaction {
   from: string
   to: string
@@ -113,14 +148,19 @@ export interface SignedRawTransaction {
   value: bigint
   nonce: number
   chainId: bigint
-  type: number
+  type: number | null
   signature: RosettanetSignature
   gasLimit: bigint
-  maxFeePerGas: bigint
-  maxPriorityFeePerGas: bigint
+  maxFeePerGas: bigint | null
+  maxPriorityFeePerGas: bigint | null
+  gasPrice: bigint | null
 }
 
 export interface ValidationError {
+  message: string
+}
+
+export interface PrepareCalldataError {
   message: string
 }
 

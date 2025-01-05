@@ -81,7 +81,7 @@ export async function getSnAddressFromEthAddress(
     return response.result[0]
   } else {
     return <StarknetRPCError> {
-        code: -32700,
+        code: -32500,
         message: 'Reading starknet address from Rosettanet contract fails. Starknet rpc resulted with different type then expected.'
     }
   }

@@ -1,10 +1,9 @@
 import { getRpc } from './getRpc'
-import { NativeBalance, RPCRequest, RPCResponse, StarknetRPCError } from '../types/types'
+import { EstimateFeeTransaction, NativeBalance, RPCRequest, RPCResponse, StarknetRPCError } from '../types/types'
 import { getConfigurationProperty } from './configReader'
-import { safeUint256ToU256, U256toUint256 } from './converters/integer'
+import { U256toUint256 } from './converters/integer'
 import axios from 'axios'
 import { isStarknetRPCError } from '../types/typeGuards'
-import { addHexPrefix } from './padding'
 
 export async function callStarknet(
   request: RPCRequest
@@ -88,10 +87,7 @@ export async function getSTRKBalance(snAddress: string): Promise<NativeBalance |
   } 
 }
 
-export async function callStarknetEstimateFee(sender: string, calldata: Array<string>, nonce: string, value: bigint): Promise<RPCResponse | StarknetRPCError> {
-
-  const value_u256 = safeUint256ToU256(value).map(v => addHexPrefix(v));
-  
+export async function callStarknetEstimateFee(sender:string, txn: EstimateFeeTransaction, calldata: string[]): Promise<RPCResponse | StarknetRPCError> {
   const response: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: '2.0',
     method: 'starknet_estimateFee',
@@ -99,16 +95,14 @@ export async function callStarknetEstimateFee(sender: string, calldata: Array<st
       request: [{
         type: "INVOKE",
         version: "0x3",
-        signature: [
-          "0x0", "0x0", "0x0", "0x0", "0x0", ...value_u256
-        ],
+        signature: txn.signature,
         sender_address: sender,
         calldata: calldata,
-        nonce: nonce,
+        nonce: txn.nonce,
         resource_bounds: {
           l1_gas: {
-            max_amount: "0x0",
-            max_price_per_unit: "0x0"
+            max_amount: txn.maxAmountGas,
+            max_price_per_unit: txn.maxGasPricePerUnit
           },
           l2_gas: {
             max_amount: "0x0",

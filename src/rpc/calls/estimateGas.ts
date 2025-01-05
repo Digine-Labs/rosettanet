@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {
   RPCResponse,
   RPCRequest,
@@ -7,6 +8,7 @@ import {
   StarknetContractReadError,
   EVMDecodeResult,
   EVMDecodeError,
+  EstimateFeeTransaction,
 } from '../../types/types'
 import { callStarknetEstimateFee, getStarknetAccountNonce } from '../../utils/callHelper'
 import { validateEthAddress } from '../../utils/validations'
@@ -20,32 +22,14 @@ import {
   getEthereumInputsCairoNamed,
 } from '../../utils/starknet'
 import { getSnAddressFromEthAddress } from '../../utils/wrapper'
-import { isEVMDecodeError, isStarknetContract, isStarknetRPCError } from '../../types/typeGuards'
-import { prepareRosettanetCalldata } from '../../utils/transaction'
+import { isEVMDecodeError, isSimulateTransaction, isStarknetContract, isStarknetRPCError } from '../../types/typeGuards'
+import { prepareRosettanetCalldataForEstimatingFee } from '../../utils/transaction'
 import BigNumber from 'bignumber.js'
 import { ConvertableType, initializeStarknetAbi } from '../../utils/converters/abiFormatter'
 import { findStarknetCallableMethod, StarknetCallableMethod } from '../../utils/match'
 import { addHexPrefix } from '../../utils/padding'
+import { safeUint256ToU256 } from '../../utils/converters/integer'
 
-interface EstimateGasParameters {
-  from: string
-  to: string
-  gas?: string
-  gasPrice?: string
-  value?: string
-  data?: string
-  maxPriorityFeePerGas?: string
-  maxFeePerGas?: string
-}
-
-export function isEstimateGasParameters(value: unknown): value is EstimateGasParameters {
-  // We can improve these validations
-  if (typeof value === "object" && value !== null) {
-      const obj = value as EstimateGasParameters;
-      return typeof obj.to === 'string' && typeof obj.from === 'string'
-  }
-  return false;
-}
 
 export async function estimateGasHandler(request: RPCRequest): Promise<RPCResponse | RPCError> {
   if(!Array.isArray(request.params)) {
@@ -71,7 +55,7 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
   }
   
   const parameters = request.params[0];
-  if(!isEstimateGasParameters(parameters)) {
+  if(!isSimulateTransaction(parameters)) {
     return <RPCError> {
       jsonrpc: request.jsonrpc,
       id: request.id,
@@ -94,7 +78,9 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
     }
   }
 
-  if (!validateEthAddress(parameters.from)) {
+  const from = parameters.from == null ? parameters.to : parameters.from; // We use same address if not from passed
+
+  if (!validateEthAddress(from)) {
     return <RPCError> {
       jsonrpc: request.jsonrpc,
       id: request.id,
@@ -109,6 +95,13 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
   const snToAddress: string | StarknetRPCError = await getSnAddressFromEthAddress(parameters.to);
 
   if(isStarknetRPCError(snToAddress)) {
+    if(snToAddress.code == -32700) {
+      return {
+        jsonrpc: '2.0',
+        id: request.id,
+        result: '0x5cec', // Constant value transfer gas to empty account
+      }
+    }
     return <RPCError> {
       jsonrpc: request.jsonrpc,
       id: request.id,
@@ -116,7 +109,7 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
     }
   }
 
-  const snFromAddress: string | StarknetRPCError = await getSnAddressFromEthAddress(parameters.from);
+  const snFromAddress: string | StarknetRPCError = await getSnAddressFromEthAddress(from);
 
   if(isStarknetRPCError(snFromAddress)) {
     return <RPCError> {
@@ -137,55 +130,71 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
 
   const targetFunctionSelector: string | null = getFunctionSelectorFromCalldata(parameters.data)
 
-  if(typeof parameters.data === 'undefined' || parameters.data.length < 3 || targetFunctionSelector == null) {
-    console.log('it is value transfer')
-    // Value transfer
-    if(typeof parameters.value === 'undefined') {
-      return <RPCError> {
-        jsonrpc: request.jsonrpc,
-        id: request.id,
-        error: {
-          code: -32701,
-          message: 'Non data call must have value parameter'
+  const gasLimit = parameters.gas == null ? parameters.gasLimit : parameters.gas;
+  const actualGasLimit = gasLimit == null ? '0x0' : gasLimit
+
+  const actualValue = parameters.value == null ? BigInt(0) : BigInt(parameters.value)
+
+  const value_u256 = safeUint256ToU256(actualValue).map(v => addHexPrefix(v));
+  const signature = ["0x0", "0x0", "0x0", "0x0", "0x0", ...value_u256]
+
+  // const actualData = parameters.data == null ? '0x' : parameters.data
+
+
+  // If no calldata passed, it can be considered as value transfer
+  if(typeof parameters.data === 'undefined' || parameters.data == null || parameters.data.length < 3 || targetFunctionSelector == null) {
+      // Value transfer
+      if(typeof parameters.value === 'undefined') {
+        return <RPCError> {
+          jsonrpc: request.jsonrpc,
+          id: request.id,
+          error: {
+            code: -32701,
+            message: 'Non data call must have value parameter'
+          }
         }
       }
-    }
-    const rosettanetCalldata = prepareRosettanetCalldata(parameters.to, Number(accountNonce), 
-      BigInt(typeof parameters.maxPriorityFeePerGas === 'undefined' ? 0 : parameters.maxPriorityFeePerGas), 
-      BigInt(typeof parameters.maxFeePerGas === 'undefined' ? 0 : parameters.maxFeePerGas), 
-      BigInt(typeof parameters.gas === 'undefined' ? 0 : parameters.gas), BigInt(parameters.value),[],[]);
-
-
-    const estimatedFee: RPCResponse | StarknetRPCError = await callStarknetEstimateFee(snFromAddress, rosettanetCalldata, accountNonce, 
-                  BigInt(typeof parameters.value === 'undefined' ? 0 : parameters.value));
-    if(isStarknetRPCError(estimatedFee)) {
-      return <RPCError> {
-        jsonrpc: request.jsonrpc,
-        id: request.id,
-        error: estimatedFee
+      const estimateFeeTransaction: EstimateFeeTransaction = {
+        from, to: parameters.to,
+        maxAmountGas: actualGasLimit,
+        maxGasPricePerUnit: parameters.gasPrice == null ? '0x0' : parameters.gasPrice,
+        signature, calldata: [], directives: [], nonce:accountNonce, value: actualValue, targetFunction: undefined
       }
-    }
-    console.log(estimatedFee)
-    const result = estimatedFee.result[0];
- 
-    if(typeof result.gas_consumed === 'undefined' || typeof result.gas_price === 'undefined' || typeof result.overall_fee === 'undefined') {
-      return <RPCError> {
-        jsonrpc: request.jsonrpc,
-        id: request.id,
-        error: {
-          code: -32500,
-          message: 'Wrong data returned from starknet estimate fee.'
+
+      const rosettanetCalldata = prepareRosettanetCalldataForEstimatingFee(estimateFeeTransaction);
+
+      //const rosettanetCalldata = prepareRosettanetCalldataForEstimateTransaction(parameters, [], []);
+
+
+      const estimatedFee: RPCResponse | StarknetRPCError = await callStarknetEstimateFee(snFromAddress, estimateFeeTransaction, rosettanetCalldata);
+      if(isStarknetRPCError(estimatedFee)) {
+        return <RPCError> {
+          jsonrpc: request.jsonrpc,
+          id: request.id,
+          error: estimatedFee
         }
       }
-    }
-      // Fee cok dusuk olunca metamask devam etmiyor
-    const totalFee = addHexPrefix(new BigNumber(result.gas_consumed).plus(500000).toString(16))
+      console.log(estimatedFee)
+      const result = estimatedFee.result[0];
+  
+      if(typeof result.gas_consumed === 'undefined' || typeof result.gas_price === 'undefined' || typeof result.overall_fee === 'undefined') {
+        return <RPCError> {
+          jsonrpc: request.jsonrpc,
+          id: request.id,
+          error: {
+            code: -32500,
+            message: 'Wrong data returned from starknet estimate fee.'
+          }
+        }
+      }
+        // Fee cok dusuk olunca metamask devam etmiyor
+      const totalFee = addHexPrefix(new BigNumber(result.gas_consumed).plus(500000).toString(16))
 
-    return <RPCResponse> {
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      result: totalFee
-    }
+      return <RPCResponse> {
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        result: totalFee
+      }
   }
 
   const targetContract: StarknetContract | StarknetContractReadError = await getContractAbiAndMethods(snToAddress);
@@ -238,14 +247,18 @@ if(typeof starknetFunction === 'undefined') {
     }
   }
 
-  const rosettanetCalldata = prepareRosettanetCalldata(parameters.to, Number(accountNonce), 
-              BigInt(typeof parameters.maxPriorityFeePerGas === 'undefined' ? 0 : parameters.maxPriorityFeePerGas), 
-              BigInt(typeof parameters.maxFeePerGas === 'undefined' ? 0 : parameters.maxFeePerGas), 
-              BigInt(typeof parameters.gas === 'undefined' ? 0 : parameters.gas), BigInt(typeof parameters.value === 'undefined' ? 0 : parameters.value), 
-                  EVMCalldataDecode.calldata, EVMCalldataDecode.directives, starknetFunction);
+  const estimateFeeTransaction: EstimateFeeTransaction = {
+    from, to: parameters.to,
+    maxAmountGas: actualGasLimit,
+    maxGasPricePerUnit: parameters.gasPrice == null ? '0x0' : parameters.gasPrice,
+    signature, calldata: EVMCalldataDecode.calldata, directives: EVMCalldataDecode.directives, nonce:accountNonce, value: actualValue, targetFunction: starknetFunction
+  }
 
-  const estimatedFee: RPCResponse | StarknetRPCError = await callStarknetEstimateFee(snFromAddress, rosettanetCalldata, accountNonce, 
-                BigInt(typeof parameters.value === 'undefined' ? 0 : parameters.value));
+  const rosettanetCalldata = prepareRosettanetCalldataForEstimatingFee(estimateFeeTransaction);
+  //const rosettanetCalldata: Array<string> | PrepareCalldataError = prepareRosettanetCalldataForEstimateTransaction(parameters, EVMCalldataDecode.calldata, EVMCalldataDecode.directives, starknetFunction);
+
+
+  const estimatedFee: RPCResponse | StarknetRPCError = await callStarknetEstimateFee(snFromAddress, estimateFeeTransaction, rosettanetCalldata);
 
   if(isStarknetRPCError(estimatedFee)) {
     return <RPCError> {

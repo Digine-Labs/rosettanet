@@ -35,6 +35,13 @@ export async function getBalanceHandler(
   const snAddress: string | StarknetRPCError = await getSnAddressFromEthAddress(ethAddress)
 
   if (isStarknetRPCError(snAddress)) {
+    if(snAddress.code == -32700) {
+      return {
+        jsonrpc: '2.0',
+        id: request.id,
+        result: '0x0',
+      }
+    }
     return <RPCError> {
       jsonrpc: request.jsonrpc,
       id: request.id,
