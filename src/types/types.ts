@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request } from 'express'
 import { Abi } from 'starknet'
+import { StarknetCallableMethod } from '../utils/match'
 
 export interface ParsedRequest extends Request {
   rpcRequest?: RPCRequest
@@ -113,6 +114,31 @@ export interface RawTransaction {
   gasPrice: string
   value: string | null
   data: string | null
+}
+
+export interface SimulateTransaction {
+  from: string | null
+  to: string // We use to address as sender_address in case from is null
+  gas: string | null
+  gasPrice: string | null
+  maxPriorityFeePerGas: string | null
+  maxFeePerGas: string | null
+  value: string | null
+  data: string | null
+  gasLimit: string | null
+}
+
+export interface EstimateFeeTransaction {
+  from: string
+  to: string
+  maxAmountGas: string
+  maxGasPricePerUnit: string
+  nonce: string
+  value: bigint
+  signature : string[]
+  calldata: string[]
+  directives: number[]
+  targetFunction: StarknetCallableMethod | undefined
 }
 
 export interface SignedRawTransaction {

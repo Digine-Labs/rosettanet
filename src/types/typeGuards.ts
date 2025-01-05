@@ -1,5 +1,5 @@
 import { AccountDeployError, AccountDeployResult } from "../utils/rosettanet";
-import { EVMDecodeError, EVMDecodeResult, EVMEncodeResult, PrepareCalldataError, RawTransaction, RosettanetSignature, RPCError, RPCResponse, SignedRawTransaction, StarknetContract, StarknetRPCError, ValidationError } from "./types";
+import { EVMDecodeError, EVMDecodeResult, EVMEncodeResult, PrepareCalldataError, RawTransaction, RosettanetSignature, RPCError, RPCResponse, SignedRawTransaction, SimulateTransaction, StarknetContract, StarknetRPCError, ValidationError } from "./types";
 
 export function isRPCError(value: unknown): value is RPCError {
     if (typeof value === "object" && value !== null) {
@@ -113,6 +113,17 @@ export function isEstimateGasTransaction(value: unknown): value is RawTransactio
     if (typeof value === "object" && value !== null) {
         const obj = value as RawTransaction;
         return typeof obj.from === 'string' && typeof obj.to === 'string' && typeof obj.gas === 'string' && typeof obj.gasPrice === 'string';
+    }
+    return false;  
+}
+
+export function isSimulateTransaction(value: unknown): value is SimulateTransaction {
+    if (typeof value === "object" && value !== null) {
+        const obj = value as SimulateTransaction;
+        return (typeof obj.from === 'string' || obj.from == null) && typeof obj.to === 'string' && (typeof obj.gas === 'string' || obj.gas == null) 
+        && (typeof obj.gasPrice === 'string' || obj.gasPrice == null) && (typeof obj.maxPriorityFeePerGas === 'string' || obj.maxPriorityFeePerGas == null) 
+        && (typeof obj.maxFeePerGas === 'string' || obj.maxFeePerGas == null) && (typeof obj.value === 'string' || obj.value == null) 
+        && (typeof obj.data === 'string' || obj.data == null) && (typeof obj.gasLimit === 'string' || obj.gasLimit == null);
     }
     return false;  
 }

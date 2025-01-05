@@ -77,6 +77,8 @@ export async function sendRawTransactionHandler(
   const rawTxn: string = request.params[0]
   const tx = Transaction.from(rawTxn)
 
+  console.log(tx.toJSON())
+
   const signedValidRawTransaction: SignedRawTransaction | ValidationError  = validateRawTransaction(tx)
   // todo improve validations calcualte gas according to tx type https://docs.ethers.org/v5/api/utils/transactions/
   if (!isSignedRawTransaction(signedValidRawTransaction)) {
