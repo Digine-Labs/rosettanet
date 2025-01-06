@@ -30,8 +30,15 @@ import { findStarknetCallableMethod, StarknetCallableMethod } from '../../utils/
 import { addHexPrefix } from '../../utils/padding'
 import { safeUint256ToU256 } from '../../utils/converters/integer'
 
+export async function estimateGasHandler(request: RPCRequest): Promise<RPCResponse|RPCError> {
+  return <RPCResponse> {
+    jsonrpc: request.jsonrpc,
+    id: request.id,
+    result: '0x5208'
+  }
+}
 
-export async function estimateGasHandler(request: RPCRequest): Promise<RPCResponse | RPCError> {
+export async function estimateGasHandlerx(request: RPCRequest): Promise<RPCResponse | RPCError> {
   if(!Array.isArray(request.params)) {
     return <RPCError> {
       jsonrpc: request.jsonrpc,
@@ -188,12 +195,12 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
         }
       }
         // Fee cok dusuk olunca metamask devam etmiyor
-      const totalFee = addHexPrefix(new BigNumber(result.gas_consumed).plus(500000).toString(16))
+      //const totalFee = addHexPrefix(new BigNumber(result.gas_consumed).plus(500000).toString(16))
 
       return <RPCResponse> {
         jsonrpc: request.jsonrpc,
         id: request.id,
-        result: totalFee
+        result: '0x5208' // Constant min gas if value transfer
       }
   }
 
@@ -285,6 +292,6 @@ if(typeof starknetFunction === 'undefined') {
   return <RPCResponse> {
     jsonrpc: request.jsonrpc,
     id: request.id,
-    result: totalFee
+    result: totalFee // We can return 21000 in all cases its too big for starknet
   }
 }

@@ -20,12 +20,15 @@ export async function getTransactionReceiptHandler(
     }
   }
 
-  const transactionHash = request.params[0] as string
+  const transactionHash = request.params[0].transactionHash
+  // TODO: validate transaction hash
 
   const response1: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_getTransactionReceipt',
-    params: [transactionHash],
+    params: {
+      transaction_hash : transactionHash
+    },
     id: request.id,
   })
 
@@ -38,22 +41,12 @@ export async function getTransactionReceiptHandler(
   }
 
   // TODO: use a schema validation library such as zod or manually(?) check the properties of the result object
-  const result1 = response1.result as Transaction
+  const result1 = response1.result
+
+  console.log(response1)
 
   // We return an error for pending transactions as this is the default behaviour in EVM chains.
   // Non-pending transactions always have `block_hash` and `block_number` properties.
-  const isPendingTransaction = !('finality_status' in result1)
-  if (isPendingTransaction) {
-    return {
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      error: {
-        code: -32602,
-        message:
-          'Invalid argument, Only finished blocks supported. Pending blocks are not supported.',
-      },
-    }
-  }
 
   const response2: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
@@ -82,39 +75,31 @@ export async function getTransactionReceiptHandler(
     result2.transactions[transactionIndex].sender_address ??
     '0x000000000000000000000000000000000000000000000000000000000000000'
 
-  const contractAddress = result1.contract_address
-    ? await getEthAddressFromSnAddress(result1.contract_address)
-    : null
+  const contractAddress: string | StarknetRPCError = await getEthAddressFromSnAddress(result1.contract_address)
+
+  if(isStarknetRPCError(contractAddress)) {
+    return <RPCError> {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: contractAddress
+    }
+  }
 
   return {
     jsonrpc: '2.0',
     id: request.id,
     result: {
       transactionHash: transactionHash,
-      blockHash: result1.block_hash!,
-      blockNumber: '0x' + result1.block_number!.toString(16),
-      logs: await Promise.all(
-        result1.events.map(async (event, i) => ({
-          transactionHash: transactionHash,
-          address: await getEthAddressFromSnAddress(event.from_address),
-          blockHash: result1.block_hash!,
-          blockNumber: '0x' + result1.block_number!.toString(16),
-          // NOTE: hardcoded value
-          data: '0x0',
-          logIndex: '0x' + i.toString(16),
-          removed: false,
-          // NOTE: hardcoded value
-          topics: [],
-          transactionIndex: '0x' + transactionIndex.toString(16),
-        })),
-      ),
+      blockHash: result1.block_hash,
+      blockNumber: '0x' + result1.block_number.toString(16),
+      logs: [], // Todo events
       contractAddress: contractAddress,
       effectiveGasPrice: '0x1',
       cumulativeGasUsed: result1.actual_fee.amount,
       from: senderAddress,
       gasUsed: result1.actual_fee.amount,
       logsBloom: '0x0',
-      status: '0x1',
+      status: '0x1', // 0 if failed
       // NOTE: hardcoded value
       to: contractAddress
         ? null
