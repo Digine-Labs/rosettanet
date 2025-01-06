@@ -13,7 +13,7 @@ export function isRPCError(value: unknown): value is RPCError {
 export function isRPCResponse(value: unknown): value is RPCResponse {
     if (typeof value === "object" && value !== null) {
         const obj = value as RPCResponse;
-        return typeof obj.id === "number" && typeof obj.jsonrpc === "string"  && obj.result !== null;
+        return typeof obj.id === "number" && typeof obj.jsonrpc === "string"  && obj.result != null;
     }
     return false;
 }

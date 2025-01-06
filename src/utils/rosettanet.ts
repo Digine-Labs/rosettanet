@@ -2,7 +2,7 @@
 import { callStarknet } from './callHelper'
 import { RPCResponse, StarknetRPCError } from '../types/types'
 import { getConfigurationProperty } from './configReader'
-import { isStarknetRPCError } from '../types/typeGuards'
+import { isRPCResponse, isStarknetRPCError } from '../types/typeGuards'
 
 // Calls starknet factory contract to precalculate starknet account address
 // TODO: add custom types like in deploy function
@@ -147,8 +147,8 @@ export async function deployRosettanetAccount(
     "id": 1
 }
  */
-
-  if(isStarknetRPCError(response)) {
+  console.log(response)
+  if(!isRPCResponse(response)) {
     return response
   }
 

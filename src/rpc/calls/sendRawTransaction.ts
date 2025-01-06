@@ -47,7 +47,7 @@ import {
 } from '../../utils/transaction'
 import { StarknetInvokeTransaction } from '../../types/transactions.types'
 
-import { isAccountDeployError, isEVMDecodeError, isPrepareCalldataError, isRPCError, isSignedRawTransaction, isStarknetContract, isStarknetRPCError } from '../../types/typeGuards'
+import { isAccountDeployError, isAccountDeployResult, isEVMDecodeError, isPrepareCalldataError, isRPCError, isSignedRawTransaction, isStarknetContract, isStarknetRPCError } from '../../types/typeGuards'
 
 export async function sendRawTransactionHandler(
   request: RPCRequest,
@@ -77,7 +77,7 @@ export async function sendRawTransactionHandler(
   const rawTxn: string = request.params[0]
   const tx = Transaction.from(rawTxn)
 
-
+  console.log(tx.toJSON())
   const signedValidRawTransaction: SignedRawTransaction | ValidationError  = validateRawTransaction(tx)
   // todo improve validations calcualte gas according to tx type https://docs.ethers.org/v5/api/utils/transactions/
   if (!isSignedRawTransaction(signedValidRawTransaction)) {
@@ -96,7 +96,7 @@ export async function sendRawTransactionHandler(
   if (!deployedAccountAddress.isDeployed) {
     // This means account is not registered on rosettanet registry. Lets deploy the address
     const accountDeployResult: AccountDeployResult | AccountDeployError = await deployRosettanetAccount(signedValidRawTransaction.from)
-    if(isAccountDeployError(accountDeployResult)) {
+    if(!isAccountDeployResult(accountDeployResult)) {
       return {
         jsonrpc: request.jsonrpc,
         id: request.id,
@@ -230,6 +230,8 @@ async function broadcastTransaction(request: RPCRequest, params: any): Promise<R
     params: params,
     method: 'starknet_addInvokeTransaction'
   });
+  console.log(params)
+  console.log(params.invoke_transaction.resource_bounds)
   if(isStarknetRPCError(response)) {
     return <RPCError> {
       jsonrpc: request.jsonrpc,
