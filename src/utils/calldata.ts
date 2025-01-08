@@ -228,7 +228,10 @@ export function mergeSlots(
     const currentType = types[typeIndex];
 
     if(currentType.solidityType === 'uint256') {
-      const mergedUint256 = safeU256ToUint256([data[i], data[i+1]]);
+      const valuesToMerge = data[i + 1] !== undefined
+          ? [data[i], data[i + 1]]
+          : [data[i]];
+      const mergedUint256 = safeU256ToUint256(valuesToMerge);
       encodedValues.push(addHexPrefix(mergedUint256))
       i++;
       typeIndex++;
@@ -240,7 +243,10 @@ export function mergeSlots(
       const insideArray = [];
       //encodedValues.push(addHexPrefix(elementCount.toString(16)));
       for(let j = 0; j < elementCount; j++) {
-        const currentUint256 = safeU256ToUint256([data[i+1], data[i+2]]);
+        const valuesToMerge = data[i + 1] !== undefined
+          ? [data[i], data[i + 1]]
+          : [data[i]];
+        const currentUint256 = safeU256ToUint256(valuesToMerge);
         insideArray.push(addHexPrefix(currentUint256))
         i +=2
       }
