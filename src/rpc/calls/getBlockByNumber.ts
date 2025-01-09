@@ -66,9 +66,12 @@ export async function getBlockByNumberHandler(
     }
   }
 
-  const params = isHexString(blockNumber)
-    ? [{ block_number: parseInt(blockNumber, 16) }]
-    : [{ block_number: blockNumber }]
+  const params =
+    blockNumber === 'latest' || blockNumber === 'pending'
+      ? [blockNumber]
+      : isHexString(blockNumber)
+        ? [{ block_number: parseInt(blockNumber, 16) }]
+        : [{ block_number: blockNumber }]
 
   if (isFullTxObjectRequested == true) {
     const method = 'starknet_getBlockWithTxs'
