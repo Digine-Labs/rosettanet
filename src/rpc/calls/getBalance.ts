@@ -1,7 +1,7 @@
 import { NativeBalance, RPCError, RPCRequest, RPCResponse, StarknetRPCError } from '../../types/types'
 import { getSTRKBalance } from '../../utils/callHelper'
 import { validateEthAddress } from '../../utils/validations'
-import { getSnAddressFromEthAddress } from '../../utils/wrapper'
+import { getSnAddressFromEthAddress, precalculateStarknetAccountAddress } from '../../utils/wrapper'
 import { isStarknetRPCError } from '../../types/typeGuards'
 
 export async function getBalanceHandler(
@@ -32,7 +32,7 @@ export async function getBalanceHandler(
     }
   }
 
-  const snAddress: string | StarknetRPCError = await getSnAddressFromEthAddress(ethAddress)
+  const snAddress: string | StarknetRPCError = await precalculateStarknetAccountAddress(ethAddress)
 
   if (isStarknetRPCError(snAddress)) {
     if(snAddress.code == -32700) {

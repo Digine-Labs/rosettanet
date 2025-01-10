@@ -13,7 +13,7 @@ export function isRPCError(value: unknown): value is RPCError {
 export function isRPCResponse(value: unknown): value is RPCResponse {
     if (typeof value === "object" && value !== null) {
         const obj = value as RPCResponse;
-        return typeof obj.id === "number" && typeof obj.jsonrpc === "string"  && obj.result !== null;
+        return typeof obj.id === "number" && typeof obj.jsonrpc === "string"  && obj.result != null;
     }
     return false;
 }
@@ -101,6 +101,8 @@ export function isStarknetContract(value: unknown): value is StarknetContract {
     return false;
 }
 
+// TODO: Important, this function is not working. Fix it. error object is inside error property not in default
+// Bu check sadece bizim kendi starknet rpc error return ettiklerimizde calisiyor. Starknetten return gelende calismaz
 export function isStarknetRPCError(value: unknown): value is StarknetRPCError {
     if (typeof value === "object" && value !== null) {
         const obj = value as StarknetRPCError;
