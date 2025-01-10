@@ -1,13 +1,28 @@
 import { Response, NextFunction } from 'express'
 import { ParsedRequest, RPCError } from '../types/types'
 
+function isValidJsonRpcRequest(body: ParsedRequest): boolean {
+  // Validate types according to JSON-RPC 2.0 spec
+  return (
+    'jsonrpc' in body &&
+    'method' in body &&
+    'params' in body &&
+    'id' in body &&
+    body.jsonrpc === '2.0' &&
+    typeof body.method === 'string' &&
+    (body.params === null || typeof body.params === 'object') &&
+    (body.id === null ||
+      typeof body.id === 'string' ||
+      typeof body.id === 'number')
+  )
+}
+
 export function parseRequest(
   req: ParsedRequest,
   res: Response,
   next: NextFunction,
 ) {
-  if (req.body.jsonrpc && req.body.method && req.body.params && req.body.id) {
-    // TODO: Also validate types
+  if (isValidJsonRpcRequest(req.body)) {
     const { jsonrpc, method, params, id } = req.body
     req.rpcRequest = { jsonrpc, method, params, id }
     next()
