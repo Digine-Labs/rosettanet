@@ -243,6 +243,16 @@ async function broadcastTransaction(request: RPCRequest, params: any): Promise<R
     method: 'starknet_addInvokeTransaction'
   });
   if(isStarknetRPCError(response)) {
+    if(response.code == 55) {
+      return <RPCError> {
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          message: 'Transaction rejected',
+          code: -32003
+        }
+      }
+    }
     return <RPCError> {
       jsonrpc: request.jsonrpc,
       id: request.id,
