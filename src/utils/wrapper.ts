@@ -66,6 +66,7 @@ export async function precalculateStarknetAccountAddress(ethAddress: string): Pr
   const response: RPCResponse | StarknetRPCError = await callStarknet(request)
 
   if (isStarknetRPCError(response)) {
+    // This returns full object not only error part??? Check it
     return response
   }
 

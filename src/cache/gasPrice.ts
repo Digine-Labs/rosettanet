@@ -1,7 +1,9 @@
+import BigNumber from "bignumber.js";
 import { writeLog } from "../logger";
 import { isStarknetRPCError } from "../types/typeGuards";
 import { RPCResponse, StarknetRPCError } from "../types/types";
 import { callStarknet } from "../utils/callHelper";
+import { addHexPrefix } from "../utils/padding";
 
 export interface SyncedL1Gas {
     wei: string,
@@ -73,12 +75,13 @@ async function updateGasPrice() {
     }
     syncedGasPrice = {
         wei: l1Gas.price_in_wei,
-        fri: l1Gas.price_in_fri,
+        fri: addHexPrefix((BigInt(l1Gas.price_in_fri) + (BigInt(l1Gas.price_in_fri) / BigInt(10))).toString(16)),
         data : {
             wei: l1DataGas?.price_in_wei,
             fri: l1DataGas?.price_in_fri
         }
     }
+    writeLog(1, 'Gas Synced: ' + syncedGasPrice.fri)
     return;
 }
 
@@ -86,7 +89,6 @@ export async function syncGasPrice() {
     // eslint-disable-next-line no-constant-condition
     while(true) {
         await updateGasPrice();
-
         await new Promise<void>((resolve) => setTimeout(resolve, 10000)) // Sync new blocks in every 10 seconds
     }
 }

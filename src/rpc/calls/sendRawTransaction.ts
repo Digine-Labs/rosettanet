@@ -23,7 +23,7 @@ import {
 } from '../../utils/rosettanet'
 import { callStarknet } from '../../utils/callHelper'
 import { validateRawTransaction } from '../../utils/validations'
-import { getSnAddressFromEthAddress } from '../../utils/wrapper'
+import { getSnAddressFromEthAddress, precalculateStarknetAccountAddress } from '../../utils/wrapper'
 import {
   CairoNamedConvertableType,
   getContractAbiAndMethods,
@@ -113,12 +113,24 @@ export async function sendRawTransactionHandler(
 
   const starknetAccountAddress = deployedAccountAddress.contractAddress;
 
-  const targetContractAddress: string | StarknetRPCError = await getSnAddressFromEthAddress(signedValidRawTransaction.to)
+  let targetContractAddress: string | StarknetRPCError = await getSnAddressFromEthAddress(signedValidRawTransaction.to)
   if(isStarknetRPCError(targetContractAddress)) {
-    return <RPCError> {
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      error : targetContractAddress
+    if(targetContractAddress.code === -32700) {
+      // This means this contract address is not registered. So we fallback to precalculation
+      targetContractAddress = await precalculateStarknetAccountAddress(signedValidRawTransaction.to);
+      if(isStarknetRPCError(targetContractAddress)) {
+        return <RPCError> {
+          jsonrpc: request.jsonrpc,
+          id: request.id,
+          error : targetContractAddress
+        }
+      }
+    } else {
+      return <RPCError> {
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error : targetContractAddress
+      }
     }
   }
 
