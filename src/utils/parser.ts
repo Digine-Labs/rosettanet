@@ -30,10 +30,10 @@ export function parseRequest(
   }
   const error: RPCError = {
     jsonrpc: req.body.jsonrpc,
-    id: req.body.id,
+    id: req.body.id ? req.body.id : null,
     error: {
-      code: 405,
-      message: 'Bad request format, 405 Not Allowed',
+      code: -32700,
+      message: 'Parse error',
     },
   }
 
@@ -45,9 +45,5 @@ export function revertWithError(
   statusCode: number,
   error: RPCError,
 ) {
-  res.status(statusCode).send({
-    jsonrpc: '2.0',
-    id: 0,
-    error,
-  })
+  res.status(statusCode).send(error)
 }
