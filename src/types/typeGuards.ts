@@ -4,7 +4,7 @@ import { EVMDecodeError, EVMDecodeResult, EVMEncodeResult, PrepareCalldataError,
 export function isRPCError(value: unknown): value is RPCError {
     if (typeof value === "object" && value !== null) {
         const obj = value as RPCError;
-        return typeof obj.id === "number" && typeof obj.jsonrpc === "string"  && typeof obj.error === "object"  && obj.error !== null 
+        return (typeof obj.id === "number" || typeof obj.id === 'string') && typeof obj.jsonrpc === "string"  && typeof obj.error === "object"  && obj.error !== null 
         && typeof obj.error.code === 'number' && typeof obj.error.message === 'string';
     }
     return false;

@@ -67,14 +67,6 @@ interface TransactionReceiptRequest extends RPCRequest {
   params: string[] | TransactionHashObject[]
 }
 
-function isTransactionReceiptRequest(value: unknown): value is TransactionReceiptRequest {
-  if(typeof value === 'object' && value !== null) {
-    const obj = value as TransactionReceiptRequest;
-    return Array.isArray(obj.params) && obj.params.length == 1 
-    && (typeof obj.params[0] === 'string' || (typeof obj.params[0] === 'object' && 'transaction_hash' in obj.params[0]))
-  }
-  return false;
-}
 
 
 export async function getTransactionReceiptHandler(request: TransactionReceiptRequest): Promise<RPCResponse | RPCError> {

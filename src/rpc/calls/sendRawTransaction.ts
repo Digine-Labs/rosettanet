@@ -242,8 +242,6 @@ async function broadcastTransaction(request: RPCRequest, params: any): Promise<R
     params: params,
     method: 'starknet_addInvokeTransaction'
   });
-  console.log(params)
-  console.log(params.invoke_transaction.resource_bounds)
   if(isStarknetRPCError(response)) {
     return <RPCError> {
       jsonrpc: request.jsonrpc,

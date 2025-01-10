@@ -31,58 +31,64 @@ export function getCachedGasPrice(): SyncedL1Gas {
 }
 
 async function updateGasPrice() {
-    const blockHashCall: RPCResponse | StarknetRPCError = await callStarknet({
-        jsonrpc: '2.0',
-        method: 'starknet_blockHashAndNumber',
-        params: [],
-        id: 1,
-    })
-
-    if(isStarknetRPCError(blockHashCall)) {
-        writeLog(2, 'Error at syncing starknet gas price' + blockHashCall.message);
-        return;
-    }
-
-    if(typeof blockHashCall.result.block_hash !== 'string') {
-        writeLog(2, 'Block hash and number call returned wrong value' + blockHashCall.result);
-        return;
-    }
-
-    const blockHash: string = blockHashCall.result.block_hash
-
-    const blockResponse: RPCResponse | StarknetRPCError = await callStarknet({
-        jsonrpc: "2.0",
-        method: "starknet_getBlockWithTxs",
-        params: {
-          block_id: {
-            block_hash: blockHash
-          }
-        },
-        id: 0
-    })
-
-    if(isStarknetRPCError(blockResponse)) {
-        writeLog(2, 'Error at starknet_getBlockWithTxs call on gas price sync.');
-        return; 
-    }
-
-    const l1Gas = blockResponse.result.l1_gas_price;
-    const l1DataGas = blockResponse.result.l1_data_gas_price;
-
-    if(typeof l1Gas !== 'object') {
-        writeLog(2, 'L1_gas_price is not object');
-        return;
-    }
-    syncedGasPrice = {
-        wei: l1Gas.price_in_wei,
-        fri: addHexPrefix((BigInt(l1Gas.price_in_fri) + (BigInt(l1Gas.price_in_fri) / BigInt(10))).toString(16)),
-        data : {
-            wei: l1DataGas?.price_in_wei,
-            fri: l1DataGas?.price_in_fri
+    try {
+        const blockHashCall: RPCResponse | StarknetRPCError = await callStarknet({
+            jsonrpc: '2.0',
+            method: 'starknet_blockHashAndNumber',
+            params: [],
+            id: 1,
+        })
+    
+        if(isStarknetRPCError(blockHashCall)) {
+            writeLog(2, 'Error at syncing starknet gas price' + blockHashCall.message);
+            return;
         }
+    
+        if(typeof blockHashCall.result.block_hash !== 'string') {
+            writeLog(2, 'Block hash and number call returned wrong value' + blockHashCall.result);
+            return;
+        }
+    
+        const blockHash: string = blockHashCall.result.block_hash
+    
+        const blockResponse: RPCResponse | StarknetRPCError = await callStarknet({
+            jsonrpc: "2.0",
+            method: "starknet_getBlockWithTxs",
+            params: {
+              block_id: {
+                block_hash: blockHash
+              }
+            },
+            id: 0
+        })
+    
+        if(isStarknetRPCError(blockResponse)) {
+            writeLog(2, 'Error at starknet_getBlockWithTxs call on gas price sync.');
+            return; 
+        }
+    
+        const l1Gas = blockResponse.result.l1_gas_price;
+        const l1DataGas = blockResponse.result.l1_data_gas_price;
+    
+        if(typeof l1Gas !== 'object') {
+            writeLog(2, 'L1_gas_price is not object');
+            return;
+        }
+        syncedGasPrice = {
+            wei: l1Gas.price_in_wei,
+            fri: addHexPrefix((BigInt(l1Gas.price_in_fri) + (BigInt(l1Gas.price_in_fri) / BigInt(10))).toString(16)),
+            data : {
+                wei: l1DataGas?.price_in_wei,
+                fri: l1DataGas?.price_in_fri
+            }
+        }
+        writeLog(1, 'Gas Synced: ' + syncedGasPrice.fri)
+        return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch(e: any) {
+        writeLog(2, 'Error at gas sync: ' + e.message)
     }
-    writeLog(1, 'Gas Synced: ' + syncedGasPrice.fri)
-    return;
+
 }
 
 export async function syncGasPrice() {
