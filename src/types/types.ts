@@ -11,7 +11,7 @@ export interface RPCRequest {
   jsonrpc: string
   method: string
   params: any
-  id: number
+  id: any
 }
 
 export interface RPCError {
@@ -26,7 +26,7 @@ export interface RPCError {
 
 export interface RPCResponse {
   jsonrpc: string
-  id: number
+  id: any
   result: any
 }
 

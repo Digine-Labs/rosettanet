@@ -1,16 +1,17 @@
 import { getRpc } from './getRpc'
-import { EstimateFeeTransaction, NativeBalance, RPCRequest, RPCResponse, StarknetRPCError } from '../types/types'
+import { EstimateFeeTransaction, NativeBalance, RPCError, RPCRequest, RPCResponse, StarknetRPCError } from '../types/types'
 import { getConfigurationProperty } from './configReader'
 import { U256toUint256 } from './converters/integer'
 import axios from 'axios'
-import { isStarknetRPCError } from '../types/typeGuards'
+import { isRPCError, isStarknetRPCError } from '../types/typeGuards'
+
 
 export async function callStarknet(
   request: RPCRequest
 ): Promise<RPCResponse | StarknetRPCError> {
   try {
     const rpcUrl: string = getRpc()
-    const { data } = await axios.post<RPCResponse>(
+    const { data } = await axios.post<RPCResponse | RPCError>(
       rpcUrl,
       JSON.stringify(request),
       {
@@ -20,6 +21,14 @@ export async function callStarknet(
         },
       },
     )
+
+    if(isRPCError(data)) {
+      // We have to make a error code matching here
+      return <StarknetRPCError> {
+        code: data.error.code,
+        message: data.error.message
+      }
+    }
     return data
   } catch (error) {
     if (axios.isAxiosError(error)) {

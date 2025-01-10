@@ -2,12 +2,12 @@ import { isStarknetRPCError } from '../../types/typeGuards'
 import { RPCError, RPCRequest, RPCResponse, StarknetRPCError } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateEthAddress } from '../../utils/validations'
-import { getSnAddressFromEthAddress } from '../../utils/wrapper'
+import { getSnAddressFromEthAddress, getSnAddressWithFallback } from '../../utils/wrapper'
+
 
 export async function getTransactionCountHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  const method = 'starknet_getNonce'
 
   if (request.params.length == 0) {
     return {
@@ -34,27 +34,31 @@ export async function getTransactionCountHandler(
     }
   }
 
-  const snAddress = await getSnAddressFromEthAddress(ethAddress)
-
-  if (snAddress === '0x0') {
-    return {
+  const snAddress: string | StarknetRPCError = await getSnAddressWithFallback(ethAddress)
+  if(isStarknetRPCError(snAddress)) {
+    return <RPCError> {
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: {
-        code: -32602,
-        message: 'Invalid argument, Ethereum address is not in Lens contract.',
-      },
+      error: snAddress
     }
   }
 
   const response: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
-    method: method,
+    method: "starknet_getNonce",
     params: ['latest', snAddress],
     id: request.id,
   })
 
+
   if(isStarknetRPCError(response)) {
+    if(response.code == 20) {
+      return <RPCResponse> {
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        result: "0x0", 
+      }
+    }
     return <RPCError> {
       jsonrpc: request.jsonrpc,
       id: request.id,
