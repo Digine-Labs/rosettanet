@@ -3,8 +3,8 @@
   "port": 3000,
   "rpcUrls": [ "https://starknet-sepolia.public.blastapi.io"],
   "chainId": "0x52535453",
-  "accountClass": "0x0762a134cd04ef7066cbad3c50c7134224ba57e562d812575d0522dcb530067f",
+  "accountClass": "0x0437eb056018e5c878f4231478a4e1370a82d3e2b1a163c9d1346e85fde87246",
   "ethAddress": "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
   "strkAddress": "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
-  "rosettanet": "0x0243d4ec37b48193aa1d48b8f30d906d14494726341be11dcfbf669f686c7d55"
+  "rosettanet": "0x07c519e568e76ee8a72327ab30363059a6757fdd113f7b23db685ecf9b20a539"
 }
