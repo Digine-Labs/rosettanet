@@ -1,8 +1,9 @@
 /* eslint-disable no-console */
 import { callStarknet } from './callHelper'
-import { RPCResponse, StarknetRPCError } from '../types/types'
+import { RPCResponse, SignedRawTransaction, StarknetRPCError } from '../types/types'
 import { getConfigurationProperty } from './configReader'
 import { isRPCResponse, isStarknetRPCError } from '../types/typeGuards'
+import { addHexPrefix } from './padding'
 
 // Calls starknet factory contract to precalculate starknet account address
 // TODO: add custom types like in deploy function
@@ -102,10 +103,12 @@ export interface AccountDeployError {
 }
 
 export async function deployRosettanetAccount(
-  ethAddress: string,
+  txn: SignedRawTransaction
 ): Promise<AccountDeployResult | AccountDeployError> {
   const rosettanet = getConfigurationProperty('rosettanet')
   const accountClass = getConfigurationProperty('accountClass')
+  const gasPrice = txn.maxFeePerGas == null ? txn.gasPrice : txn.maxFeePerGas
+  const actualGasPrice = gasPrice == null ? '0x0' : gasPrice
   const response: RPCResponse | StarknetRPCError = await callStarknet({
     // todo handle error if string
     jsonrpc: '2.0',
@@ -116,13 +119,13 @@ export async function deployRosettanetAccount(
         version: '0x3',
         signature: ['0'],
         nonce: '0x0',
-        contract_address_salt: ethAddress,
+        contract_address_salt: txn.from,
         class_hash: accountClass,
-        constructor_calldata: [ethAddress, rosettanet],
+        constructor_calldata: [txn.from, rosettanet],
         resource_bounds: {
           l1_gas: {
-            max_amount: '100',
-            max_price_per_unit: '1674663993390', // TODO: We need to find a way to get actual values for these
+              max_amount: addHexPrefix(txn.gasLimit.toString(16)),
+              max_price_per_unit: addHexPrefix(actualGasPrice.toString(16))
           },
           l2_gas: {
             max_amount: '0',
