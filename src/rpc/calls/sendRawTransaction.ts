@@ -95,13 +95,13 @@ export async function sendRawTransactionHandler(
   const deployedAccountAddress: RosettanetAccountResult = await getRosettaAccountAddress(signedValidRawTransaction.from)
   if (!deployedAccountAddress.isDeployed) {
     // This means account is not registered on rosettanet registry. Lets deploy the address
-    const accountDeployResult: AccountDeployResult | AccountDeployError = await deployRosettanetAccount(signedValidRawTransaction.from)
+    const accountDeployResult: AccountDeployResult | AccountDeployError = await deployRosettanetAccount(signedValidRawTransaction)
     if(!isAccountDeployResult(accountDeployResult)) {
       return {
         jsonrpc: request.jsonrpc,
         id: request.id,
         error: {
-          code: accountDeployResult.code,
+          code: -32003,
           message: 'Error at account deployment : ' + accountDeployResult.message,
         },
       }
@@ -109,6 +109,12 @@ export async function sendRawTransactionHandler(
 
     // eslint-disable-next-line no-console
     console.log(`Account Deployed ${accountDeployResult.contractAddress}`)
+
+    return <RPCResponse> {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      result: accountDeployResult.transactionHash
+    }
   }
 
   const starknetAccountAddress = deployedAccountAddress.contractAddress;
