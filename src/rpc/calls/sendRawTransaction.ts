@@ -39,10 +39,12 @@ import {
 } from '../../utils/match'
 import {
   decodeEVMCalldata,
+  decodeMulticallFeatureCalldata,
   getFunctionSelectorFromCalldata,
 } from '../../utils/calldata'
 import {
   prepareRosettanetCalldata,
+  prepareRosettanetFeatureCalldata,
   prepareStarknetInvokeTransaction,
 } from '../../utils/transaction'
 import { StarknetInvokeTransaction } from '../../types/transactions.types'
@@ -117,6 +119,7 @@ export async function sendRawTransactionHandler(
     }
   }
 
+
   const starknetAccountAddress = deployedAccountAddress.contractAddress;
 
   let targetContractAddress: string | StarknetRPCError = await getSnAddressFromEthAddress(signedValidRawTransaction.to)
@@ -165,6 +168,12 @@ export async function sendRawTransactionHandler(
       signedValidRawTransaction
     )
     return await broadcastTransaction(request, invokeTransaction);
+  }
+
+    // This is Rosettanet feature transaction.
+    // It may be upgrade or multicall so directly broadcast tx
+  if(tx.from === tx.to) {
+    return broadcastInternalTransaction(request, starknetAccountAddress, signedValidRawTransaction, targetFunctionSelector);
   }
 
   const targetContract: StarknetContract | StarknetContractReadError = await getContractAbiAndMethods(targetContractAddress);
@@ -269,4 +278,64 @@ async function broadcastTransaction(request: RPCRequest, params: any): Promise<R
     }
   }
   return response
+}
+
+// Selector is checked target function
+async function broadcastInternalTransaction(request: RPCRequest, from: string,  tx: SignedRawTransaction, selector: string): Promise<RPCResponse | RPCError> {
+  if(selector === '0x76971d7f') {
+    // Multicall
+    const ethCalldata = tx.data.slice(10)
+    const decodedMulticallCalldata: EVMDecodeResult | EVMDecodeError = decodeMulticallFeatureCalldata(ethCalldata, selector) // datadan selector cikart selector ayri gonder
+    if(isEVMDecodeError(decodedMulticallCalldata)) {
+      return {
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: decodedMulticallCalldata.code,
+          message: decodedMulticallCalldata.message,
+        },
+      }
+    }
+    const rosettanetCalldata: Array<string> | PrepareCalldataError = prepareRosettanetCalldata(tx, decodedMulticallCalldata.calldata, decodedMulticallCalldata.directives);
+    
+    if(isPrepareCalldataError(rosettanetCalldata)) {
+      return <RPCError> {
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: -32708,
+          message: rosettanetCalldata.message,
+        }
+      }
+    }
+    const invokeTx = prepareStarknetInvokeTransaction(from, rosettanetCalldata, tx.signature.arrayified, tx)
+
+    return broadcastTransaction(request, invokeTx);
+  } else if(selector === '0x74d0bb9d') {
+    // Upgrade
+    const rosettanetCalldata: Array<string> | PrepareCalldataError = prepareRosettanetCalldata(tx, ['0x74d0bb9d'],[]);
+    
+    if(isPrepareCalldataError(rosettanetCalldata)) {
+      return <RPCError> {
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: {
+          code: -32708,
+          message: rosettanetCalldata.message,
+        }
+      }
+    }
+    const invokeTx = prepareStarknetInvokeTransaction(from, rosettanetCalldata, tx.signature.arrayified, tx)
+
+    return broadcastTransaction(request, invokeTx);
+  } else {
+    return <RPCError> {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        message: 'Feature function selector not found',
+        code: -32003
+      }
+    }
+  }
 }

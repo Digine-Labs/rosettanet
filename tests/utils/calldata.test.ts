@@ -4,10 +4,38 @@ import {
   decodeCalldataWithTypes,
   encodeStarknetData,
   mergeSlots,
+  decodeMulticallFeatureCalldata,
 } from '../../src/utils/calldata'
-import { EthereumSlot, EVMEncodeError, EVMEncodeResult } from '../../src/types/types'
+import { EthereumSlot, EVMDecodeError, EVMDecodeResult, EVMEncodeError, EVMEncodeResult } from '../../src/types/types'
 import { CairoNamedConvertableType } from '../../src/utils/starknet'
-import { isEVMEncodeResult } from '../../src/types/typeGuards'
+import { isEVMDecodeError, isEVMDecodeResult, isEVMEncodeResult } from '../../src/types/typeGuards'
+
+describe('Test feature calldata parse', () => {
+  it('Parses multicall calldata', () => {
+    /*
+        uint256[] memory arr1 = new uint256[](3);
+        arr1[0] = 123;
+        arr1[1] = 456;
+        arr1[2] = 789;
+
+        uint256[] memory arr2 = new uint256[](1);
+        arr2[0] = 987;
+        cd[0] = RosettanetMulticall(123,6666,arr1);
+        cd[1] = RosettanetMulticall(777,8888,arr2);
+    */
+    const data = '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000007b0000000000000000000000000000000000000000000000000000000000001a0a00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000007b00000000000000000000000000000000000000000000000000000000000001c80000000000000000000000000000000000000000000000000000000000000315000000000000000000000000000000000000000000000000000000000000030900000000000000000000000000000000000000000000000000000000000022b80000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000003db'
+
+    const decoded: EVMDecodeResult | EVMDecodeError = decodeMulticallFeatureCalldata(data, '0x76971d7f');
+
+    if(isEVMDecodeResult(decoded)) {
+      expect(decoded.calldata).toStrictEqual([
+        '0x76971d7f', '0x2', '0x7b', '0x1a0a', '0x3', '0x7b', '0x1c8', '0x315', '0x309', '0x22b8', '0x1', '0x3db'
+      ])
+    } else {
+      fail('Error')
+    }
+  })
+})
 
 describe('Tests calldata function selector', () => {
   it('Returns eth function selector', async () => {
