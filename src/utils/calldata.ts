@@ -365,6 +365,66 @@ export async function decodeEVMCalldataWithAddressConversion(
     }
   }
 
+// data: Selector removed calldata
+export function decodeMulticallFeatureCalldata(
+  data: string,
+  selector: string
+): EVMDecodeResult | EVMDecodeError {
+  // TODO: add tests
+  try {
+    if (data.length == 0) {
+      return <EVMDecodeError> {
+        code: -32700,
+        message: 'Types or data length is wrong on EVM calldata decoding for multicall'
+      }
+    }
+    if(selector.length != 10) {
+      return <EVMDecodeError> {
+        code: -32700,
+        message: 'Selector length must be 10 on EVM calldata decoding for multicall'
+      }
+    }
+    const decoder = new AbiCoder()
+    const type = "(uint256,uint256,uint256[])[]"
+
+    const calls = decoder.decode([type], data)[0];
+
+    const decodedValues: Array<string> = [];
+    const directives: Array<number> = [];
+    decodedValues.push(selector)
+
+    decodedValues.push(addHexPrefix(BigInt(calls.length).toString(16)))
+
+    for (let i = 0; i < calls.length; i++) {
+      const currentCall = calls[i]
+
+      if(currentCall.length != 3) {
+        return <EVMDecodeError> {
+          code: -2,
+          message: 'Inner calldata length wrong'
+        }
+      }
+      const to = addHexPrefix(BigInt(currentCall[0]).toString(16));
+      const entrypoint = addHexPrefix(BigInt(currentCall[1]).toString(16));
+      const innerCalldata = currentCall[2].map((ic: string | number | bigint | boolean) => addHexPrefix(BigInt(ic).toString(16)));
+
+      decodedValues.push(to)
+      decodedValues.push(entrypoint)
+      decodedValues.push(addHexPrefix(BigInt(innerCalldata.length).toString(16)))
+      decodedValues.push(...innerCalldata);
+    }
+
+    return <EVMDecodeResult> {
+      directives, calldata: decodedValues
+    }
+  } catch (ex) {
+    return <EVMDecodeError> {
+      code: -1,
+      message: (ex as Error).message
+    }
+  }
+}
+
 export function decodeEVMCalldata(  
   types: Array<CairoNamedConvertableType>,
   data: string,

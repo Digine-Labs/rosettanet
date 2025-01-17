@@ -50,7 +50,7 @@ function getGasObject(txn: SignedRawTransaction) {
               max_price_per_unit: "0x0"
           }
   }
-  console.log(gasObject)
+
   return gasObject
 }
 
@@ -86,10 +86,6 @@ function prepareRosettanetCalldataEip1559(
 
     finalCalldata.push(addHexPrefix('0')) // Target function length
     return finalCalldata
-  }
-
-  if (calldata.length -1 != directives.length) {
-    throw `Directive and calldata array sanity fails`
   }
 
   if(typeof targetFunction === 'undefined') {
@@ -156,10 +152,6 @@ export function prepareRosettanetCalldataForEstimatingFee(tx: EstimateFeeTransac
 
     finalCalldata.push(addHexPrefix('0')) // Target function length
     return finalCalldata
-  }
-
-  if (calldata.length -1 != directives.length) {
-    throw `Directive and calldata array sanity fails`
   }
 
   if(typeof targetFunction === 'undefined') {
