@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AbiCoder, dataSlice } from 'ethers'
-import { EVMDecodeError, EVMDecodeResult, EVMEncodeError, EVMEncodeResult, RPCError, StarknetRPCError } from '../types/types'
+import { EVMDecodeError, EVMDecodeResult, EVMEncodeError, EVMEncodeResult, StarknetRPCError } from '../types/types'
 import { BnToU256, safeU256ToUint256, Uint256ToU256 } from './converters/integer'
 import { getSnAddressFromEthAddress } from './wrapper'
 import { CairoNamedConvertableType } from './starknet'
 import { addHexPrefix } from './padding'
-import { isRPCError, isStarknetRPCError } from '../types/typeGuards'
+import { isStarknetRPCError } from '../types/typeGuards'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getFunctionSelectorFromCalldata(calldata: any): string | null {
