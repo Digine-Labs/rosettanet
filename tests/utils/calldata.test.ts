@@ -6,9 +6,9 @@ import {
   mergeSlots,
   decodeMulticallFeatureCalldata,
 } from '../../src/utils/calldata'
-import { EthereumSlot, EVMDecodeError, EVMDecodeResult, EVMEncodeError, EVMEncodeResult } from '../../src/types/types'
+import { EVMDecodeError, EVMDecodeResult, EVMEncodeError, EVMEncodeResult } from '../../src/types/types'
 import { CairoNamedConvertableType } from '../../src/utils/starknet'
-import { isEVMDecodeError, isEVMDecodeResult, isEVMEncodeResult } from '../../src/types/typeGuards'
+import { isEVMDecodeResult, isEVMEncodeResult } from '../../src/types/typeGuards'
 
 describe('Test feature calldata parse', () => {
   it('Parses multicall calldata', () => {

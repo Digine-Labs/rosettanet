@@ -44,7 +44,6 @@ import {
 } from '../../utils/calldata'
 import {
   prepareRosettanetCalldata,
-  prepareRosettanetFeatureCalldata,
   prepareStarknetInvokeTransaction,
 } from '../../utils/transaction'
 import { StarknetInvokeTransaction } from '../../types/transactions.types'
