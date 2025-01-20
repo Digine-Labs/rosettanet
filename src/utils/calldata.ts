@@ -2,7 +2,7 @@
 import { AbiCoder, dataSlice } from 'ethers'
 import { EVMDecodeError, EVMDecodeResult, EVMEncodeError, EVMEncodeResult, StarknetRPCError } from '../types/types'
 import { BnToU256, safeU256ToUint256, Uint256ToU256 } from './converters/integer'
-import { getSnAddressFromEthAddress } from './wrapper'
+import { getSnAddressWithFallback } from './wrapper'
 import { CairoNamedConvertableType } from './starknet'
 import { addHexPrefix } from './padding'
 import { isStarknetRPCError } from '../types/typeGuards'
@@ -342,7 +342,7 @@ export async function decodeEVMCalldataWithAddressConversion(
           continue;
         }
         if(currentType.solidityType === 'address') {
-          const snAddress: string | StarknetRPCError = await getSnAddressFromEthAddress(currentData)
+          const snAddress: string | StarknetRPCError = await getSnAddressWithFallback(currentData)
           if(isStarknetRPCError(snAddress)) {
             return snAddress
           }
