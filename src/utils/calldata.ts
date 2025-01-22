@@ -396,7 +396,7 @@ export function decodeMulticallCalldata(
 
     }      
     return <EVMDecodeResult> {
-      directives : [],
+      directives : [0,0],
       calldata: calls
     }
   } catch (ex) {

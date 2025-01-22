@@ -54,6 +54,39 @@ function getGasObject(txn: SignedRawTransaction) {
   return gasObject
 }
 
+function prepareRosettanetCalldataForMulticall(
+  to: string,
+  nonce: number,
+  max_priority_fee_per_gas: bigint,
+  max_fee_per_gas: bigint,
+  gas_limit: bigint,
+  value: bigint,
+  calldata: Array<string>,
+): string[] {
+  const finalCalldata: Array<string> = []
+
+  finalCalldata.push(to)
+  finalCalldata.push(addHexPrefix(nonce.toString(16)))
+  finalCalldata.push(addHexPrefix(max_priority_fee_per_gas.toString(16)))
+  finalCalldata.push(addHexPrefix(max_fee_per_gas.toString(16)))
+  finalCalldata.push(addHexPrefix(gas_limit.toString(16)))
+
+  const value_u256 = Uint256ToU256(value.toString())
+  finalCalldata.push(...(value_u256.map(v => addHexPrefix(v))))
+
+  finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
+  finalCalldata.push(...calldata)
+  
+  finalCalldata.push(addHexPrefix('0')) // Access list length
+
+  finalCalldata.push(addHexPrefix('0')) // directives are empty
+
+  finalCalldata.push(addHexPrefix('0')) // target function empty
+
+
+  return finalCalldata
+}
+
 function prepareRosettanetCalldataEip1559(
   to: string,
   nonce: number,
@@ -193,20 +226,32 @@ export function prepareRosettanetCalldata(
   directives: Array<number>,
   targetFunction?: StarknetCallableMethod
 ): Array<string> | PrepareCalldataError  {
-  if(signedTransaction.type == 2) {
-    // Eip-1559
-    const { to, nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, value} = signedTransaction;
-    if(maxPriorityFeePerGas == null || maxFeePerGas == null) {
+  try {
+    if(signedTransaction.type == 2) {
+      // Eip-1559
+      const { to, nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, value} = signedTransaction;
+      if(maxPriorityFeePerGas == null || maxFeePerGas == null) {
+        return <PrepareCalldataError> {
+          message: 'maxPriorityFeePerGas or maxFeePerGas fields are null on Eip1559 transaction'
+        }
+      }
+
+      const selector = signedTransaction.data.substring(0, 10)
+      if(selector === '0x76971d7f') {
+        return prepareRosettanetCalldataForMulticall(to, nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, value, calldata);
+      }
+      return prepareRosettanetCalldataEip1559(to,nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, value, calldata,directives, targetFunction)
+    } else {
       return <PrepareCalldataError> {
-        message: 'maxPriorityFeePerGas or maxFeePerGas fields are null on Eip1559 transaction'
+        message: 'Only Eip1559 transactions supported at the moment'
       }
     }
-    return prepareRosettanetCalldataEip1559(to,nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, value, calldata,directives, targetFunction)
-  } else {
+  } catch (ex) {
     return <PrepareCalldataError> {
-      message: 'Only Eip1559 transactions supported at the moment'
+      message: typeof ex === 'string' ? ex : (ex as Error).message
     }
   }
+
 }
 
 export function prepareSignature(

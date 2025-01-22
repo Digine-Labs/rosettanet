@@ -282,6 +282,7 @@ async function broadcastTransaction(request: RPCRequest, params: any): Promise<R
 
 // Selector is checked target function
 async function broadcastInternalTransaction(request: RPCRequest, from: string,  tx: SignedRawTransaction, selector: string): Promise<RPCResponse | RPCError> {
+
   if(selector === '0x76971d7f') {
     // Multicall
     const ethCalldata = tx.data.slice(10)
@@ -297,7 +298,8 @@ async function broadcastInternalTransaction(request: RPCRequest, from: string,  
       }
     }
     const rosettanetCalldata: Array<string> | PrepareCalldataError = prepareRosettanetCalldata(tx, decodedMulticallCalldata.calldata, decodedMulticallCalldata.directives);
-    
+    console.log('ros calldata')
+    console.log(rosettanetCalldata)
     if(isPrepareCalldataError(rosettanetCalldata)) {
       return <RPCError> {
         jsonrpc: request.jsonrpc,
@@ -309,8 +311,10 @@ async function broadcastInternalTransaction(request: RPCRequest, from: string,  
       }
     }
     const invokeTx = prepareStarknetInvokeTransaction(from, rosettanetCalldata, tx.signature.arrayified, tx)
-
-    return broadcastTransaction(request, invokeTx);
+    console.log(invokeTx)
+    const response = await broadcastTransaction(request, invokeTx);
+    console.log(response)
+    return response
   } else if(selector === '0x74d0bb9d') {
     // Upgrade
     const rosettanetCalldata: Array<string> | PrepareCalldataError = prepareRosettanetCalldata(tx, ['0x74d0bb9d'],[]);
