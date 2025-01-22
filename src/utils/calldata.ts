@@ -4,8 +4,9 @@ import { EVMDecodeError, EVMDecodeResult, EVMEncodeError, EVMEncodeResult, Stark
 import { BnToU256, safeU256ToUint256, Uint256ToU256 } from './converters/integer'
 import { getSnAddressWithFallback } from './wrapper'
 import { CairoNamedConvertableType } from './starknet'
-import { addHexPrefix } from './padding'
+import { addHexPrefix, removeHexZeroes } from './padding'
 import { isStarknetRPCError } from '../types/typeGuards'
+import { convertStringIntoChunks } from './felt'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getFunctionSelectorFromCalldata(calldata: any): string | null {
@@ -364,6 +365,47 @@ export async function decodeEVMCalldataWithAddressConversion(
       }
     }
   }
+
+export function decodeMulticallCalldata(  
+  data: string,
+): EVMDecodeResult | EVMDecodeError{
+  try {
+    const chunks = convertStringIntoChunks(data, 64);
+    const calls = [];
+    const callCount = Number(chunks[0]);
+    calls.push(removeHexZeroes(callCount.toString(16)))
+    let readIndex = 1;
+
+    for(let i = 0; i < callCount; i++) {
+      const to = chunks[readIndex];
+
+      calls.push(removeHexZeroes(to))
+      readIndex++;
+      const entrypoint = chunks[readIndex];
+      calls.push(removeHexZeroes(entrypoint))
+      readIndex++;
+      const innerCalldataLength = Number(chunks[readIndex]);
+      calls.push(removeHexZeroes(innerCalldataLength.toString(16)))
+      readIndex++;
+      const innerCalldata = [];
+      for(let j = 0; j < innerCalldataLength; j++) {
+        innerCalldata.push(chunks[readIndex]);
+        calls.push(removeHexZeroes(chunks[readIndex]))
+        readIndex++;
+      }
+
+    }      
+    return <EVMDecodeResult> {
+      directives : [],
+      calldata: calls
+    }
+  } catch (ex) {
+    return <EVMDecodeError> {
+      code: -1,
+      message: (ex as Error).message
+    }
+  }
+}
 
 // data: Selector removed calldata
 export function decodeMulticallFeatureCalldata(

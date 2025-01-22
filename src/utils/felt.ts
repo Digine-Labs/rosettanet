@@ -9,6 +9,10 @@ export function convertHexIntoBytesArray(chunk: string): Array<string> {
   return convertChunkIntoHexStringArray(chunk, chunkSize)
 }
 
+export function convertStringIntoChunks(data: string, size: number): string[] {
+  return convertChunkIntoHexStringArray(data, size);
+}
+
 function convertChunkIntoHexStringArray(
   chunk: string,
   size: number,

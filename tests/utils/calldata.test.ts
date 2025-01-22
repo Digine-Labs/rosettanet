@@ -5,6 +5,7 @@ import {
   encodeStarknetData,
   mergeSlots,
   decodeMulticallFeatureCalldata,
+  decodeMulticallCalldata
 } from '../../src/utils/calldata'
 import { EVMDecodeError, EVMDecodeResult, EVMEncodeError, EVMEncodeResult } from '../../src/types/types'
 import { CairoNamedConvertableType } from '../../src/utils/starknet'
@@ -34,6 +35,33 @@ describe('Test feature calldata parse', () => {
     } else {
       fail('Error')
     }
+  })
+
+  it('tries parse multicall data', () => {
+    const data = '000000000000000000000000000000000000000000000000000000000000000200a551825f2e7d5313ee03b1dfe40e2a7b78b27a7fed40fa17aec27e010bfa960083afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e0000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000055566600000000000000000000000000000000000000000000000000000000000005dc000000000000000000000000000000000000000000000000000000000000000000a551825f2e7d5313ee03b1dfe40e2a7b78b27a7fed40fa17aec27e010bfa960083afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000001112220000000000000000000000000000000000000000000000000000000000000bb80000000000000000000000000000000000000000000000000000000000000000'
+    
+    const decoded = decodeMulticallCalldata(data)
+
+    if(isEVMDecodeResult(decoded)) {
+      expect(decoded.calldata).toStrictEqual([
+        '0x2',
+        '0xa551825f2e7d5313ee03b1dfe40e2a7b78b27a7fed40fa17aec27e010bfa96',
+        '0x83afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e',
+        '0x3',
+        '0x555666',
+        '0x5dc',
+        '0x0',
+        '0xa551825f2e7d5313ee03b1dfe40e2a7b78b27a7fed40fa17aec27e010bfa96',
+        '0x83afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e',
+        '0x3',
+        '0x111222',
+        '0xbb8',
+        '0x0'
+      ])
+    } else {
+      fail('Error')
+    } 
+
   })
 })
 

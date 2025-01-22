@@ -39,6 +39,7 @@ import {
 } from '../../utils/match'
 import {
   decodeEVMCalldata,
+  decodeMulticallCalldata,
   decodeMulticallFeatureCalldata,
   getFunctionSelectorFromCalldata,
 } from '../../utils/calldata'
@@ -284,7 +285,7 @@ async function broadcastInternalTransaction(request: RPCRequest, from: string,  
   if(selector === '0x76971d7f') {
     // Multicall
     const ethCalldata = tx.data.slice(10)
-    const decodedMulticallCalldata: EVMDecodeResult | EVMDecodeError = decodeMulticallFeatureCalldata(ethCalldata, selector) // datadan selector cikart selector ayri gonder
+    const decodedMulticallCalldata: EVMDecodeResult | EVMDecodeError = decodeMulticallCalldata(ethCalldata) // datadan selector cikart selector ayri gonder
     if(isEVMDecodeError(decodedMulticallCalldata)) {
       return {
         jsonrpc: request.jsonrpc,
