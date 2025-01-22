@@ -368,11 +368,13 @@ export async function decodeEVMCalldataWithAddressConversion(
 
 export function decodeMulticallCalldata(  
   data: string,
+  selector: string,
 ): EVMDecodeResult | EVMDecodeError{
   try {
     const chunks = convertStringIntoChunks(data, 64);
     const calls = [];
     const callCount = Number(chunks[0]);
+    calls.push(selector)
     calls.push(removeHexZeroes(callCount.toString(16)))
     let readIndex = 1;
 
