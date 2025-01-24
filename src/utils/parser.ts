@@ -27,6 +27,7 @@ export function parseRequest(
   res: Response,
   next: NextFunction,
 ) {
+  // Todo: If params not provided, pass empty array
   if (isValidJsonRpcRequest(req.body)) {
     const { jsonrpc, method, params, id } = req.body
     req.rpcRequest = { jsonrpc, method, params, id }
