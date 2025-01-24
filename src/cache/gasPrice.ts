@@ -1,4 +1,3 @@
-import BigNumber from "bignumber.js";
 import { writeLog } from "../logger";
 import { isStarknetRPCError } from "../types/typeGuards";
 import { RPCResponse, StarknetRPCError } from "../types/types";
@@ -82,7 +81,7 @@ async function updateGasPrice() {
                 fri: l1DataGas?.price_in_fri
             }
         }
-        writeLog(1, 'Gas Synced: ' + syncedGasPrice.fri)
+        writeLog(0, 'Gas Synced: ' + syncedGasPrice.fri)
         return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch(e: any) {
