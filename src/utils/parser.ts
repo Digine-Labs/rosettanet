@@ -32,10 +32,6 @@ const nonParamMethods = [
   "eth_hashrate",
   "eth_accounts",
   "eth_blockNumber",
-  "",
-  "",
-  "",
-  "",
 
 ]
 
