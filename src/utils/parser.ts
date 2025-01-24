@@ -28,7 +28,7 @@ export function parseRequest(
 ) {
   if (isValidJsonRpcRequest(req.body)) {
     const { jsonrpc, method, params, id } = req.body
-    if(nonParamMethods.indexOf(method)) {
+    if(nonParamMethods.indexOf(method) > -1) {
       req.rpcRequest = { jsonrpc, method, params: [], id }
       next()
       return
