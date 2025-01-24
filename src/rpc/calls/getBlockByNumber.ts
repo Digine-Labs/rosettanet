@@ -185,10 +185,9 @@ export async function getBlockByNumberHandler(
     const response: RPCResponse | StarknetRPCError = await callStarknet({
       jsonrpc: request.jsonrpc,
       method,
-      params,
+      params: ["latest"],
       id: request.id,
     })
-
     if(isStarknetRPCError(response)) {
       return <RPCError> {
         jsonrpc: request.jsonrpc,
