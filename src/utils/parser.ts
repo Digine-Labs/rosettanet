@@ -19,7 +19,8 @@ function isValidJsonRpcRequest(body: ParsedRequest): boolean {
 }
 
 const nonParamMethods = [
-  "eth_gasPrice"
+  "eth_gasPrice",
+  "eth_chainId"
 ]
 
 export function parseRequest(
