@@ -17,6 +17,10 @@ function isValidJsonRpcRequest(body: ParsedRequest): boolean {
   )
 }
 
+const nonParamMethods = [
+  "eth_gasPrice"
+]
+
 export function parseRequest(
   req: ParsedRequest,
   res: Response,
@@ -24,6 +28,11 @@ export function parseRequest(
 ) {
   if (isValidJsonRpcRequest(req.body)) {
     const { jsonrpc, method, params, id } = req.body
+    if(nonParamMethods.indexOf(method)) {
+      req.rpcRequest = { jsonrpc, method, params: [], id }
+      next()
+      return
+    }
     req.rpcRequest = { jsonrpc, method, params, id }
     next()
     return
