@@ -3,6 +3,7 @@ import { ParsedRequest, RPCError } from '../types/types'
 
 function isValidJsonRpcRequest(body: ParsedRequest): boolean {
   // Validate types according to JSON-RPC 2.0 spec
+  
   return (
     'jsonrpc' in body &&
     'method' in body &&
@@ -28,14 +29,16 @@ export function parseRequest(
 ) {
   if (isValidJsonRpcRequest(req.body)) {
     const { jsonrpc, method, params, id } = req.body
+    req.rpcRequest = { jsonrpc, method, params, id }
+    next()
+    return
+  } else {
+    const { jsonrpc, method, id } = req.body
     if(nonParamMethods.indexOf(method) > -1) {
       req.rpcRequest = { jsonrpc, method, params: [], id }
       next()
       return
     }
-    req.rpcRequest = { jsonrpc, method, params, id }
-    next()
-    return
   }
   const error: RPCError = {
     jsonrpc: req.body.jsonrpc,
