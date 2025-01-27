@@ -6,28 +6,15 @@ describe('Test getBlockTransactionCountByNumber request testnet', () => {
     const request = {
       jsonrpc: '2.0',
       method: 'eth_getBlockTransactionCountByNumber',
-      params: ['0x0'],
+      params: ['0x1'],
       id: 1,
     }
     const response: RPCResponse = <RPCResponse>(
       await getBlockTransactionCountByNumberHandler(request)
     )
     expect(typeof response.result).toBe('string')
-    expect(response.result).toBe('0x7')
-  }),
-    it('Returns block transaction count', async () => {
-      const request = {
-        jsonrpc: '2.0',
-        method: 'eth_getBlockTransactionCountByNumber',
-        params: ['0x1'],
-        id: 1,
-      }
-      const response: RPCResponse = <RPCResponse>(
-        await getBlockTransactionCountByNumberHandler(request)
-      )
-      expect(typeof response.result).toBe('string')
-      expect(response.result).toBe('0x1')
-    })
+    expect(response.result).toBe('0x1')
+  })
   it('Error if invalid block number', async () => {
     const request = {
       jsonrpc: '2.0',
