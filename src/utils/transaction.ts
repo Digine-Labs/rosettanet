@@ -18,7 +18,7 @@ export function prepareStarknetInvokeTransaction(
     invoke_transaction: {
       calldata: calldata,
       fee_data_availability_mode: 'L1',
-      nonce: signedRawTransaction.nonce.toString(),
+      nonce: addHexPrefix(signedRawTransaction.nonce.toString(16)),
       nonce_data_availability_mode: 'L1',
       paymaster_data: [],
       account_deployment_data: [],
