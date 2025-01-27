@@ -277,6 +277,15 @@ async function broadcastTransaction(request: RPCRequest, params: any): Promise<R
       }
     }
   }
+
+  const transactionHash = response.result.transaction_hash;
+  if(typeof transactionHash === 'string') {
+    return <RPCResponse> {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      result: transactionHash
+    }
+  }
   return response
 }
 
