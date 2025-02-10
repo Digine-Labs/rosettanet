@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "contracts": [
+    {
+      "id": "44ai8cq2ucbs8",
+      "package_name": "rosettacontracts",
+      "contract_name": "MockUpgradedAccount",
+      "module_path": "rosettacontracts::mocks::upgraded_account::MockUpgradedAccount",
+      "artifacts": {
+        "sierra": "rosettacontracts_MockUpgradedAccount.contract_class.json",
+        "casm": "rosettacontracts_MockUpgradedAccount.compiled_contract_class.json"
+      }
+    },
+    {
+      "id": "7urdel2fl110a",
+      "package_name": "rosettacontracts",
+      "contract_name": "Rosettanet",
+      "module_path": "rosettacontracts::rosettanet::Rosettanet",
+      "artifacts": {
+        "sierra": "rosettacontracts_Rosettanet.contract_class.json",
+        "casm": "rosettacontracts_Rosettanet.compiled_contract_class.json"
+      }
+    },
+    {
+      "id": "e61t4nkpohg22",
+      "package_name": "rosettacontracts",
+      "contract_name": "MockERC20",
+      "module_path": "rosettacontracts::mocks::erc20::MockERC20",
+      "artifacts": {
+        "sierra": "rosettacontracts_MockERC20.contract_class.json",
+        "casm": "rosettacontracts_MockERC20.compiled_contract_class.json"
+      }
+    },
+    {
+      "id": "rbai9e3qpjcck",
+      "package_name": "rosettacontracts",
+      "contract_name": "MockWETH",
+      "module_path": "rosettacontracts::mocks::weth::MockWETH",
+      "artifacts": {
+        "sierra": "rosettacontracts_MockWETH.contract_class.json",
+        "casm": "rosettacontracts_MockWETH.compiled_contract_class.json"
+      }
+    },
+    {
+      "id": "uluo4c4knsbc6",
+      "package_name": "rosettacontracts",
+      "contract_name": "RosettaAccount",
+      "module_path": "rosettacontracts::accounts::base::RosettaAccount",
+      "artifacts": {
+        "sierra": "rosettacontracts_RosettaAccount.contract_class.json",
+        "casm": "rosettacontracts_RosettaAccount.compiled_contract_class.json"
+      }
+    }
+  ]
+}
