@@ -1,5 +1,10 @@
 import { Router, Response } from 'express'
-import { ParsedRequest, ResponseHandler, RPCError, RPCResponse } from '../types/types'
+import {
+  ParsedRequest,
+  ResponseHandler,
+  RPCError,
+  RPCResponse,
+} from '../types/types'
 import { chainIdHandler } from './calls/chainId'
 import { maxPriorityFeePerGasHandler } from './calls/maxPriorityFeePerGas'
 import { gasPriceHandler } from './calls/gasPrice'
@@ -232,7 +237,7 @@ Methods.set('eth_sendRawTransaction', {
 
 Methods.set('eth_createAccessList', {
   method: 'eth_createAccessList',
-  handler: createAccessListHandler
+  handler: createAccessListHandler,
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
@@ -262,23 +267,28 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
         }
         res.send(result)
         return
-      } catch(ex) {
+      } catch (ex) {
         const errorMessage = `Error at method ${request.method}`
-        writeLog(2, JSON.stringify({
-          title: errorMessage,
-          message: typeof (ex as Error).message === 'string' ? (ex as Error).message : ex,
-          request: request
-        }))
+        writeLog(
+          2,
+          JSON.stringify({
+            title: errorMessage,
+            message:
+              typeof (ex as Error).message === 'string'
+                ? (ex as Error).message
+                : ex,
+            request: request,
+          }),
+        )
         res.send({
           jsonrpc: '2.0',
           id: req.body.id,
           error: {
             code: -32500,
-            message: 'Internal server error'
+            message: 'Internal server error',
           },
         })
       }
-
     }
   } else {
     const error: RPCError = {

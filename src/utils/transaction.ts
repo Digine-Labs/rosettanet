@@ -1,6 +1,14 @@
 import { StarknetInvokeTransaction } from '../types/transactions.types'
-import { EstimateFeeTransaction, PrepareCalldataError, SignedRawTransaction } from '../types/types'
-import { BnToU256, safeUint256ToU256, Uint256ToU256 } from './converters/integer'
+import {
+  EstimateFeeTransaction,
+  PrepareCalldataError,
+  SignedRawTransaction,
+} from '../types/types'
+import {
+  BnToU256,
+  safeUint256ToU256,
+  Uint256ToU256,
+} from './converters/integer'
 import { asciiToHex } from './encoding'
 import { convertHexChunkIntoFeltArray } from './felt'
 import { StarknetCallableMethod } from './match'
@@ -12,7 +20,7 @@ export function prepareStarknetInvokeTransaction(
   caller: string,
   calldata: Array<string>,
   signature: Array<string>,
-  signedRawTransaction: SignedRawTransaction
+  signedRawTransaction: SignedRawTransaction,
 ) {
   const starknetTx: StarknetInvokeTransaction = {
     invoke_transaction: {
@@ -40,15 +48,15 @@ function getGasObject(txn: SignedRawTransaction) {
   const gasPrice = txn.maxFeePerGas == null ? txn.gasPrice : txn.maxFeePerGas
   const actualGasPrice = gasPrice == null ? '0x0' : gasPrice
 
-  const gasObject =  {
-          l1_gas: {
-              max_amount: addHexPrefix(txn.gasLimit.toString(16)),
-              max_price_per_unit: addHexPrefix(actualGasPrice.toString(16))
-          },
-          l2_gas: {
-              max_amount: "0x0",
-              max_price_per_unit: "0x0"
-          }
+  const gasObject = {
+    l1_gas: {
+      max_amount: addHexPrefix(txn.gasLimit.toString(16)),
+      max_price_per_unit: addHexPrefix(actualGasPrice.toString(16)),
+    },
+    l2_gas: {
+      max_amount: '0x0',
+      max_price_per_unit: '0x0',
+    },
   }
 
   return gasObject
@@ -72,17 +80,16 @@ function prepareRosettanetCalldataForMulticall(
   finalCalldata.push(addHexPrefix(gas_limit.toString(16)))
 
   const value_u256 = Uint256ToU256(value.toString())
-  finalCalldata.push(...(value_u256.map(v => addHexPrefix(v))))
+  finalCalldata.push(...value_u256.map(v => addHexPrefix(v)))
 
   finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
   finalCalldata.push(...calldata)
-  
+
   finalCalldata.push(addHexPrefix('0')) // Access list length
 
   finalCalldata.push(addHexPrefix('0')) // directives are empty
 
   finalCalldata.push(addHexPrefix('0')) // target function empty
-
 
   return finalCalldata
 }
@@ -96,11 +103,10 @@ function prepareRosettanetCalldataEip1559(
   value: bigint,
   calldata: Array<string>,
   directives: Array<number>,
-  targetFunction?: StarknetCallableMethod
+  targetFunction?: StarknetCallableMethod,
 ): Array<string> {
   // TODO add final validations for parameters
-  if(calldata.length == 0 && directives.length == 0) {
-      
+  if (calldata.length == 0 && directives.length == 0) {
     const finalCalldata: Array<string> = []
 
     finalCalldata.push(to)
@@ -110,7 +116,7 @@ function prepareRosettanetCalldataEip1559(
     finalCalldata.push(addHexPrefix(gas_limit.toString(16)))
 
     const value_u256 = safeUint256ToU256(value)
-    finalCalldata.push(...(value_u256.map(v => addHexPrefix(v))))
+    finalCalldata.push(...value_u256.map(v => addHexPrefix(v)))
 
     finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
     finalCalldata.push(addHexPrefix('0')) // Access list length
@@ -121,10 +127,10 @@ function prepareRosettanetCalldataEip1559(
     return finalCalldata
   }
 
-  if(typeof targetFunction === 'undefined') {
+  if (typeof targetFunction === 'undefined') {
     throw 'Target function not empty but calldata and directives are empty'
   }
-  
+
   const finalCalldata: Array<string> = []
 
   finalCalldata.push(to)
@@ -134,18 +140,21 @@ function prepareRosettanetCalldataEip1559(
   finalCalldata.push(addHexPrefix(gas_limit.toString(16)))
 
   const value_u256 = Uint256ToU256(value.toString())
-  finalCalldata.push(...(value_u256.map(v => addHexPrefix(v))))
+  finalCalldata.push(...value_u256.map(v => addHexPrefix(v)))
 
   finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
   finalCalldata.push(...calldata)
-  
+
   finalCalldata.push(addHexPrefix('0')) // Access list length
 
   finalCalldata.push(addHexPrefix(directives.length.toString(16)))
   finalCalldata.push(...directives.map(d => addHexPrefix(d.toString(16))))
 
-  const targetFunctionName: string = asciiToHex(targetFunction.ethereumTypedName);
-  const functionNameChunks: Array<string> = convertHexChunkIntoFeltArray(targetFunctionName);
+  const targetFunctionName: string = asciiToHex(
+    targetFunction.ethereumTypedName,
+  )
+  const functionNameChunks: Array<string> =
+    convertHexChunkIntoFeltArray(targetFunctionName)
 
   finalCalldata.push(addHexPrefix(functionNameChunks.length.toString(16)))
   finalCalldata.push(...functionNameChunks.map(n => addHexPrefix(n)))
@@ -154,19 +163,17 @@ function prepareRosettanetCalldataEip1559(
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function prepareRosettanetCalldataEip2930() {
-
-}
+function prepareRosettanetCalldataEip2930() {}
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function prepareRosettanetCalldataLegacy() {
+function prepareRosettanetCalldataLegacy() {}
 
-}
+export function prepareRosettanetCalldataForEstimatingFee(
+  tx: EstimateFeeTransaction,
+): string[] {
+  const { to, calldata, directives, value, targetFunction } = tx
 
-export function prepareRosettanetCalldataForEstimatingFee(tx: EstimateFeeTransaction) : string[] {
-  const { to, calldata, directives, value, targetFunction } = tx;
-
-  if(calldata.length == 0 || directives.length == 0) {
+  if (calldata.length == 0 || directives.length == 0) {
     const finalCalldata: Array<string> = []
 
     finalCalldata.push(to)
@@ -176,7 +183,7 @@ export function prepareRosettanetCalldataForEstimatingFee(tx: EstimateFeeTransac
     finalCalldata.push('0x0')
 
     const value_u256 = safeUint256ToU256(value)
-    finalCalldata.push(...(value_u256.map(v => addHexPrefix(v))))
+    finalCalldata.push(...value_u256.map(v => addHexPrefix(v)))
 
     finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
     finalCalldata.push(addHexPrefix('0')) // Access list length
@@ -187,7 +194,7 @@ export function prepareRosettanetCalldataForEstimatingFee(tx: EstimateFeeTransac
     return finalCalldata
   }
 
-  if(typeof targetFunction === 'undefined') {
+  if (typeof targetFunction === 'undefined') {
     throw 'Target function not empty but calldata and directives are empty'
   }
 
@@ -200,18 +207,21 @@ export function prepareRosettanetCalldataForEstimatingFee(tx: EstimateFeeTransac
   finalCalldata.push('0x0')
 
   const value_u256 = safeUint256ToU256(value)
-  finalCalldata.push(...(value_u256.map(v => addHexPrefix(v))))
+  finalCalldata.push(...value_u256.map(v => addHexPrefix(v)))
 
   finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
   finalCalldata.push(...calldata)
-  
+
   finalCalldata.push(addHexPrefix('0')) // Access list length
 
   finalCalldata.push(addHexPrefix(directives.length.toString(16)))
   finalCalldata.push(...directives.map(d => addHexPrefix(d.toString(16))))
 
-  const targetFunctionName: string = asciiToHex(targetFunction.ethereumTypedName);
-  const functionNameChunks: Array<string> = convertHexChunkIntoFeltArray(targetFunctionName);
+  const targetFunctionName: string = asciiToHex(
+    targetFunction.ethereumTypedName,
+  )
+  const functionNameChunks: Array<string> =
+    convertHexChunkIntoFeltArray(targetFunctionName)
 
   finalCalldata.push(addHexPrefix(functionNameChunks.length.toString(16)))
   finalCalldata.push(...functionNameChunks.map(n => addHexPrefix(n)))
@@ -224,34 +234,53 @@ export function prepareRosettanetCalldata(
   signedTransaction: SignedRawTransaction,
   calldata: Array<string>,
   directives: Array<number>,
-  targetFunction?: StarknetCallableMethod
-): Array<string> | PrepareCalldataError  {
+  targetFunction?: StarknetCallableMethod,
+): Array<string> | PrepareCalldataError {
   try {
-    if(signedTransaction.type == 2) {
+    if (signedTransaction.type == 2) {
       // Eip-1559
-      const { to, nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, value} = signedTransaction;
-      if(maxPriorityFeePerGas == null || maxFeePerGas == null) {
-        return <PrepareCalldataError> {
-          message: 'maxPriorityFeePerGas or maxFeePerGas fields are null on Eip1559 transaction'
+      const { to, nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, value } =
+        signedTransaction
+      if (maxPriorityFeePerGas == null || maxFeePerGas == null) {
+        return <PrepareCalldataError>{
+          message:
+            'maxPriorityFeePerGas or maxFeePerGas fields are null on Eip1559 transaction',
         }
       }
 
       const selector = signedTransaction.data.substring(0, 10)
-      if(selector === '0x76971d7f') {
-        return prepareRosettanetCalldataForMulticall(to, nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, value, calldata);
+      if (selector === '0x76971d7f') {
+        return prepareRosettanetCalldataForMulticall(
+          to,
+          nonce,
+          maxPriorityFeePerGas,
+          maxFeePerGas,
+          gasLimit,
+          value,
+          calldata,
+        )
       }
-      return prepareRosettanetCalldataEip1559(to,nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, value, calldata,directives, targetFunction)
+      return prepareRosettanetCalldataEip1559(
+        to,
+        nonce,
+        maxPriorityFeePerGas,
+        maxFeePerGas,
+        gasLimit,
+        value,
+        calldata,
+        directives,
+        targetFunction,
+      )
     } else {
-      return <PrepareCalldataError> {
-        message: 'Only Eip1559 transactions supported at the moment'
+      return <PrepareCalldataError>{
+        message: 'Only Eip1559 transactions supported at the moment',
       }
     }
   } catch (ex) {
-    return <PrepareCalldataError> {
-      message: typeof ex === 'string' ? ex : (ex as Error).message
+    return <PrepareCalldataError>{
+      message: typeof ex === 'string' ? ex : (ex as Error).message,
     }
   }
-
 }
 
 export function prepareSignature(

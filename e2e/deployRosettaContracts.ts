@@ -1,12 +1,4 @@
-import {
-  RpcProvider,
-  Account,
-  Contract,
-  json,
-  stark,
-  uint256,
-  shortString,
-} from 'starknet'
+import { RpcProvider, Account, Contract, json, ContractFactory } from 'starknet'
 import { getRpc } from '../src/utils/getRpc'
 import {
   addConfigurationElement,
@@ -18,25 +10,34 @@ import * as path from 'path'
 export async function deployRosettaContracts() {
   const rpc = getRpc()
 
-  const provider = new RpcProvider({ baseUrl: rpc })
+  const provider = new RpcProvider({ nodeUrl: rpc })
 
-  const account1Address = getConfigurationProperty('account1.address')
-  const account1PrivateKey = getConfigurationProperty('account1.privateKey')
-  const account1 = new Account(provider, account1Address, account1PrivateKey)
+  const configAccount1 = getConfigurationProperty('account1')
+  const configStrkAddress = getConfigurationProperty('strkAddress')
+
+  const account1 = new Account(
+    provider,
+    configAccount1.address,
+    configAccount1.privateKey,
+  )
 
   const compiledRosettanetContractCasmPath = path.resolve(
+    __dirname,
     './rosettaCompiledContracts/rosettacontracts_Rosettanet.compiled_contract_class.json',
   )
 
   const compiledRosettanetContractSierraPath = path.resolve(
+    __dirname,
     './rosettaCompiledContracts/rosettacontracts_Rosettanet.contract_class.json',
   )
 
   const compiledRosettanetAccountContractCasmPath = path.resolve(
+    __dirname,
     './rosettaCompiledContracts/rosettacontracts_RosettaAccount.compiled_contract_class.json',
   )
 
   const compiledRosettanetAccountContractSierraPath = path.resolve(
+    __dirname,
     './rosettaCompiledContracts/rosettacontracts_RosettaAccount.contract_class.json',
   )
 
@@ -60,28 +61,42 @@ export async function deployRosettaContracts() {
       .toString('ascii'),
   )
 
-  const deployRosettanet = await account1.declareAndDeploy({
-    contract: compiledRosettaContractSierra,
+  let declareAccountContract
+
+  try {
+    declareAccountContract = await account1.declare({
+      contract: compiledRosettanetAccountContractSierra,
+      casm: compiledRosettanetAccountContractCasm,
+    })
+  } catch {
+    declareAccountContract = {
+      class_hash:
+        '0x01ebf4c94d78182233b53f4c3c7176ec20d7eab5387bfaa178a036c481e472a7',
+    }
+  }
+
+  const rosettanetFactory = new ContractFactory({
+    compiledContract: compiledRosettaContractSierra,
+    account: account1,
     casm: compiledRosettanetContractCasm,
   })
 
-  const deployAccount = await account1.declareAndDeploy({
-    contract: compiledRosettanetAccountContractSierra,
-    casm: compiledRosettanetAccountContractCasm,
-  })
+  const rosettanetDeployer = await rosettanetFactory.deploy(
+    declareAccountContract.class_hash,
+    account1.address,
+    configStrkAddress,
+  )
 
   const rosettanetContract = new Contract(
     compiledRosettaContractSierra.abi,
-    deployRosettanet.deploy.contract_address,
+    rosettanetDeployer.address,
     provider,
   )
 
-  const accountContract = new Contract(
-    compiledRosettanetAccountContractSierra.abi,
-    deployAccount.deploy.contract_address,
-    provider,
+  console.log(
+    'Rosettanet contracts are deployed. You can get addresses with getConfigurationProperty("rosettanet") or getConfigurationProperty("accountClass") function.',
   )
 
-  addConfigurationElement('account', accountContract.address)
   addConfigurationElement('rosettanet', rosettanetContract.address)
+  addConfigurationElement('accountClass', declareAccountContract.class_hash)
 }

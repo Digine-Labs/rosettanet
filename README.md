@@ -56,7 +56,7 @@ See the [RPC README](src/README.md) for more information.
 
 ### Local Network and RPC Server Setup
 
-This guide assumes that you have **Docker** installed on your machine. In your config file **"rpcUrls"** needs to be **"http://127.0.0.1:5050"** pointing Docker container.
+This guide assumes that you have **Docker** installed on your machine.
 
 #### Building and Starting the Devnet
 

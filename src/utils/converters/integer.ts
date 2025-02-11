@@ -17,21 +17,23 @@ export function Uint256ToU256(value: string): Array<string> {
 }
 
 // Returns hex strings without hex prefix
-export function safeUint256ToU256(value:bigint): Array<string> {
+export function safeUint256ToU256(value: bigint): Array<string> {
   const spl = cairo.uint256(value)
 
-  return [BigInt(spl.low).toString(16),BigInt(spl.high).toString(16)]
+  return [BigInt(spl.low).toString(16), BigInt(spl.high).toString(16)]
 }
 
 export function safeU256ToUint256(value: Array<string>): string {
-  if(value.length == 0) {
-    return new CairoUint256({low : 0, high: 0}).toBigInt().toString(16)
+  if (value.length == 0) {
+    return new CairoUint256({ low: 0, high: 0 }).toBigInt().toString(16)
   }
 
-  if(value.length == 1) {
-    return new CairoUint256({low : value[0], high: 0}).toBigInt().toString(16)
+  if (value.length == 1) {
+    return new CairoUint256({ low: value[0], high: 0 }).toBigInt().toString(16)
   }
-  const result = new CairoUint256({low : value[0], high: value[1]}).toBigInt().toString(16)
+  const result = new CairoUint256({ low: value[0], high: value[1] })
+    .toBigInt()
+    .toString(16)
   return result
 }
 
@@ -45,7 +47,9 @@ export function U256toUint256(value: Array<string>): string {
 }
 
 export function BnToU256(value: bigint): Array<string> {
-  return Uint256ToU256(addHexPadding(value.toString(16), 64, false)).map(val => '0x' + val)
+  return Uint256ToU256(addHexPadding(value.toString(16), 64, false)).map(
+    val => '0x' + val,
+  )
 }
 
 // TODO: support signed integers

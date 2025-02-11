@@ -5,14 +5,17 @@ import { StartListening } from './server'
 import { initConfig } from './utils/configReader'
 
 function isDevnet(): boolean {
-  console.log(process.argv.slice(2).indexOf('--devnet') > -1)
   return process.argv.slice(2).indexOf('--devnet') > -1
 }
 
-initConfig(isDevnet())
-if (isDevnet()) {
-  deployRosettaContracts()
+async function Start() {
+  initConfig(isDevnet())
+  if (isDevnet()) {
+    await deployRosettaContracts()
+  }
+  syncBlockNumber()
+  syncGasPrice()
+  StartListening()
 }
-syncBlockNumber()
-syncGasPrice()
-StartListening()
+
+Start()

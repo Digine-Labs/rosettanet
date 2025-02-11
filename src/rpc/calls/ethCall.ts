@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { isEVMDecodeError, isEVMEncodeResult, isRPCError, isStarknetContract, isStarknetRPCError } from '../../types/typeGuards'
+import {
+  isEVMDecodeError,
+  isEVMEncodeResult,
+  isRPCError,
+  isStarknetContract,
+  isStarknetRPCError,
+} from '../../types/typeGuards'
 import {
   EVMDecodeError,
   EVMDecodeResult,
@@ -18,8 +24,14 @@ import {
   encodeStarknetData,
   getFunctionSelectorFromCalldata,
 } from '../../utils/calldata'
-import { ConvertableType, initializeStarknetAbi } from '../../utils/converters/abiFormatter'
-import { findStarknetCallableMethod, StarknetCallableMethod } from '../../utils/match'
+import {
+  ConvertableType,
+  initializeStarknetAbi,
+} from '../../utils/converters/abiFormatter'
+import {
+  findStarknetCallableMethod,
+  StarknetCallableMethod,
+} from '../../utils/match'
 import { snKeccak } from '../../utils/sn_keccak'
 import {
   CairoNamedConvertableType,
@@ -33,25 +45,28 @@ import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 export interface EthCallParameters {
   from?: string
   to: string
-  gas?: string| number| bigint
-  gasPrice?: string| number| bigint
-  value?: string| number| bigint
+  gas?: string | number | bigint
+  gasPrice?: string | number | bigint
+  value?: string | number | bigint
   data?: string
 }
 
-
-export function isEthCallParameters(value: unknown): value is EthCallParameters {
+export function isEthCallParameters(
+  value: unknown,
+): value is EthCallParameters {
   // We can improve these validations
-  if (typeof value === "object" && value !== null) {
-      const obj = value as EthCallParameters;
-      return typeof obj.to === 'string'
+  if (typeof value === 'object' && value !== null) {
+    const obj = value as EthCallParameters
+    return typeof obj.to === 'string'
   }
-  return false;
+  return false
 }
 
-export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse | RPCError> {
+export async function ethCallHandler(
+  request: RPCRequest,
+): Promise<RPCResponse | RPCError> {
   if (Array.isArray(request.params) && request.params.length != 2) {
-    return <RPCError> {
+    return <RPCError>{
       jsonrpc: request.jsonrpc,
       id: request.id,
       error: {
@@ -61,9 +76,9 @@ export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse 
     }
   }
 
-  const parameters = request.params[0]; // What happens if they pass object or array?? TODO
-  if(!isEthCallParameters(parameters)) {
-    return <RPCError> {
+  const parameters = request.params[0] // What happens if they pass object or array?? TODO
+  if (!isEthCallParameters(parameters)) {
+    return <RPCError>{
       jsonrpc: request.jsonrpc,
       id: request.id,
       error: {
@@ -94,9 +109,14 @@ export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse 
       },
     }
   }
-  const targetFunctionSelector: string | null = getFunctionSelectorFromCalldata(parameters.data);
+  const targetFunctionSelector: string | null = getFunctionSelectorFromCalldata(
+    parameters.data,
+  )
 
-  if(targetFunctionSelector == null || typeof parameters.data === 'undefined') {
+  if (
+    targetFunctionSelector == null ||
+    typeof parameters.data === 'undefined'
+  ) {
     return {
       jsonrpc: request.jsonrpc,
       id: request.id,
@@ -105,8 +125,9 @@ export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse 
   }
   // ETH CALL BAZEN from field bos geliyor.
   // to ise registered degilse result 0x donmeli
-  const targetContractAddress: string | StarknetRPCError = await getSnAddressFromEthAddress(parameters.to);
-  if(isStarknetRPCError(targetContractAddress)) {
+  const targetContractAddress: string | StarknetRPCError =
+    await getSnAddressFromEthAddress(parameters.to)
+  if (isStarknetRPCError(targetContractAddress)) {
     return {
       jsonrpc: request.jsonrpc,
       id: request.id,
@@ -114,24 +135,31 @@ export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse 
     }
   }
 
-  const targetContract: StarknetContract | StarknetContractReadError = await getContractAbiAndMethods(targetContractAddress);
-  if(!isStarknetContract(targetContract)) {
-    return <RPCError> {
+  const targetContract: StarknetContract | StarknetContractReadError =
+    await getContractAbiAndMethods(targetContractAddress)
+  if (!isStarknetContract(targetContract)) {
+    return <RPCError>{
       jsonrpc: request.jsonrpc,
       id: request.id,
       error: {
         code: targetContract.code,
-        message: 'Error at reading starknet contract abi: ' + targetContract.message,
-      }
+        message:
+          'Error at reading starknet contract abi: ' + targetContract.message,
+      },
     }
   }
 
   const contractTypeMapping: Map<string, ConvertableType> =
-  initializeStarknetAbi(targetContract.abi)
+    initializeStarknetAbi(targetContract.abi)
 
-  const starknetFunction: StarknetCallableMethod | undefined = findStarknetCallableMethod(targetFunctionSelector, targetContract.methods, contractTypeMapping);
+  const starknetFunction: StarknetCallableMethod | undefined =
+    findStarknetCallableMethod(
+      targetFunctionSelector,
+      targetContract.methods,
+      contractTypeMapping,
+    )
   // It tries to find starknet method in target contract without throwin error.
-  if(typeof starknetFunction === 'undefined') {
+  if (typeof starknetFunction === 'undefined') {
     return <RPCResponse>{
       jsonrpc: request.jsonrpc,
       id: request.id,
@@ -140,16 +168,20 @@ export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse 
   }
 
   const starknetFunctionEthereumInputTypes: Array<CairoNamedConvertableType> =
-  getEthereumInputsCairoNamed(starknetFunction.snFunction, contractTypeMapping)
+    getEthereumInputsCairoNamed(
+      starknetFunction.snFunction,
+      contractTypeMapping,
+    )
 
   const calldata = parameters.data.slice(10)
-  const EVMCalldataDecode: EVMDecodeResult | EVMDecodeError = await decodeEVMCalldataWithAddressConversion(
-    starknetFunctionEthereumInputTypes,
-    calldata,
-    targetFunctionSelector
-  );
+  const EVMCalldataDecode: EVMDecodeResult | EVMDecodeError =
+    await decodeEVMCalldataWithAddressConversion(
+      starknetFunctionEthereumInputTypes,
+      calldata,
+      targetFunctionSelector,
+    )
 
-  if(isEVMDecodeError(EVMCalldataDecode)) {
+  if (isEVMDecodeError(EVMCalldataDecode)) {
     return {
       jsonrpc: request.jsonrpc,
       id: request.id,
@@ -160,7 +192,7 @@ export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse 
     }
   }
 
-  EVMCalldataDecode.calldata.shift(); // Remove first item, it is function selector
+  EVMCalldataDecode.calldata.shift() // Remove first item, it is function selector
 
   const starknetSelector = snKeccak(starknetFunction.name.split('(')[0])
   const starknetCallParams = [
@@ -179,27 +211,31 @@ export async function ethCallHandler(request: RPCRequest) : Promise<RPCResponse 
     id: request.id,
   })
 
-  if(isStarknetRPCError(snResponse)) {
-    return <RPCError> {
+  if (isStarknetRPCError(snResponse)) {
+    return <RPCError>{
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: snResponse
+      error: snResponse,
     }
   }
 
+  const starknetFunctionEthereumOutputTypes: Array<CairoNamedConvertableType> =
+    getEthereumOutputsCairoNamed(
+      starknetFunction.snFunction,
+      contractTypeMapping,
+    )
 
-  const starknetFunctionEthereumOutputTypes: Array<CairoNamedConvertableType> = getEthereumOutputsCairoNamed(starknetFunction.snFunction, contractTypeMapping);
+  const formattedStarknetOutput: EVMEncodeResult | EVMEncodeError =
+    encodeStarknetData(starknetFunctionEthereumOutputTypes, snResponse.result)
 
-  const formattedStarknetOutput: EVMEncodeResult | EVMEncodeError = encodeStarknetData(starknetFunctionEthereumOutputTypes, snResponse.result)
-
-  if(!isEVMEncodeResult(formattedStarknetOutput)) {
-    return <RPCError> {
+  if (!isEVMEncodeResult(formattedStarknetOutput)) {
+    return <RPCError>{
       jsonrpc: request.jsonrpc,
       id: request.id,
       error: {
         code: -32705,
-        message: formattedStarknetOutput.message
-      }
+        message: formattedStarknetOutput.message,
+      },
     }
   }
 

@@ -1,7 +1,6 @@
 import { getConfigurationProperty, initConfig } from './configReader'
 
 function isDevnet(): boolean {
-  console.log(process.argv.slice(2).indexOf('--devnet') > -1)
   return process.argv.slice(2).indexOf('--devnet') > -1
 }
 
