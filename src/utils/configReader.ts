@@ -78,6 +78,7 @@ export function initConfig(isDevnet: boolean) {
 
   if (isDevnet) {
     config.accountClass = '0x0'
+    config.rosettanet = '0x0'
     config.rpcUrls = ['http://127.0.0.1:5050']
     config.ethAddress =
       '0x49D36570D4E46F48E99674BD3FCC84644DDD6B96F7C741B1562B82F9E004DC7'

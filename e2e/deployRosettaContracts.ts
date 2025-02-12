@@ -1,25 +1,23 @@
-import { RpcProvider, Account, Contract, json, ContractFactory } from 'starknet'
-import { getRpc } from '../src/utils/getRpc'
+import { RpcProvider, Contract, json, ContractFactory } from 'starknet'
+import * as fs from 'fs'
+import * as path from 'path'
+import { getStarknetDeployerAccount } from './testingUtilities'
 import {
   addConfigurationElement,
   getConfigurationProperty,
 } from '../src/utils/configReader'
-import * as fs from 'fs'
-import * as path from 'path'
+import { getRpc } from '../src/utils/getRpc'
+
+let rosettanetAddress: any
 
 export async function deployRosettaContracts() {
   const rpc = getRpc()
 
   const provider = new RpcProvider({ nodeUrl: rpc })
 
-  const configAccount1 = getConfigurationProperty('account1')
   const configStrkAddress = getConfigurationProperty('strkAddress')
 
-  const account1 = new Account(
-    provider,
-    configAccount1.address,
-    configAccount1.privateKey,
-  )
+  const account1 = getStarknetDeployerAccount()
 
   const compiledRosettanetContractCasmPath = path.resolve(
     __dirname,
@@ -97,6 +95,14 @@ export async function deployRosettaContracts() {
     'Rosettanet contracts are deployed. You can get addresses with getConfigurationProperty("rosettanet") or getConfigurationProperty("accountClass") function.',
   )
 
+  rosettanetAddress = rosettanetDeployer.address
+
   addConfigurationElement('rosettanet', rosettanetContract.address)
   addConfigurationElement('accountClass', declareAccountContract.class_hash)
+  console.log('Rosettanet contract address:', rosettanetContract.address)
+  console.log('Account class hash:', declareAccountContract.class_hash)
+}
+
+export async function getRosettanetAddress() {
+  return rosettanetAddress
 }

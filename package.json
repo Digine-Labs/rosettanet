@@ -14,7 +14,7 @@
     "test:converters": "jest --watch tests/utils/converters",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:e2e": "docker start devnet-container && npx nodemon --devnet --enable-logs --logging-type console --sniffer && jest --watch e2e/tests",
+    "test:e2e": "jest --watch e2e/tests",
     "start:file-logging": "npx nodemon --enable-logs --logging-type file --logging-file logs.md",
     "start:console-logging": "npx nodemon --enable-logs --logging-type console",
     "start:dev:console-sniff": "npx nodemon --enable-logs --logging-type console --sniffer",
