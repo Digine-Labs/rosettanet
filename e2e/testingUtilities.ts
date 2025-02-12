@@ -2,7 +2,6 @@ import { RpcProvider, Account, Contract, json } from 'starknet'
 import * as fs from 'fs'
 import * as path from 'path'
 import { Wallet } from 'ethers'
-import { getRosettanetAddress } from './deployRosettaContracts'
 
 const configAccount1 = {
   address: '0x064b48806902a367c8598f4f95c305e8c1a1acba5f082d294a43793113115691',
@@ -57,7 +56,8 @@ export function getCompiledRosettaContractSierra() {
 }
 
 export async function getRosettanetContract() {
-  const rosettanetAddress = await getRosettanetAddress()
+  const rosettanetAddress =
+    '0x37a66400579d7a1bbeec478d4b189b25e486a59b5f9ad1e4d5aa89b9bf9b002'
 
   const rosettanetContract = new Contract(
     compiledRosettaContractSierra.abi,
