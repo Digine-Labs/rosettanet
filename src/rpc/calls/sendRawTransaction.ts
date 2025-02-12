@@ -307,8 +307,7 @@ async function broadcastInternalTransaction(request: RPCRequest, from: string,  
       }
     }
     const rosettanetCalldata: Array<string> | PrepareCalldataError = prepareRosettanetCalldata(tx, decodedMulticallCalldata.calldata, decodedMulticallCalldata.directives);
-    console.log('ros calldata')
-    console.log(rosettanetCalldata)
+
     if(isPrepareCalldataError(rosettanetCalldata)) {
       return <RPCError> {
         jsonrpc: request.jsonrpc,
@@ -320,9 +319,8 @@ async function broadcastInternalTransaction(request: RPCRequest, from: string,  
       }
     }
     const invokeTx = prepareStarknetInvokeTransaction(from, rosettanetCalldata, tx.signature.arrayified, tx)
-    console.log(invokeTx)
+
     const response = await broadcastTransaction(request, invokeTx);
-    console.log(response)
     return response
   } else if(selector === '0x74d0bb9d') {
     // Upgrade
