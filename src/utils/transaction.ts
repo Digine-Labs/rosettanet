@@ -64,7 +64,7 @@ function prepareRosettanetCalldataForLegacyMulticall(
 ): string[] {
   const finalCalldata: Array<string> = []
 
-  finalCalldata.push(addHexPrefix('8'));
+  finalCalldata.push(addHexPrefix('0'));
   finalCalldata.push(to)
   finalCalldata.push(addHexPrefix(nonce.toString(16)))
   finalCalldata.push(addHexPrefix('0'))
@@ -99,7 +99,7 @@ function prepareRosettanetCalldataForEip1559Multicall(
 ): string[] {
   const finalCalldata: Array<string> = []
 
-  finalCalldata.push(addHexPrefix('8'));
+  finalCalldata.push(addHexPrefix('2'));
   finalCalldata.push(to)
   finalCalldata.push(addHexPrefix(nonce.toString(16)))
   finalCalldata.push(addHexPrefix(max_priority_fee_per_gas.toString(16)))
