@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
+import { Transaction } from 'ethers'
 import {
   EVMDecodeError,
   EVMDecodeResult,
@@ -8,12 +7,17 @@ import {
   RPCRequest,
   RPCResponse,
   SignedRawTransaction,
-  StarknetContract,
-  StarknetContractReadError,
   StarknetRPCError,
   ValidationError,
 } from '../../types/types'
-import { Transaction } from 'ethers'
+import { validateRawTransaction } from '../../utils/validations'
+import {
+  isAccountDeployResult,
+  isEVMDecodeError,
+  isPrepareCalldataError,
+  isSignedRawTransaction,
+  isStarknetRPCError,
+} from '../../types/typeGuards'
 import {
   AccountDeployError,
   AccountDeployResult,
@@ -21,29 +25,8 @@ import {
   getRosettaAccountAddress,
   RosettanetAccountResult,
 } from '../../utils/rosettanet'
-import { callStarknet } from '../../utils/callHelper'
-import { validateRawTransaction } from '../../utils/validations'
 import {
-  getSnAddressFromEthAddress,
-  precalculateStarknetAccountAddress,
-} from '../../utils/wrapper'
-import {
-  CairoNamedConvertableType,
-  getContractAbiAndMethods,
-  getEthereumInputsCairoNamed,
-} from '../../utils/starknet'
-import {
-  ConvertableType,
-  initializeStarknetAbi,
-} from '../../utils/converters/abiFormatter'
-import {
-  findStarknetCallableMethod,
-  StarknetCallableMethod,
-} from '../../utils/match'
-import {
-  decodeEVMCalldata,
   decodeMulticallCalldata,
-  decodeMulticallFeatureCalldata,
   getFunctionSelectorFromCalldata,
 } from '../../utils/calldata'
 import {
@@ -51,17 +34,7 @@ import {
   prepareStarknetInvokeTransaction,
 } from '../../utils/transaction'
 import { StarknetInvokeTransaction } from '../../types/transactions.types'
-
-import {
-  isAccountDeployError,
-  isAccountDeployResult,
-  isEVMDecodeError,
-  isPrepareCalldataError,
-  isRPCError,
-  isSignedRawTransaction,
-  isStarknetContract,
-  isStarknetRPCError,
-} from '../../types/typeGuards'
+import { callStarknet } from '../../utils/callHelper'
 
 export async function sendRawTransactionHandler(
   request: RPCRequest,

@@ -1,16 +1,6 @@
 import { StarknetInvokeTransaction } from '../types/transactions.types'
-import {
-  EstimateFeeTransaction,
-  PrepareCalldataError,
-  SignedRawTransaction,
-} from '../types/types'
-import {
-  BnToU256,
-  safeUint256ToU256,
-  Uint256ToU256,
-} from './converters/integer'
-import { asciiToHex } from './encoding'
-import { convertHexChunkIntoFeltArray } from './felt'
+import { EstimateFeeTransaction, PrepareCalldataError, SignedRawTransaction } from '../types/types'
+import { BnToU256, safeUint256ToU256, Uint256ToU256 } from './converters/integer'
 import { StarknetCallableMethod } from './match'
 import { addHexPrefix } from './padding'
 
@@ -62,7 +52,35 @@ function getGasObject(txn: SignedRawTransaction) {
   return gasObject
 }
 
-function prepareRosettanetCalldataForMulticall(
+function prepareRosettanetCalldataForLegacyMulticall(
+  to: string,
+  nonce: number,
+  gas_limit: bigint,
+  gas_price: bigint,
+  value: bigint,
+  calldata: Array<string>,
+): string[] {
+  const finalCalldata: Array<string> = []
+
+  finalCalldata.push(addHexPrefix('0'));
+  finalCalldata.push(to)
+  finalCalldata.push(addHexPrefix(nonce.toString(16)))
+  finalCalldata.push(addHexPrefix('0'))
+  finalCalldata.push(addHexPrefix('0'))
+  finalCalldata.push(addHexPrefix(gas_price.toString(16)))
+  finalCalldata.push(addHexPrefix(gas_limit.toString(16)))
+
+  const value_u256 = Uint256ToU256(value.toString())
+  finalCalldata.push(...(value_u256.map(v => addHexPrefix(v))))
+
+  finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
+  finalCalldata.push(...calldata)
+
+
+  return finalCalldata
+}
+
+function prepareRosettanetCalldataForEip1559Multicall(
   to: string,
   nonce: number,
   max_priority_fee_per_gas: bigint,
@@ -73,10 +91,12 @@ function prepareRosettanetCalldataForMulticall(
 ): string[] {
   const finalCalldata: Array<string> = []
 
+  finalCalldata.push(addHexPrefix('2'));
   finalCalldata.push(to)
   finalCalldata.push(addHexPrefix(nonce.toString(16)))
   finalCalldata.push(addHexPrefix(max_priority_fee_per_gas.toString(16)))
   finalCalldata.push(addHexPrefix(max_fee_per_gas.toString(16)))
+  finalCalldata.push(addHexPrefix('0'))
   finalCalldata.push(addHexPrefix(gas_limit.toString(16)))
 
   const value_u256 = Uint256ToU256(value.toString())
@@ -84,12 +104,13 @@ function prepareRosettanetCalldataForMulticall(
 
   finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
   finalCalldata.push(...calldata)
-
+  
   finalCalldata.push(addHexPrefix('0')) // Access list length
 
   finalCalldata.push(addHexPrefix('0')) // directives are empty
 
   finalCalldata.push(addHexPrefix('0')) // target function empty
+
 
   return finalCalldata
 }
@@ -109,21 +130,19 @@ function prepareRosettanetCalldataEip1559(
   if (calldata.length == 0 && directives.length == 0) {
     const finalCalldata: Array<string> = []
 
+    finalCalldata.push(addHexPrefix('2')); // Tx type
     finalCalldata.push(to)
     finalCalldata.push(addHexPrefix(nonce.toString(16)))
     finalCalldata.push(addHexPrefix(max_priority_fee_per_gas.toString(16)))
     finalCalldata.push(addHexPrefix(max_fee_per_gas.toString(16)))
+    finalCalldata.push(addHexPrefix('0')) // gas_price is not used on eip1559
     finalCalldata.push(addHexPrefix(gas_limit.toString(16)))
 
     const value_u256 = safeUint256ToU256(value)
     finalCalldata.push(...value_u256.map(v => addHexPrefix(v)))
 
-    finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
-    finalCalldata.push(addHexPrefix('0')) // Access list length
+    finalCalldata.push(addHexPrefix(calldata.length.toString(16))) // Calldata length zero
 
-    finalCalldata.push(addHexPrefix(directives.length.toString(16)))
-
-    finalCalldata.push(addHexPrefix('0')) // Target function length
     return finalCalldata
   }
 
@@ -133,10 +152,12 @@ function prepareRosettanetCalldataEip1559(
 
   const finalCalldata: Array<string> = []
 
+  finalCalldata.push(addHexPrefix('2'));
   finalCalldata.push(to)
   finalCalldata.push(addHexPrefix(nonce.toString(16)))
   finalCalldata.push(addHexPrefix(max_priority_fee_per_gas.toString(16)))
   finalCalldata.push(addHexPrefix(max_fee_per_gas.toString(16)))
+  finalCalldata.push(addHexPrefix('0')) // gas_price is not used on eip1559
   finalCalldata.push(addHexPrefix(gas_limit.toString(16)))
 
   const value_u256 = Uint256ToU256(value.toString())
@@ -144,17 +165,14 @@ function prepareRosettanetCalldataEip1559(
 
   finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
   finalCalldata.push(...calldata)
-
+  
   finalCalldata.push(addHexPrefix('0')) // Access list length
 
   finalCalldata.push(addHexPrefix(directives.length.toString(16)))
   finalCalldata.push(...directives.map(d => addHexPrefix(d.toString(16))))
 
-  const targetFunctionName: string = asciiToHex(
-    targetFunction.ethereumTypedName,
-  )
-  const functionNameChunks: Array<string> =
-    convertHexChunkIntoFeltArray(targetFunctionName)
+  const targetFunctionName: string = asciiToHex(targetFunction.ethereumTypedName);
+  const functionNameChunks: Array<string> = convertHexChunkIntoFeltArray(targetFunctionName);
 
   finalCalldata.push(addHexPrefix(functionNameChunks.length.toString(16)))
   finalCalldata.push(...functionNameChunks.map(n => addHexPrefix(n)))
@@ -163,15 +181,14 @@ function prepareRosettanetCalldataEip1559(
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function prepareRosettanetCalldataEip2930() {}
+function prepareRosettanetCalldataEip2930() {
+
+}
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function prepareRosettanetCalldataLegacy() {}
+function prepareRosettanetCalldataLegacy() {
 
-export function prepareRosettanetCalldataForEstimatingFee(
-  tx: EstimateFeeTransaction,
-): string[] {
-  const { to, calldata, directives, value, targetFunction } = tx
+}
 
   if (calldata.length == 0 || directives.length == 0) {
     const finalCalldata: Array<string> = []
@@ -185,12 +202,7 @@ export function prepareRosettanetCalldataForEstimatingFee(
     const value_u256 = safeUint256ToU256(value)
     finalCalldata.push(...value_u256.map(v => addHexPrefix(v)))
 
-    finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
-    finalCalldata.push(addHexPrefix('0')) // Access list length
-
-    finalCalldata.push(addHexPrefix(directives.length.toString(16)))
-
-    finalCalldata.push(addHexPrefix('0')) // Target function length
+    finalCalldata.push(addHexPrefix(calldata.length.toString(16))) // len zero
     return finalCalldata
   }
 
@@ -211,17 +223,14 @@ export function prepareRosettanetCalldataForEstimatingFee(
 
   finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
   finalCalldata.push(...calldata)
-
+  
   finalCalldata.push(addHexPrefix('0')) // Access list length
 
   finalCalldata.push(addHexPrefix(directives.length.toString(16)))
   finalCalldata.push(...directives.map(d => addHexPrefix(d.toString(16))))
 
-  const targetFunctionName: string = asciiToHex(
-    targetFunction.ethereumTypedName,
-  )
-  const functionNameChunks: Array<string> =
-    convertHexChunkIntoFeltArray(targetFunctionName)
+  const targetFunctionName: string = asciiToHex(targetFunction.ethereumTypedName);
+  const functionNameChunks: Array<string> = convertHexChunkIntoFeltArray(targetFunctionName);
 
   finalCalldata.push(addHexPrefix(functionNameChunks.length.toString(16)))
   finalCalldata.push(...functionNameChunks.map(n => addHexPrefix(n)))
@@ -249,31 +258,13 @@ export function prepareRosettanetCalldata(
       }
 
       const selector = signedTransaction.data.substring(0, 10)
-      if (selector === '0x76971d7f') {
-        return prepareRosettanetCalldataForMulticall(
-          to,
-          nonce,
-          maxPriorityFeePerGas,
-          maxFeePerGas,
-          gasLimit,
-          value,
-          calldata,
-        )
+      if(selector === '0x76971d7f') {
+        return prepareRosettanetCalldataForMulticall(to, nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, value, calldata);
       }
-      return prepareRosettanetCalldataEip1559(
-        to,
-        nonce,
-        maxPriorityFeePerGas,
-        maxFeePerGas,
-        gasLimit,
-        value,
-        calldata,
-        directives,
-        targetFunction,
-      )
+      return prepareRosettanetCalldataEip1559(to,nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, value, calldata,directives, targetFunction)
     } else {
-      return <PrepareCalldataError>{
-        message: 'Only Eip1559 transactions supported at the moment',
+      return <PrepareCalldataError> {
+        message: 'Only Eip1559 transactions supported at the moment'
       }
     }
   } catch (ex) {
