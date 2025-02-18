@@ -1,5 +1,10 @@
 import { isStarknetRPCError } from '../../types/typeGuards'
-import { RPCError, RPCRequest, RPCResponse, StarknetRPCError } from '../../types/types'
+import {
+  RPCError,
+  RPCRequest,
+  RPCResponse,
+  StarknetRPCError,
+} from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 
 export async function ethSyncingHandler(
@@ -23,19 +28,19 @@ export async function ethSyncingHandler(
     id: request.id,
   })
 
-  if(isStarknetRPCError(response)) {
-    return <RPCError> {
+  if (isStarknetRPCError(response)) {
+    return <RPCError>{
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: response
+      error: response,
     }
   }
 
-  if(response.result === 'false' || response.result == false) {
+  if (response.result === 'false' || response.result == false) {
     return {
       jsonrpc: '2.0',
       id: request.id,
-      result: response.result
+      result: response.result,
     }
   }
 

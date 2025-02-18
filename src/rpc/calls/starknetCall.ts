@@ -1,5 +1,10 @@
 import { isStarknetRPCError } from '../../types/typeGuards'
-import { RPCError, RPCRequest, RPCResponse, StarknetRPCError } from '../../types/types'
+import {
+  RPCError,
+  RPCRequest,
+  RPCResponse,
+  StarknetRPCError,
+} from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 
 export async function starknetCallHandler(
@@ -12,11 +17,11 @@ export async function starknetCallHandler(
     id: request.id,
   })
 
-  if(isStarknetRPCError(response)) {
-    return <RPCError> {
+  if (isStarknetRPCError(response)) {
+    return <RPCError>{
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: response
+      error: response,
     }
   }
 

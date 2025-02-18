@@ -6,7 +6,7 @@ import { getRpc } from '../../src/utils/getRpc'
 
 describe('RPC Url unit test', () => {
   it('Returns testnet url', () => {
-    initConfig()
+    initConfig(false)
     const rpcList = getConfigurationProperty('rpcUrls')
     const testRpc = getRpc()
     expect(rpcList.includes(testRpc))

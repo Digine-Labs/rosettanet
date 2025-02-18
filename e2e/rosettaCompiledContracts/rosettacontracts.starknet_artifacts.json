@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "contracts": [
+    {
+      "id": "7urdel2fl110a",
+      "package_name": "rosettacontracts",
+      "contract_name": "Rosettanet",
+      "module_path": "rosettacontracts::rosettanet::Rosettanet",
+      "artifacts": {
+        "sierra": "rosettacontracts_Rosettanet.contract_class.json",
+        "casm": "rosettacontracts_Rosettanet.compiled_contract_class.json"
+      }
+    },
+    {
+      "id": "uluo4c4knsbc6",
+      "package_name": "rosettacontracts",
+      "contract_name": "RosettaAccount",
+      "module_path": "rosettacontracts::accounts::base::RosettaAccount",
+      "artifacts": {
+        "sierra": "rosettacontracts_RosettaAccount.contract_class.json",
+        "casm": "rosettacontracts_RosettaAccount.compiled_contract_class.json"
+      }
+    }
+  ]
+}

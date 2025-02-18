@@ -1,6 +1,10 @@
 /* eslint-disable no-console */
 import { callStarknet } from './callHelper'
-import { RPCResponse, SignedRawTransaction, StarknetRPCError } from '../types/types'
+import {
+  RPCResponse,
+  SignedRawTransaction,
+  StarknetRPCError,
+} from '../types/types'
 import { getConfigurationProperty } from './configReader'
 import { isRPCResponse, isStarknetRPCError } from '../types/typeGuards'
 import { addHexPrefix } from './padding'
@@ -36,39 +40,41 @@ export async function getRosettaAccountAddress(
   })
 
   if (isStarknetRPCError(response)) {
-    return <RosettanetAccountResult> {
+    return <RosettanetAccountResult>{
       contractAddress: '',
       ethAddress: ethAddress,
-      isDeployed: false
+      isDeployed: false,
     }
   }
 
-  const precalculatedAddress = response.result[0].toString();
+  const precalculatedAddress = response.result[0].toString()
 
   const classHashCall: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: '2.0',
     method: 'starknet_getClassHashAt',
     params: {
       block_id: 'latest',
-      contract_address: precalculatedAddress
+      contract_address: precalculatedAddress,
     },
     id: 2,
   })
 
-  if(isStarknetRPCError(classHashCall) || typeof classHashCall.result === 'undefined') {
-    return <RosettanetAccountResult> {
+  if (
+    isStarknetRPCError(classHashCall) ||
+    typeof classHashCall.result === 'undefined'
+  ) {
+    return <RosettanetAccountResult>{
       contractAddress: '',
       ethAddress: ethAddress,
-      isDeployed: false
+      isDeployed: false,
     }
   }
 
-  return <RosettanetAccountResult> {
+  return <RosettanetAccountResult>{
     contractAddress: precalculatedAddress,
     ethAddress: ethAddress,
-    isDeployed: true
+    isDeployed: true,
   }
-
 }
 
 export async function isRosettaAccountDeployed(
@@ -85,7 +91,7 @@ export async function isRosettaAccountDeployed(
     },
   })
 
-  if(isStarknetRPCError(response)) {
+  if (isStarknetRPCError(response)) {
     return false
   }
 
@@ -93,17 +99,17 @@ export async function isRosettaAccountDeployed(
 }
 
 export interface AccountDeployResult {
-  transactionHash : string,
+  transactionHash: string
   contractAddress: string
 }
 
 export interface AccountDeployError {
-  code: number,
+  code: number
   message: string
 }
 
 export async function deployRosettanetAccount(
-  txn: SignedRawTransaction
+  txn: SignedRawTransaction,
 ): Promise<AccountDeployResult | AccountDeployError> {
   const rosettanet = getConfigurationProperty('rosettanet')
   const accountClass = getConfigurationProperty('accountClass')
@@ -124,8 +130,8 @@ export async function deployRosettanetAccount(
         constructor_calldata: [txn.from, rosettanet],
         resource_bounds: {
           l1_gas: {
-              max_amount: addHexPrefix(txn.gasLimit.toString(16)),
-              max_price_per_unit: addHexPrefix(actualGasPrice.toString(16))
+            max_amount: addHexPrefix(txn.gasLimit.toString(16)),
+            max_price_per_unit: addHexPrefix(actualGasPrice.toString(16)),
           },
           l2_gas: {
             max_amount: '0',
@@ -151,20 +157,23 @@ export async function deployRosettanetAccount(
 }
  */
   console.log(response)
-  if(!isRPCResponse(response)) {
+  if (!isRPCResponse(response)) {
     return response
   }
 
-  if (typeof response.result['contract_address'] === 'string' && typeof response.result['transaction_hash'] === 'string') {
-    return <AccountDeployResult> {
+  if (
+    typeof response.result['contract_address'] === 'string' &&
+    typeof response.result['transaction_hash'] === 'string'
+  ) {
+    return <AccountDeployResult>{
       transactionHash: response.result.transaction_hash,
-      contractAddress: response.result.contract_address
+      contractAddress: response.result.contract_address,
     }
   }
 
-  return <AccountDeployError> {
+  return <AccountDeployError>{
     code: -32700,
-    message: 'Starknet RPC respond unexpected data format.'
+    message: 'Starknet RPC respond unexpected data format.',
   }
 }
 
