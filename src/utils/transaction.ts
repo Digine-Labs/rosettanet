@@ -1,8 +1,6 @@
 import { StarknetInvokeTransaction } from '../types/transactions.types'
 import { EstimateFeeTransaction, PrepareCalldataError, SignedRawTransaction } from '../types/types'
 import { BnToU256, safeUint256ToU256, Uint256ToU256 } from './converters/integer'
-import { asciiToHex } from './encoding'
-import { convertHexChunkIntoFeltArray } from './felt'
 import { StarknetCallableMethod } from './match'
 import { addHexPrefix } from './padding'
 
@@ -77,12 +75,6 @@ function prepareRosettanetCalldataForLegacyMulticall(
 
   finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
   finalCalldata.push(...calldata)
-  
-  finalCalldata.push(addHexPrefix('0')) // Access list length
-
-  finalCalldata.push(addHexPrefix('0')) // directives are empty
-
-  finalCalldata.push(addHexPrefix('0')) // target function empty
 
 
   return finalCalldata
@@ -112,14 +104,6 @@ function prepareRosettanetCalldataForEip1559Multicall(
 
   finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
   finalCalldata.push(...calldata)
-  
-  finalCalldata.push(addHexPrefix('0')) // Access list length
-
-  finalCalldata.push(addHexPrefix('0')) // directives are empty
-
-  finalCalldata.push(addHexPrefix('0')) // target function empty
-
-
   return finalCalldata
 }
 
@@ -150,12 +134,8 @@ function prepareRosettanetCalldataEip1559(
     const value_u256 = safeUint256ToU256(value)
     finalCalldata.push(...(value_u256.map(v => addHexPrefix(v))))
 
-    finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
-    finalCalldata.push(addHexPrefix('0')) // Access list length
+    finalCalldata.push(addHexPrefix(calldata.length.toString(16))) // Calldata length zero
 
-    finalCalldata.push(addHexPrefix(directives.length.toString(16)))
-
-    finalCalldata.push(addHexPrefix('0')) // Target function length
     return finalCalldata
   }
 
@@ -178,24 +158,8 @@ function prepareRosettanetCalldataEip1559(
 
   finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
   finalCalldata.push(...calldata)
-  
-  finalCalldata.push(addHexPrefix('0')) // Access list length
-
-  finalCalldata.push(addHexPrefix(directives.length.toString(16)))
-  finalCalldata.push(...directives.map(d => addHexPrefix(d.toString(16))))
-
-  const targetFunctionName: string = asciiToHex(targetFunction.ethereumTypedName);
-  const functionNameChunks: Array<string> = convertHexChunkIntoFeltArray(targetFunctionName);
-
-  finalCalldata.push(addHexPrefix(functionNameChunks.length.toString(16)))
-  finalCalldata.push(...functionNameChunks.map(n => addHexPrefix(n)))
 
   return finalCalldata
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function prepareRosettanetCalldataEip2930() {
-
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -225,12 +189,7 @@ function prepareRosettanetCalldataLegacy(
     const value_u256 = safeUint256ToU256(value)
     finalCalldata.push(...(value_u256.map(v => addHexPrefix(v))))
 
-    finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
-    finalCalldata.push(addHexPrefix('0')) // Access list length
-
-    finalCalldata.push(addHexPrefix(directives.length.toString(16)))
-
-    finalCalldata.push(addHexPrefix('0')) // Target function length
+    finalCalldata.push(addHexPrefix(calldata.length.toString(16))) // len zero
     return finalCalldata
   }
   
@@ -253,17 +212,6 @@ function prepareRosettanetCalldataLegacy(
 
   finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
   finalCalldata.push(...calldata)
-  
-  finalCalldata.push(addHexPrefix('0')) // Access list length
-
-  finalCalldata.push(addHexPrefix(directives.length.toString(16)))
-  finalCalldata.push(...directives.map(d => addHexPrefix(d.toString(16))))
-
-  const targetFunctionName: string = asciiToHex(targetFunction.ethereumTypedName);
-  const functionNameChunks: Array<string> = convertHexChunkIntoFeltArray(targetFunctionName);
-
-  finalCalldata.push(addHexPrefix(functionNameChunks.length.toString(16)))
-  finalCalldata.push(...functionNameChunks.map(n => addHexPrefix(n)))
 
   return finalCalldata
 }
@@ -283,12 +231,7 @@ export function prepareRosettanetCalldataForEstimatingFee(tx: EstimateFeeTransac
     const value_u256 = safeUint256ToU256(value)
     finalCalldata.push(...(value_u256.map(v => addHexPrefix(v))))
 
-    finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
-    finalCalldata.push(addHexPrefix('0')) // Access list length
-
-    finalCalldata.push(addHexPrefix(directives.length.toString(16)))
-
-    finalCalldata.push(addHexPrefix('0')) // Target function length
+    finalCalldata.push(addHexPrefix(calldata.length.toString(16))) // len zero
     return finalCalldata
   }
 
@@ -309,17 +252,6 @@ export function prepareRosettanetCalldataForEstimatingFee(tx: EstimateFeeTransac
 
   finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
   finalCalldata.push(...calldata)
-  
-  finalCalldata.push(addHexPrefix('0')) // Access list length
-
-  finalCalldata.push(addHexPrefix(directives.length.toString(16)))
-  finalCalldata.push(...directives.map(d => addHexPrefix(d.toString(16))))
-
-  const targetFunctionName: string = asciiToHex(targetFunction.ethereumTypedName);
-  const functionNameChunks: Array<string> = convertHexChunkIntoFeltArray(targetFunctionName);
-
-  finalCalldata.push(addHexPrefix(functionNameChunks.length.toString(16)))
-  finalCalldata.push(...functionNameChunks.map(n => addHexPrefix(n)))
 
   return finalCalldata
 }
