@@ -36,6 +36,7 @@ export async function sendRawTransactionHandler(
       const rawTxn: string = request.params[0]
       const tx = Transaction.from(rawTxn)
     
+      // eslint-disable-next-line no-console
       console.log(tx.toJSON())
       const signedValidRawTransaction: SignedRawTransaction | ValidationError  = validateRawTransaction(tx);
 
