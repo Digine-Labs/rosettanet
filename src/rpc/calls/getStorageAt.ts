@@ -1,5 +1,10 @@
 import { isStarknetRPCError } from '../../types/typeGuards'
-import { RPCError, RPCRequest, RPCResponse, StarknetRPCError } from '../../types/types'
+import {
+  RPCError,
+  RPCRequest,
+  RPCResponse,
+  StarknetRPCError,
+} from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { hexPadding } from '../../utils/padding'
 import { validateEthAddress } from '../../utils/validations'
@@ -8,7 +13,6 @@ import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 export async function getStorageAtHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-
   const method = 'starknet_getStorageAt'
 
   if (request.params.length == 0) {
@@ -34,13 +38,14 @@ export async function getStorageAtHandler(
     }
   }
 
-  const snAddress: string | StarknetRPCError = await getSnAddressFromEthAddress(ethAddress)
+  const snAddress: string | StarknetRPCError =
+    await getSnAddressFromEthAddress(ethAddress)
 
-  if(isStarknetRPCError(snAddress)) {
-    return <RPCError> {
+  if (isStarknetRPCError(snAddress)) {
+    return <RPCError>{
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: snAddress
+      error: snAddress,
     }
   }
 
@@ -50,20 +55,18 @@ export async function getStorageAtHandler(
     params: [snAddress, ...request.params.slice(1)],
     id: request.id,
   }
-  const response: RPCResponse | StarknetRPCError = await callStarknet(starknet_params)
+  const response: RPCResponse | StarknetRPCError =
+    await callStarknet(starknet_params)
 
-  if(isStarknetRPCError(response)) {
-    return <RPCError> {
+  if (isStarknetRPCError(response)) {
+    return <RPCError>{
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: response
-    };
+      error: response,
+    }
   }
 
-  response.result = hexPadding(
-    response.result as string,
-    64,
-  )
+  response.result = hexPadding(response.result as string, 64)
 
   return {
     jsonrpc: '2.0',

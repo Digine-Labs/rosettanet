@@ -64,41 +64,66 @@ export function validateBlockNumber(value: string | number): boolean {
   }
 }
 
-
-
-export function validateRawTransaction(tx: Transaction): SignedRawTransaction | ValidationError {
-
-  const { from, to, data, value, nonce, chainId, signature, gasLimit, maxFeePerGas, maxPriorityFeePerGas, gasPrice, type } = tx
+export function validateRawTransaction(
+  tx: Transaction,
+): SignedRawTransaction | ValidationError {
+  const {
+    from,
+    to,
+    data,
+    value,
+    nonce,
+    chainId,
+    signature,
+    gasLimit,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
+    gasPrice,
+    type,
+  } = tx
 
   if (to === null) {
-    return <ValidationError> {
-      message: 'To address can not be null'
+    return <ValidationError>{
+      message: 'To address can not be null',
     }
   }
 
   if (from === null) {
-    return <ValidationError> {
-      message: 'From address can not be null'
+    return <ValidationError>{
+      message: 'From address can not be null',
     }
   }
 
   if (typeof signature === 'undefined' || signature === null) {
-    return <ValidationError> {
-      message: 'Transaction is not signed'
+    return <ValidationError>{
+      message: 'Transaction is not signed',
     }
   }
 
-  if((maxFeePerGas == null && gasPrice == null) || (maxPriorityFeePerGas == null && gasPrice == null)) {
-    return <ValidationError> {
-      message: 'maxFeePerGas and gas price or maxPriorityFeePerGas and gasPrice null at the same time'
+  if (
+    (maxFeePerGas == null && gasPrice == null) ||
+    (maxPriorityFeePerGas == null && gasPrice == null)
+  ) {
+    return <ValidationError>{
+      message:
+        'maxFeePerGas and gas price or maxPriorityFeePerGas and gasPrice null at the same time',
     }
   }
 
   const rosettanetSignature = createRosettanetSignature(signature, value)
-  
-  return <SignedRawTransaction> {
-    from, to, data, value, nonce, chainId, 
-    signature: rosettanetSignature, gasLimit, 
-    maxFeePerGas, maxPriorityFeePerGas, gasPrice, type
+
+  return <SignedRawTransaction>{
+    from,
+    to,
+    data,
+    value,
+    nonce,
+    chainId,
+    signature: rosettanetSignature,
+    gasLimit,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
+    gasPrice,
+    type,
   }
 }

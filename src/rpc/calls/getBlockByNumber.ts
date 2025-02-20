@@ -1,5 +1,10 @@
 import { isHexString } from 'ethers'
-import { RPCError, RPCRequest, RPCResponse, StarknetRPCError } from '../../types/types'
+import {
+  RPCError,
+  RPCRequest,
+  RPCResponse,
+  StarknetRPCError,
+} from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateBlockNumber } from '../../utils/validations'
 import { isStarknetRPCError } from '../../types/typeGuards'
@@ -36,18 +41,19 @@ export async function getBlockByNumberHandler(
     }
   }
 
-  const currentLiveBlockNumber: RPCResponse | StarknetRPCError = await callStarknet({
-    jsonrpc: request.jsonrpc,
-    method: 'starknet_blockNumber',
-    params: [],
-    id: request.id,
-  })
+  const currentLiveBlockNumber: RPCResponse | StarknetRPCError =
+    await callStarknet({
+      jsonrpc: request.jsonrpc,
+      method: 'starknet_blockNumber',
+      params: [],
+      id: request.id,
+    })
 
-  if(isStarknetRPCError(currentLiveBlockNumber)) {
-    return <RPCError> {
+  if (isStarknetRPCError(currentLiveBlockNumber)) {
+    return <RPCError>{
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: currentLiveBlockNumber
+      error: currentLiveBlockNumber,
     }
   }
 
@@ -80,11 +86,11 @@ export async function getBlockByNumberHandler(
       id: request.id,
     })
 
-    if(isStarknetRPCError(response)) {
-      return <RPCError> {
+    if (isStarknetRPCError(response)) {
+      return <RPCError>{
         jsonrpc: request.jsonrpc,
         id: request.id,
-        error: response
+        error: response,
       }
     }
 
@@ -185,14 +191,14 @@ export async function getBlockByNumberHandler(
     const response: RPCResponse | StarknetRPCError = await callStarknet({
       jsonrpc: request.jsonrpc,
       method,
-      params: ["latest"],
+      params: ['latest'],
       id: request.id,
     })
-    if(isStarknetRPCError(response)) {
-      return <RPCError> {
+    if (isStarknetRPCError(response)) {
+      return <RPCError>{
         jsonrpc: request.jsonrpc,
         id: request.id,
-        error: response
+        error: response,
       }
     }
 

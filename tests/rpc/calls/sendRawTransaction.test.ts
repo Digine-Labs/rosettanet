@@ -5,8 +5,6 @@ import { getTestAccount } from '../../testingUtilities'
 describe('Test sendRawTransaction handler', () => {
   it('Simple decoding', async () => {
     const testAccount = getTestAccount()
-    const strkAddress = '0xbec5832bd3f642d090891b4991da42fa4d5d9e2d'
-    const registeredSpender = '0xc7d3a94a457eff5d1f40482bbe9729c064cdead2'
     // Account 2 on argent 0xbc75b6c9f34232628bef76c6b74d6b78a99933b5
 
     const tx = {

@@ -3,7 +3,7 @@ import { ParsedRequest, RPCError } from '../types/types'
 
 function isValidJsonRpcRequest(body: ParsedRequest): boolean {
   // Validate types according to JSON-RPC 2.0 spec
-  
+
   return (
     'jsonrpc' in body &&
     'method' in body &&
@@ -19,20 +19,19 @@ function isValidJsonRpcRequest(body: ParsedRequest): boolean {
 }
 
 const nonParamMethods = [
-  "eth_gasPrice",
-  "eth_chainId",
-  "web3_clientVersion",
-  "net_version",
-  "net_listening",
-  "net_peerCount",
-  "eth_protocolVersion",
-  "eth_syncing",
-  "eth_coinbase",
-  "eth_mining",
-  "eth_hashrate",
-  "eth_accounts",
-  "eth_blockNumber",
-
+  'eth_gasPrice',
+  'eth_chainId',
+  'web3_clientVersion',
+  'net_version',
+  'net_listening',
+  'net_peerCount',
+  'eth_protocolVersion',
+  'eth_syncing',
+  'eth_coinbase',
+  'eth_mining',
+  'eth_hashrate',
+  'eth_accounts',
+  'eth_blockNumber',
 ]
 
 export function parseRequest(
@@ -48,7 +47,7 @@ export function parseRequest(
     return
   } else {
     const { jsonrpc, method, id } = req.body
-    if(nonParamMethods.indexOf(method) > -1) {
+    if (nonParamMethods.indexOf(method) > -1) {
       req.rpcRequest = { jsonrpc, method, params: [], id }
       next()
       return
