@@ -14,19 +14,14 @@
     "test:converters": "jest --watch tests/utils/converters",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:e2e": "jest --watch e2e/tests",
     "start:file-logging": "npx nodemon --enable-logs --logging-type file --logging-file logs.md",
     "start:console-logging": "npx nodemon --enable-logs --logging-type console",
     "start:dev:console-sniff": "npx nodemon --enable-logs --logging-type console --sniffer",
     "start:dev:file-sniff": "npx nodemon --enable-logs --logging-type file --logging-file sniffs.log --sniffer",
-    "start:dev:console-error-sniffer": "npx nodemon --enable-logs --logging-type console --sniffer --min-log 1",
-    "build:devnet": "docker build -t devnet . && docker run -d -p 127.0.0.1:5050:5050 --name devnet-container devnet",
-    "start:devnet": "docker start devnet-container",
-    "stop:devnet": "docker stop devnet-container && docker rm devnet-container",
-    "start:dev+devnet:console-sniff": "docker start devnet-container && npx nodemon --devnet --enable-logs --logging-type console --sniffer"
+    "start:dev:console-error-sniffer": "npx nodemon --enable-logs --logging-type console --sniffer --min-log 1"
   },
   "keywords": [],
-  "author": "Digine-Labs",
+  "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^4.17.21",

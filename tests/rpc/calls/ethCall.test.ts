@@ -25,7 +25,7 @@ describe('Test Eth call request testnet', () => {
     }
     // TODO: update test variables
     const result: RPCResponse = <RPCResponse>await ethCallHandler(request)
-
+    
     // We have to make it more dynamic. this test has to read actual balance before running it.
     expect(result.result).toBe(
       '0x00000000000000000000000000000000000000000000002a1ea2b650b1605ba6',

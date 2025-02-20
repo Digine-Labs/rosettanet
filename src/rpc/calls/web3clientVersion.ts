@@ -1,10 +1,5 @@
 import { isStarknetRPCError } from '../../types/typeGuards'
-import {
-  RPCError,
-  RPCRequest,
-  RPCResponse,
-  StarknetRPCError,
-} from '../../types/types'
+import { RPCError, RPCRequest, RPCResponse, StarknetRPCError } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 
 export async function web3clientVersionHandler(
@@ -28,11 +23,11 @@ export async function web3clientVersionHandler(
     id: request.id,
   })
 
-  if (isStarknetRPCError(response)) {
-    return <RPCError>{
+  if(isStarknetRPCError(response)) {
+    return <RPCError> {
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: response,
+      error: response
     }
   }
 

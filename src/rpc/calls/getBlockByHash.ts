@@ -1,10 +1,5 @@
 import { isStarknetRPCError } from '../../types/typeGuards'
-import {
-  RPCError,
-  RPCRequest,
-  RPCResponse,
-  StarknetRPCError,
-} from '../../types/types'
+import { RPCError, RPCRequest, RPCResponse, StarknetRPCError } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateBlockHash } from '../../utils/validations'
 
@@ -65,11 +60,11 @@ export async function getBlockByHashHandler(
       id: request.id,
     })
 
-    if (isStarknetRPCError(response)) {
-      return <RPCError>{
+    if(isStarknetRPCError(response)) {
+      return <RPCError> {
         jsonrpc: request.jsonrpc,
         id: request.id,
-        error: response,
+        error: response
       }
     }
 
@@ -173,11 +168,11 @@ export async function getBlockByHashHandler(
       id: request.id,
     })
 
-    if (isStarknetRPCError(response)) {
-      return <RPCError>{
+    if(isStarknetRPCError(response)) {
+      return <RPCError> {
         jsonrpc: request.jsonrpc,
         id: request.id,
-        error: response,
+        error: response
       }
     }
 

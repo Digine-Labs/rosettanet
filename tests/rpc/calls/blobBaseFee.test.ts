@@ -26,6 +26,6 @@ describe('Test BlobBaseFee handler', () => {
     const result: RPCResponse | RPCError = <RPCResponse>(
       await blobBaseFeeHandler(request)
     )
-    expect(isRPCError(result)).toBe(true)
+    expect(isRPCError(result)).toBe(true);
   })
 })
