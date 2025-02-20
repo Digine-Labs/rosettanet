@@ -1,36 +1,33 @@
 /* eslint-disable no-console */
-import {
-  RPCResponse,
-  RPCRequest,
-  RPCError
-} from '../../types/types'
+import { RPCResponse, RPCRequest, RPCError } from '../../types/types'
 
-
-export async function estimateGasHandler(request: RPCRequest): Promise<RPCResponse|RPCError> {
+export async function estimateGasHandler(
+  request: RPCRequest,
+): Promise<RPCResponse | RPCError> {
   try {
-    const parameters = request.params[0];
-    const from = parameters.from == null ? parameters.to : parameters.from;
-    const to = parameters.to;
+    const parameters = request.params[0]
+    const from = parameters.from == null ? parameters.to : parameters.from
+    const to = parameters.to
     //const targetFunctionSelector: string | null = getFunctionSelectorFromCalldata(parameters.data)
 
-    if(from === to && from != null) {
-      return <RPCResponse> {
+    if (from === to && from != null) {
+      return <RPCResponse>{
         jsonrpc: request.jsonrpc,
         id: request.id,
-        result: '0x15F90'
+        result: '0x15F90',
       }
     } else {
-      return <RPCResponse> {
+      return <RPCResponse>{
         jsonrpc: request.jsonrpc,
         id: request.id,
-        result: '0x5208'
+        result: '0x5208',
       }
     }
   } catch (ex) {
-    return <RPCResponse> {
+    return <RPCResponse>{
       jsonrpc: request.jsonrpc,
       id: request.id,
-      result: '0x5208'
+      result: '0x5208',
     }
   }
 }

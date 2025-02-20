@@ -1,8 +1,8 @@
 {
   "appName": "RosettaNet",
   "port": 3000,
-  "host" : "localhost",
-  "rpcUrls": [ "https://starknet-sepolia.public.blastapi.io"],
+  "host": "localhost",
+  "rpcUrls": ["https://starknet-sepolia.public.blastapi.io"],
   "chainId": "0x52535453",
   "accountClass": "0x06ac5e60302289f2e2503bf685c8d7b5dcd204fe1f08c69dd1b911d306a4a8c2",
   "ethAddress": "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",

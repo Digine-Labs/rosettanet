@@ -1,4 +1,4 @@
-import BigNumber from "bignumber.js";
+import BigNumber from 'bignumber.js'
 
 export function hexPadding(value: string, targetLength: number): string {
   if (value.length === 0) {
@@ -14,7 +14,7 @@ export function hexPadding(value: string, targetLength: number): string {
 }
 
 export function removeHexZeroes(val: string): string {
-  const prefixRemoved = removeHexPrefix(val);
+  const prefixRemoved = removeHexPrefix(val)
 
   const bn = new BigNumber(prefixRemoved, 16)
 

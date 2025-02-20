@@ -1,5 +1,10 @@
 import { isHexString } from 'ethers'
-import { RPCError, RPCRequest, RPCResponse, StarknetRPCError } from '../../types/types'
+import {
+  RPCError,
+  RPCRequest,
+  RPCResponse,
+  StarknetRPCError,
+} from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { validateBlockNumber } from '../../utils/validations'
 import { isStarknetRPCError } from '../../types/typeGuards'
@@ -34,18 +39,19 @@ export async function getBlockTransactionCountByNumberHandler(
     }
   }
 
-  const currentLiveBlockNumber: RPCResponse | StarknetRPCError = await callStarknet({
-    jsonrpc: request.jsonrpc,
-    method: 'starknet_blockNumber',
-    params: [],
-    id: request.id,
-  })
+  const currentLiveBlockNumber: RPCResponse | StarknetRPCError =
+    await callStarknet({
+      jsonrpc: request.jsonrpc,
+      method: 'starknet_blockNumber',
+      params: [],
+      id: request.id,
+    })
 
-  if(isStarknetRPCError(currentLiveBlockNumber)) {
-    return <RPCError> {
+  if (isStarknetRPCError(currentLiveBlockNumber)) {
+    return <RPCError>{
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: currentLiveBlockNumber
+      error: currentLiveBlockNumber,
     }
   }
 
@@ -59,11 +65,11 @@ export async function getBlockTransactionCountByNumberHandler(
     id: request.id,
   })
 
-  if(isStarknetRPCError(response)) {
-    return <RPCError> {
+  if (isStarknetRPCError(response)) {
+    return <RPCError>{
       jsonrpc: request.jsonrpc,
       id: request.id,
-      error: response
+      error: response,
     }
   }
 

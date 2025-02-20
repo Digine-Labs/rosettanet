@@ -6,7 +6,7 @@ import { getConfigurationProperty } from './utils/configReader'
 
 export function StartListening() {
   const app: Application = express()
-  const host = getConfigurationProperty('host');
+  const host = getConfigurationProperty('host')
   const port = Number(getConfigurationProperty('port')) || 3000
 
   app.use(express.json())

@@ -5,11 +5,19 @@ import {
   encodeStarknetData,
   mergeSlots,
   decodeMulticallFeatureCalldata,
-  decodeMulticallCalldata
+  decodeMulticallCalldata,
 } from '../../src/utils/calldata'
-import { EVMDecodeError, EVMDecodeResult, EVMEncodeError, EVMEncodeResult } from '../../src/types/types'
+import {
+  EVMDecodeError,
+  EVMDecodeResult,
+  EVMEncodeError,
+  EVMEncodeResult,
+} from '../../src/types/types'
 import { CairoNamedConvertableType } from '../../src/utils/starknet'
-import { isEVMDecodeResult, isEVMEncodeResult } from '../../src/types/typeGuards'
+import {
+  isEVMDecodeResult,
+  isEVMEncodeResult,
+} from '../../src/types/typeGuards'
 
 describe('Test feature calldata parse', () => {
   it('Parses multicall calldata', () => {
@@ -24,13 +32,26 @@ describe('Test feature calldata parse', () => {
         cd[0] = RosettanetMulticall(123,6666,arr1);
         cd[1] = RosettanetMulticall(777,8888,arr2);
     */
-    const data = '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000007b0000000000000000000000000000000000000000000000000000000000001a0a00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000007b00000000000000000000000000000000000000000000000000000000000001c80000000000000000000000000000000000000000000000000000000000000315000000000000000000000000000000000000000000000000000000000000030900000000000000000000000000000000000000000000000000000000000022b80000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000003db'
+    const data =
+      '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000007b0000000000000000000000000000000000000000000000000000000000001a0a00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000007b00000000000000000000000000000000000000000000000000000000000001c80000000000000000000000000000000000000000000000000000000000000315000000000000000000000000000000000000000000000000000000000000030900000000000000000000000000000000000000000000000000000000000022b80000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000003db'
 
-    const decoded: EVMDecodeResult | EVMDecodeError = decodeMulticallFeatureCalldata(data, '0x76971d7f');
+    const decoded: EVMDecodeResult | EVMDecodeError =
+      decodeMulticallFeatureCalldata(data, '0x76971d7f')
 
-    if(isEVMDecodeResult(decoded)) {
+    if (isEVMDecodeResult(decoded)) {
       expect(decoded.calldata).toStrictEqual([
-        '0x76971d7f', '0x2', '0x7b', '0x1a0a', '0x3', '0x7b', '0x1c8', '0x315', '0x309', '0x22b8', '0x1', '0x3db'
+        '0x76971d7f',
+        '0x2',
+        '0x7b',
+        '0x1a0a',
+        '0x3',
+        '0x7b',
+        '0x1c8',
+        '0x315',
+        '0x309',
+        '0x22b8',
+        '0x1',
+        '0x3db',
       ])
     } else {
       fail('Error')
@@ -38,11 +59,12 @@ describe('Test feature calldata parse', () => {
   })
 
   it('tries parse multicall data', () => {
-    const data = '000000000000000000000000000000000000000000000000000000000000000200a551825f2e7d5313ee03b1dfe40e2a7b78b27a7fed40fa17aec27e010bfa960083afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e0000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000055566600000000000000000000000000000000000000000000000000000000000005dc000000000000000000000000000000000000000000000000000000000000000000a551825f2e7d5313ee03b1dfe40e2a7b78b27a7fed40fa17aec27e010bfa960083afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000001112220000000000000000000000000000000000000000000000000000000000000bb80000000000000000000000000000000000000000000000000000000000000000'
-    
+    const data =
+      '000000000000000000000000000000000000000000000000000000000000000200a551825f2e7d5313ee03b1dfe40e2a7b78b27a7fed40fa17aec27e010bfa960083afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e0000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000055566600000000000000000000000000000000000000000000000000000000000005dc000000000000000000000000000000000000000000000000000000000000000000a551825f2e7d5313ee03b1dfe40e2a7b78b27a7fed40fa17aec27e010bfa960083afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000001112220000000000000000000000000000000000000000000000000000000000000bb80000000000000000000000000000000000000000000000000000000000000000'
+
     const decoded = decodeMulticallCalldata(data)
 
-    if(isEVMDecodeResult(decoded)) {
+    if (isEVMDecodeResult(decoded)) {
       expect(decoded.calldata).toStrictEqual([
         '0x2',
         '0xa551825f2e7d5313ee03b1dfe40e2a7b78b27a7fed40fa17aec27e010bfa96',
@@ -56,12 +78,11 @@ describe('Test feature calldata parse', () => {
         '0x3',
         '0x111222',
         '0xbb8',
-        '0x0'
+        '0x0',
       ])
     } else {
       fail('Error')
-    } 
-
+    }
   })
 })
 
@@ -93,7 +114,7 @@ describe('Test merging uint256s from data', () => {
       cairoType: 'core::integer::u256',
     }
 
-    const data = ['0x123123','0x0'];
+    const data = ['0x123123', '0x0']
 
     const result = mergeSlots([type1], data)
 
@@ -110,7 +131,7 @@ describe('Test merging uint256s from data', () => {
       cairoType: 'core::integer::u256',
     }
 
-    const data = ['0x0','0xFFF'];
+    const data = ['0x0', '0xFFF']
 
     const result = mergeSlots([type1], data)
 
@@ -127,12 +148,17 @@ describe('Test merging uint256s from data', () => {
       cairoType: 'core::integer::u256',
     }
 
-    const data = ['0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF','0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'];
+    const data = [
+      '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+      '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+    ]
 
     const result = mergeSlots([type1], data)
 
     expect(result.length).toBe(1)
-    expect(result[0]).toBe('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')
+    expect(result[0]).toBe(
+      '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+    )
   })
 
   it('Merges uint256 array', () => {
@@ -144,12 +170,18 @@ describe('Test merging uint256s from data', () => {
       cairoType: 'core::array::Array::<core::integer::u256>',
     }
 
-    const data = ['0x1', '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF','0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'];
+    const data = [
+      '0x1',
+      '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+      '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+    ]
 
     const result = mergeSlots([type], data)
 
     expect(result.length).toBe(1)
-    expect(result[0]).toStrictEqual(['0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'])
+    expect(result[0]).toStrictEqual([
+      '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+    ])
   })
 
   it('Merges uint256 array multi elements', () => {
@@ -161,12 +193,21 @@ describe('Test merging uint256s from data', () => {
       cairoType: 'core::array::Array::<core::integer::u256>',
     }
 
-    const data = ['0x2', '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF','0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', '0x0', '0x0'];
+    const data = [
+      '0x2',
+      '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+      '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+      '0x0',
+      '0x0',
+    ]
 
     const result = mergeSlots([type], data)
 
     expect(result.length).toBe(1)
-    expect(result[0]).toStrictEqual(['0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', '0x0'])
+    expect(result[0]).toStrictEqual([
+      '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+      '0x0',
+    ])
   })
 
   it('Merges uint256 array at mid some other element', () => {
@@ -185,13 +226,24 @@ describe('Test merging uint256s from data', () => {
       cairoType: 'core::array::Array::<core::integer::u256>',
     }
 
-    const data = ['0x1234', '0x2', '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF','0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', '0x0', '0x0', '0xfff'];
+    const data = [
+      '0x1234',
+      '0x2',
+      '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+      '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+      '0x0',
+      '0x0',
+      '0xfff',
+    ]
 
     const result = mergeSlots([type1, type, type1], data)
 
     expect(result.length).toBe(3)
     expect(result[0]).toBe('0x1234')
-    expect(result[1]).toStrictEqual(['0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff','0x0'])
+    expect(result[1]).toStrictEqual([
+      '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+      '0x0',
+    ])
     expect(result[2]).toBe('0xfff')
   })
 
@@ -211,13 +263,20 @@ describe('Test merging uint256s from data', () => {
       cairoType: 'core::integer::u256',
     }
 
-    const data = ['0x1234', '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF','0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', '0xfff'];
+    const data = [
+      '0x1234',
+      '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+      '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+      '0xfff',
+    ]
 
     const result = mergeSlots([type1, type, type1], data)
 
     expect(result.length).toBe(3)
     expect(result[0]).toBe('0x1234')
-    expect(result[1]).toBe('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')
+    expect(result[1]).toBe(
+      '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+    )
     expect(result[2]).toBe('0xfff')
   })
 
@@ -230,8 +289,11 @@ describe('Test merging uint256s from data', () => {
       cairoType: 'core::integer::u128',
     }
 
-
-    const data = ['0x1234', '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF','0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'];
+    const data = [
+      '0x1234',
+      '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+      '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+    ]
 
     const result = mergeSlots([type1, type1, type1], data)
 
@@ -257,13 +319,21 @@ describe('Test merging uint256s from data', () => {
       cairoType: 'core::array::Array::<core::integer::uu128>',
     }
 
-    const data = ['0x1234', '0x2', '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF','0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'];
+    const data = [
+      '0x1234',
+      '0x2',
+      '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+      '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+    ]
 
     const result = mergeSlots([type1, type], data)
 
     expect(result.length).toBe(2)
     expect(result[0]).toBe('0x1234')
-    expect(result[1]).toStrictEqual(['0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'])
+    expect(result[1]).toStrictEqual([
+      '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+      '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+    ])
   })
 })
 
@@ -279,13 +349,18 @@ describe('Tests encoding starknet data to evm data', () => {
 
     const data = ['0x12431234']
 
-    const encoded: EVMEncodeResult | EVMEncodeError = encodeStarknetData([type], data)
+    const encoded: EVMEncodeResult | EVMEncodeError = encodeStarknetData(
+      [type],
+      data,
+    )
 
-    if(!isEVMEncodeResult(encoded)) {
+    if (!isEVMEncodeResult(encoded)) {
       throw encoded.message
     }
 
-    expect(encoded.data).toBe('0x0000000000000000000000000000000000000000000000000000000012431234')
+    expect(encoded.data).toBe(
+      '0x0000000000000000000000000000000000000000000000000000000012431234',
+    )
   })
 
   it('Encodes simple calldata', () => {
@@ -307,13 +382,18 @@ describe('Tests encoding starknet data to evm data', () => {
 
     const data = ['0x12431234', '0xfff', '0x0']
 
-    const encoded: EVMEncodeResult | EVMEncodeError = encodeStarknetData([type1, type2], data)
+    const encoded: EVMEncodeResult | EVMEncodeError = encodeStarknetData(
+      [type1, type2],
+      data,
+    )
 
-    if(!isEVMEncodeResult(encoded)) {
+    if (!isEVMEncodeResult(encoded)) {
       throw encoded.message
     }
 
-    expect(encoded.data).toBe('0x00000000000000000000000000000fff000000000000000000000000124312340000000000000000000000000000000000000000000000000000000000000000')
+    expect(encoded.data).toBe(
+      '0x00000000000000000000000000000fff000000000000000000000000124312340000000000000000000000000000000000000000000000000000000000000000',
+    )
   })
 
   it('Encodes uint128 array calldata', () => {
@@ -335,13 +415,18 @@ describe('Tests encoding starknet data to evm data', () => {
 
     const data = ['0x2', '0x12431234', '0xfff', '0x5']
 
-    const encoded: EVMEncodeResult | EVMEncodeError = encodeStarknetData([type1, type2], data)
+    const encoded: EVMEncodeResult | EVMEncodeError = encodeStarknetData(
+      [type1, type2],
+      data,
+    )
 
-    if(!isEVMEncodeResult(encoded)) {
+    if (!isEVMEncodeResult(encoded)) {
       throw encoded.message
     }
 
-    expect(encoded.data).toBe('0x00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000124312340000000000000000000000000000000000000000000000000000000000000fff')
+    expect(encoded.data).toBe(
+      '0x00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000124312340000000000000000000000000000000000000000000000000000000000000fff',
+    )
   })
   it('Encodes uint128 array at middle calldata', () => {
     const type1: CairoNamedConvertableType = {
@@ -362,13 +447,18 @@ describe('Tests encoding starknet data to evm data', () => {
 
     const data = ['0xfffffffff', '0x2', '0x12431234', '0xfff', '0x5']
 
-    const encoded: EVMEncodeResult | EVMEncodeError = encodeStarknetData([type2, type1, type2], data)
+    const encoded: EVMEncodeResult | EVMEncodeError = encodeStarknetData(
+      [type2, type1, type2],
+      data,
+    )
 
-    if(!isEVMEncodeResult(encoded)) {
+    if (!isEVMEncodeResult(encoded)) {
       throw encoded.message
     }
 
-    expect(encoded.data).toBe('0x0000000000000000000000000000000000000000000000000000000fffffffff00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000124312340000000000000000000000000000000000000000000000000000000000000fff')
+    expect(encoded.data).toBe(
+      '0x0000000000000000000000000000000000000000000000000000000fffffffff00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000124312340000000000000000000000000000000000000000000000000000000000000fff',
+    )
   })
   it('Encodes uint256 array', () => {
     const type1: CairoNamedConvertableType = {
@@ -379,18 +469,22 @@ describe('Tests encoding starknet data to evm data', () => {
       cairoType: 'core::array::Array::<core::integer::u256>',
     }
 
-    const data = [ '0x2', '0x12431234', '0xfff', '0x5', '0x0']
+    const data = ['0x2', '0x12431234', '0xfff', '0x5', '0x0']
 
-    const encoded: EVMEncodeResult | EVMEncodeError = encodeStarknetData([type1], data)
+    const encoded: EVMEncodeResult | EVMEncodeError = encodeStarknetData(
+      [type1],
+      data,
+    )
 
-    if(!isEVMEncodeResult(encoded)) {
+    if (!isEVMEncodeResult(encoded)) {
       throw encoded.message
     }
 
-    expect(encoded.data).toBe('0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000fff000000000000000000000000124312340000000000000000000000000000000000000000000000000000000000000005')
+    expect(encoded.data).toBe(
+      '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000fff000000000000000000000000124312340000000000000000000000000000000000000000000000000000000000000005',
+    )
   })
 })
-
 
 describe('Test uint256 converts', () => {
   it('Converts uint256 to u256 array', () => {
