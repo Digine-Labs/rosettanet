@@ -7,7 +7,7 @@ export async function createAccessListHandler(
     jsonrpc: '2.0',
     id: request.id,
     result: {
-      accessList: [],
+        accessList: []
     },
   }
 }

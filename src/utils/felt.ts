@@ -10,7 +10,7 @@ export function convertHexIntoBytesArray(chunk: string): Array<string> {
 }
 
 export function convertStringIntoChunks(data: string, size: number): string[] {
-  return convertChunkIntoHexStringArray(data, size)
+  return convertChunkIntoHexStringArray(data, size);
 }
 
 function convertChunkIntoHexStringArray(

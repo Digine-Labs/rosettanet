@@ -5,7 +5,7 @@ import {
 
 describe('Config file check', () => {
   it('returning AppName in config', () => {
-    initConfig(false)
+    initConfig()
     expect(getConfigurationProperty('appName')).toBe('RosettaNet')
   })
 
