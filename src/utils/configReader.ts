@@ -34,7 +34,9 @@ export function getConfigurationProperty(prop: string): any {
 }
 
 export function initConfig() {
-  const configPath = path.resolve(__dirname, '../../config.json')
+  const startArguments = process.argv.slice(2)
+
+  const configPath = startArguments.indexOf('--devnet') > -1 ? path.resolve(__dirname, '../../config.test.json') : path.resolve(__dirname, '../../config.json');
 
   // Check if the config file exists
   if (!fs.existsSync(configPath)) {
