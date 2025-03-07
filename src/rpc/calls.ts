@@ -243,7 +243,7 @@ Methods.set('eth_createAccessList', {
 router.post('/', async function (req: ParsedRequest, res: Response) {
   const request = req.rpcRequest
   if (request?.method) {
-    const methodFirstLetters: string = request.method.substring(0, 7)
+    const methodFirstLetters: string = request.method.substring(0, 8)
     if (methodFirstLetters === 'starknet') {
       const result = await starknetCallHandler(request)
       res.send(result)
