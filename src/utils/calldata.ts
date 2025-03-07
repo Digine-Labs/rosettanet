@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AbiCoder, dataSlice } from 'ethers'
+import { AbiCoder, dataSlice, getBytes, hexlify } from 'ethers'
 import {
   EVMDecodeError,
   EVMDecodeResult,
@@ -29,6 +29,34 @@ export function getFunctionSelectorFromCalldata(calldata: any): string | null {
   }
 
   return calldata.substring(0, 10)
+}
+
+export function to128Bits(calldata: string): string[] {
+  if(!calldata.startsWith('0x')) {
+    throw new Error("Calldata must be a hex sting starting with 0x");
+  }
+   const data = getBytes(calldata);
+
+  if(data.length < 4) {
+    throw new Error('Calldata length is too short')
+  }
+
+  const functionSelector = hexlify(data.slice(0, 4));
+  const slots: string[] = [];
+  slots.push(functionSelector)
+  for (let i = 4; i < data.length; i += 32) {
+      if (i + 32 > data.length) {
+          throw new Error("Invalid calldata length, must be a multiple of 32 bytes after selector");
+      }
+
+      // Extract two u128 values from the 32-byte slot (in hex format)
+      const firstU128 = hexlify(data.slice(i, i + 16));
+      const secondU128 = hexlify(data.slice(i + 16, i + 32));
+
+      slots.push(...[firstU128, secondU128]);
+  }
+
+  return slots;
 }
 
 export function convertUint256s(data: Array<string>): Array<string> {
