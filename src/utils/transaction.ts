@@ -314,7 +314,7 @@ export function prepareRosettanetCalldataFinal(txn: SignedRawTransaction): strin
       if (gasPrice == null) {
         return <PrepareCalldataError>{
           message:
-            'maxPriorityFeePerGas or maxFeePerGas fields are null on Eip1559 transaction',
+            'Gas price field is mandatory for legacy transactions',
         }
       }
       const calldata: Array<string> = []
