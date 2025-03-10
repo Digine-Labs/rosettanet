@@ -149,7 +149,6 @@ export async function deployRosettanetAccount(
   }
   const response: RPCResponse | StarknetRPCError = await callStarknet(deployRequest)
 
-  console.log(JSON.stringify(deployRequest))
   /*
  {
     "jsonrpc": "2.0",
@@ -160,7 +159,6 @@ export async function deployRosettanetAccount(
     "id": 1
 }
  */
-  console.log(response)
   if (!isRPCResponse(response)) {
     return response
   }

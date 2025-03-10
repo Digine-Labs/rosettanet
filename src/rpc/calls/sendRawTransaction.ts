@@ -32,8 +32,6 @@ export async function sendRawTransactionHandler(request: RPCRequest): Promise<RP
       const rawTxn: string = request.params[0]
       const tx = Transaction.from(rawTxn)
 
-      console.log(tx.toJSON())
-
       const signedValidRawTransaction: SignedRawTransaction | ValidationError =
       validateRawTransaction(tx)
 
@@ -50,7 +48,6 @@ export async function sendRawTransactionHandler(request: RPCRequest): Promise<RP
 
       const deployedAccountAddress: RosettanetAccountResult =
       await getRosettaAccountAddress(signedValidRawTransaction.from)
-      console.log(deployedAccountAddress)
       if (!deployedAccountAddress.isDeployed) {
         // This means account is not registered on rosettanet registry. Lets deploy the address
         const accountDeployResult: AccountDeployResult | AccountDeployError =
@@ -98,8 +95,6 @@ export async function sendRawTransactionHandler(request: RPCRequest): Promise<RP
         signedValidRawTransaction.signature.arrayified,
         signedValidRawTransaction,
       )
-
-      console.log(JSON.stringify(invokeTx))
 
       return await broadcastTransaction(request, invokeTx)
 }
