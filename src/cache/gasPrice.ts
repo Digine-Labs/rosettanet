@@ -31,37 +31,12 @@ export function getCachedGasPrice(): SyncedL1Gas {
 
 async function updateGasPrice() {
   try {
-    const blockHashCall: RPCResponse | StarknetRPCError = await callStarknet({
-      jsonrpc: '2.0',
-      method: 'starknet_blockHashAndNumber',
-      params: [],
-      id: 1,
-    })
 
-    if (isStarknetRPCError(blockHashCall)) {
-      writeLog(2, 'Error at syncing starknet gas price' + blockHashCall.message)
-      return
-    }
-
-    if (typeof blockHashCall.result.block_hash !== 'string') {
-      writeLog(
-        2,
-        'Block hash and number call returned wrong value' +
-          blockHashCall.result,
-      )
-      return
-    }
-
-    const blockHash: string = blockHashCall.result.block_hash
 
     const blockResponse: RPCResponse | StarknetRPCError = await callStarknet({
       jsonrpc: '2.0',
       method: 'starknet_getBlockWithTxs',
-      params: {
-        block_id: {
-          block_hash: blockHash,
-        },
-      },
+      params: ["latest"],
       id: 0,
     })
 
