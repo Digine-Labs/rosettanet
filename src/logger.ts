@@ -1,5 +1,6 @@
 import { createWriteStream } from 'fs'
 import { RPCError, RPCRequest, RPCResponse } from './types/types'
+import { getConfigurationProperty } from './utils/configReader'
 
 export function isSnifferActive(): boolean {
   return process.argv.slice(2).indexOf('--sniffer') > -1
@@ -12,10 +13,14 @@ export function snifferOutput(
   return JSON.stringify({ request, response })
 }
 
+function getLogConfig() {
+  const logging = getConfigurationProperty("logging");
+  return logging;
+}
+
 export function writeLog(severity: number, text: string) {
-  const startArguments = process.argv.slice(2)
-  if (startArguments.indexOf('--enable-logs') == -1 && severity < 2) {
-    // logging disabled
+  const logConfig = getLogConfig();
+  if(!logConfig.active) {
     return
   }
 
@@ -26,33 +31,11 @@ export function writeLog(severity: number, text: string) {
     return
   }
 
-  let loggingType = 'console'
+  const loggingType = logConfig.output;
 
-  if (startArguments.indexOf('--logging-type') > -1) {
-    const typeIndex = startArguments.indexOf('--logging-type')
-    const typeValueIndex = typeIndex + 1
-    if (typeValueIndex > startArguments.length) {
-      throw 'logging-type value not exist'
-    }
-    loggingType = startArguments[typeValueIndex]
-  }
+  const logFile = logConfig.fileName;
 
-  let logFile = ''
-
-  if (loggingType === 'file') {
-    const logFileIndex = startArguments.indexOf('--logging-file')
-
-    if (logFileIndex == -1 || startArguments.length < logFileIndex + 1) {
-      throw 'logging-file value not exist'
-    }
-
-    logFile = startArguments[logFileIndex + 1]
-  }
-
-  let logFormat = 'text'
-  if (startArguments.indexOf('--log-json') > -1) {
-    logFormat = 'json'
-  }
+  const logFormat = logConfig.format;
 
   appendLog(loggingType, logFile, logFormat, severity, text)
   return
