@@ -115,7 +115,8 @@ export async function deployRosettanetAccount(
   const accountClass = getConfigurationProperty('accountClass')
   const gasPrice = txn.maxFeePerGas == null ? txn.gasPrice : txn.maxFeePerGas
   const actualGasPrice = gasPrice == null ? '0x0' : gasPrice
-  const response: RPCResponse | StarknetRPCError = await callStarknet({
+
+  const deployRequest = {
     // todo handle error if string
     jsonrpc: '2.0',
     method: 'starknet_addDeployAccountTransaction',
@@ -145,7 +146,10 @@ export async function deployRosettanetAccount(
       },
     },
     id: 1,
-  })
+  }
+  const response: RPCResponse | StarknetRPCError = await callStarknet(deployRequest)
+
+  console.log(JSON.stringify(deployRequest))
   /*
  {
     "jsonrpc": "2.0",

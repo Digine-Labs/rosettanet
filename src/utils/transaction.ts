@@ -289,7 +289,7 @@ export function prepareRosettanetCalldataFinal(txn: SignedRawTransaction): strin
         calldata.push(addHexPrefix(maxFeePerGas.toString(16)));
         calldata.push(addHexPrefix('0')) // Gas price
         calldata.push(addHexPrefix(gasLimit.toString(16)))
-        calldata.push(...Uint256ToU256(value.toString()).map(v => addHexPrefix(v)))
+        calldata.push(...safeUint256ToU256(value).map(v => addHexPrefix(v)))
         calldata.push(addHexPrefix('0')) // Calldata length
         return calldata;
       } else {
@@ -300,7 +300,7 @@ export function prepareRosettanetCalldataFinal(txn: SignedRawTransaction): strin
         calldata.push(addHexPrefix(maxFeePerGas.toString(16)));
         calldata.push(addHexPrefix('0')) // Gas price
         calldata.push(addHexPrefix(gasLimit.toString(16)))
-        calldata.push(...Uint256ToU256(value.toString()).map(v => addHexPrefix(v)))
+        calldata.push(...safeUint256ToU256(value).map(v => addHexPrefix(v)))
 
         const evmCalldata = to128Bits(data);
         calldata.push(addHexPrefix(evmCalldata.length.toString(16)))
@@ -327,7 +327,7 @@ export function prepareRosettanetCalldataFinal(txn: SignedRawTransaction): strin
         calldata.push(addHexPrefix('0')) 
         calldata.push(addHexPrefix(gasPrice.toString(16)))
         calldata.push(addHexPrefix(gasLimit.toString(16)))
-        calldata.push(...Uint256ToU256(value.toString()).map(v => addHexPrefix(v)))
+        calldata.push(...safeUint256ToU256(value).map(v => addHexPrefix(v)))
         calldata.push(addHexPrefix('0')) // Calldata length
         return calldata;
       } else {
@@ -338,7 +338,7 @@ export function prepareRosettanetCalldataFinal(txn: SignedRawTransaction): strin
         calldata.push(addHexPrefix('0')) 
         calldata.push(addHexPrefix(gasPrice.toString(16)))
         calldata.push(addHexPrefix(gasLimit.toString(16)))
-        calldata.push(...Uint256ToU256(value.toString()).map(v => addHexPrefix(v)))
+        calldata.push(...safeUint256ToU256(value).map(v => addHexPrefix(v)))
 
         const evmCalldata = to128Bits(data);
         calldata.push(addHexPrefix(evmCalldata.length.toString(16)))
