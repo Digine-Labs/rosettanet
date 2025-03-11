@@ -13,7 +13,7 @@ export async function starknetCallHandler(
   const response: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: request.method,
-    params: [],
+    params: request.params,
     id: request.id,
   })
 

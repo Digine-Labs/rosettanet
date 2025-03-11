@@ -32,6 +32,12 @@ const nonParamMethods = [
   'eth_hashrate',
   'eth_accounts',
   'eth_blockNumber',
+
+  'starknet_blockNumber',
+  'starknet_chainId',
+  'starknet_blockHashAndNumber',
+  'starknet_specVersion',
+  'starknet_syncing',
 ]
 
 export function parseRequest(
