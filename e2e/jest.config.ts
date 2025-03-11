@@ -7,10 +7,8 @@ const jestConfig: JestConfigWithTsJest = {
   setupFilesAfterEnv: ["<rootDir>/setup.ts"], // ✅ Runs setup only for E2E tests
   testTimeout: 30000, // Increase timeout for long-running tests
   extensionsToTreatAsEsm: [".ts"], // ✅ Treat .ts files as ES modules
-  globals: {
-    "ts-jest": {
-      useESM: true, // ✅ Enables ES module support
-    },
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest', { tsconfig: 'tsconfig.json', isolatedModules: true }]
   },
   forceExit: true
 };

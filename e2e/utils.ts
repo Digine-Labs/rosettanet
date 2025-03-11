@@ -3,23 +3,24 @@ import { initNode } from "../src/index";
 import { Devnet } from 'starknet-devnet'
 
 
-const mainnetRpc = "https://free-rpc.nethermind.io/mainnet-juno"
+const mainnetRpc = "https://starknet-mainnet.public.blastapi.io/rpc/v0_7"
 const forkBlock = "1219608"
 
-async function forkDevnet() {
-    await Devnet.spawnInstalled({ args: ["--fork-network", mainnetRpc, "--fork-block", forkBlock] });
+export const SERVER = "http://localhost:3000"
 
-    return;
+async function forkDevnet() {
+    const devnet = await Devnet.spawnInstalled({ args: ["--fork-network", mainnetRpc, "--fork-block", forkBlock] });
+
+    return devnet;
 }
 
 export async function startNode() {
     try { 
-        await forkDevnet()
+        const devnet = await forkDevnet()
+        await initNode("config.test.json")
+        return devnet;
     } catch (ex) {
         console.error(ex)
         process.exit(0);
     }
-    await initNode("config.test.json")
-
-    return;
 }
