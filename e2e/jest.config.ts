@@ -12,6 +12,7 @@ const jestConfig: JestConfigWithTsJest = {
       useESM: true, // ✅ Enables ES module support
     },
   },
+  forceExit: true
 };
 
 export default jestConfig;

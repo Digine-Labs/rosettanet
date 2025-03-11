@@ -12,7 +12,7 @@
     "active": true,
     "output": "file",
     "minSeverity": "1",
-    "fileName": "logs.log",
+    "fileName": "./e2e/logs.log",
     "format": "text"
   }
 }
