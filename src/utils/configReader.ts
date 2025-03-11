@@ -1,4 +1,4 @@
-import * as fs from 'fs'
+import{promises as fs} from 'fs'
 import * as path from 'path'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,32 +33,21 @@ export function getConfigurationProperty(prop: string): any {
   return configuration[prop]
 }
 
-export function initConfig() {
-  const startArguments = process.argv.slice(2)
-
-  const configPath =
-    startArguments.indexOf('--devnet') > -1
-      ? path.resolve(__dirname, '../../config.test.json')
-      : path.resolve(__dirname, '../../config.json')
-
-  // Check if the config file exists
-  if (!fs.existsSync(configPath)) {
-    throw new Error(`Configuration file not found at path: ${configPath}`)
-  }
-
+export async function initConfig(configPath: string): Promise<boolean> {
   // Check if the file is a JSON file
   if (path.extname(configPath) !== '.json') {
     throw new Error(`Configuration file is not a JSON file: ${configPath}`)
   }
-
+  
   // Check if the file has read access
   try {
-    fs.accessSync(configPath, fs.constants.R_OK)
+    
+    await fs.access(configPath, fs.constants.R_OK)
   } catch (error) {
     throw new Error(`Configuration file is not readable: ${configPath}`)
   }
 
-  const rawData = fs.readFileSync(configPath, 'utf8')
+  const rawData = await fs.readFile(configPath, 'utf8')
 
   // Try to parse the JSON file
   let config
@@ -82,4 +71,5 @@ export function initConfig() {
   }
 
   configuration = config
+  return true;
 }

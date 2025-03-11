@@ -19,7 +19,7 @@ export function StartListening() {
   app.options('*', cors())
   app.use('/', Routes)
 
-  app.listen(port, host, (): void => {
+  const server = app.listen(port, host, (): void => {
     // eslint-disable-next-line no-console
     writeLog(0, `Server started at ${host}:${port}`)
 
@@ -34,4 +34,12 @@ export function StartListening() {
       })
     })
   })
+
+  process.on("SIGINT", () => {
+    writeLog(1,"🛑 Stopping Node...");
+    server.close(() => {
+      writeLog(1, "✅ Server stopped.");
+      process.exit(0);
+    });
+  });
 }

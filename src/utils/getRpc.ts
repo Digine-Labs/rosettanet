@@ -1,9 +1,7 @@
-import { getConfigurationProperty, initConfig } from './configReader'
-
-initConfig()
-const rpcList = getConfigurationProperty('rpcUrls')
+import { getConfigurationProperty } from './configReader'
 
 export const getRpc = (): string => {
+  const rpcList = getConfigurationProperty('rpcUrls')
   const rpc = rpcList[Math.floor(Math.random() * rpcList.length)]
   return rpc
 }
