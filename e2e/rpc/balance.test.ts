@@ -1,17 +1,20 @@
+
 import axios from "axios";
 import { SERVER } from "../utils";
 
-test.only("get chain id", async () => {
+const snAddress = "0x06419f7dea356b74bc1443bd1600ab3831b7808d1ef897789facfad11a172da7"
+
+test.only("balance request in array", async () => {
+    // todo: deploy first
     const response = await axios.post(SERVER, {
         jsonrpc: "2.0",
-        method: "eth_chainId",
-        params: [],
+        method: "eth_getBalance",
+        params: [snAddress, "latest"],
         id: 1,
     });
     expect(response.status).toBe(200);
     expect(response.data.result).not.toBeUndefined();
     expect(response.data.result).toBe("0x52535453")
 }, 30000)
-
 
 
