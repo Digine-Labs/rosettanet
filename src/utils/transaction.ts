@@ -103,14 +103,24 @@ export function prepareRosettanetCalldataForEstimatingFee(
 }
 
 // Last version of calldata preparing
-export function prepareRosettanetCalldata(txn: SignedRawTransaction): string[] | PrepareCalldataError {
+export function prepareRosettanetCalldata(
+  txn: SignedRawTransaction,
+): string[] | PrepareCalldataError {
   try {
-    const targetFunctionSelector: string | null = getFunctionSelectorFromCalldata(
-      txn.data,
-    );
-    if(txn.type == 2) {
+    const targetFunctionSelector: string | null =
+      getFunctionSelectorFromCalldata(txn.data)
+    if (txn.type == 2) {
       // Eip 1559
-      const { type, to, nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, value, data } = txn;
+      const {
+        type,
+        to,
+        nonce,
+        maxPriorityFeePerGas,
+        maxFeePerGas,
+        gasLimit,
+        value,
+        data,
+      } = txn
       if (maxPriorityFeePerGas == null || maxFeePerGas == null) {
         return <PrepareCalldataError>{
           message:
@@ -118,78 +128,77 @@ export function prepareRosettanetCalldata(txn: SignedRawTransaction): string[] |
         }
       }
       const calldata: Array<string> = []
-      if(targetFunctionSelector == null) {
+      if (targetFunctionSelector == null) {
         // Only strk transfer
-        calldata.push(addHexPrefix(type.toString(16)));
-        calldata.push(to);
-        calldata.push(addHexPrefix(nonce.toString(16)));
-        calldata.push(addHexPrefix(maxPriorityFeePerGas.toString(16)));
-        calldata.push(addHexPrefix(maxFeePerGas.toString(16)));
+        calldata.push(addHexPrefix(type.toString(16)))
+        calldata.push(to)
+        calldata.push(addHexPrefix(nonce.toString(16)))
+        calldata.push(addHexPrefix(maxPriorityFeePerGas.toString(16)))
+        calldata.push(addHexPrefix(maxFeePerGas.toString(16)))
         calldata.push(addHexPrefix('0')) // Gas price
         calldata.push(addHexPrefix(gasLimit.toString(16)))
         calldata.push(...safeUint256ToU256(value).map(v => addHexPrefix(v)))
         calldata.push(addHexPrefix('0')) // Calldata length
-        return calldata;
+        return calldata
       } else {
-        calldata.push(addHexPrefix(type.toString(16)));
-        calldata.push(to);
-        calldata.push(addHexPrefix(nonce.toString(16)));
-        calldata.push(addHexPrefix(maxPriorityFeePerGas.toString(16)));
-        calldata.push(addHexPrefix(maxFeePerGas.toString(16)));
+        calldata.push(addHexPrefix(type.toString(16)))
+        calldata.push(to)
+        calldata.push(addHexPrefix(nonce.toString(16)))
+        calldata.push(addHexPrefix(maxPriorityFeePerGas.toString(16)))
+        calldata.push(addHexPrefix(maxFeePerGas.toString(16)))
         calldata.push(addHexPrefix('0')) // Gas price
         calldata.push(addHexPrefix(gasLimit.toString(16)))
         calldata.push(...safeUint256ToU256(value).map(v => addHexPrefix(v)))
 
-        const evmCalldata = to128Bits(data);
+        const evmCalldata = to128Bits(data)
         calldata.push(addHexPrefix(evmCalldata.length.toString(16)))
         calldata.push(...evmCalldata)
 
-        return calldata;
+        return calldata
       }
-    } else if(txn.type == 0) {
+    } else if (txn.type == 0) {
       // Legacy
-      const { type, to, nonce, gasPrice, gasLimit, value, data } = txn;
+      const { type, to, nonce, gasPrice, gasLimit, value, data } = txn
       if (gasPrice == null) {
         return <PrepareCalldataError>{
-          message:
-            'Gas price field is mandatory for legacy transactions',
+          message: 'Gas price field is mandatory for legacy transactions',
         }
       }
       const calldata: Array<string> = []
-      if(targetFunctionSelector == null) {
+      if (targetFunctionSelector == null) {
         // Only strk transfer
-        calldata.push(addHexPrefix(type.toString(16)));
-        calldata.push(to);
-        calldata.push(addHexPrefix(nonce.toString(16)));
-        calldata.push(addHexPrefix('0')) 
-        calldata.push(addHexPrefix('0')) 
+        calldata.push(addHexPrefix(type.toString(16)))
+        calldata.push(to)
+        calldata.push(addHexPrefix(nonce.toString(16)))
+        calldata.push(addHexPrefix('0'))
+        calldata.push(addHexPrefix('0'))
         calldata.push(addHexPrefix(gasPrice.toString(16)))
         calldata.push(addHexPrefix(gasLimit.toString(16)))
         calldata.push(...safeUint256ToU256(value).map(v => addHexPrefix(v)))
         calldata.push(addHexPrefix('0')) // Calldata length
-        return calldata;
+        return calldata
       } else {
-        calldata.push(addHexPrefix(type.toString(16)));
-        calldata.push(to);
-        calldata.push(addHexPrefix(nonce.toString(16)));
-        calldata.push(addHexPrefix('0')) 
-        calldata.push(addHexPrefix('0')) 
+        calldata.push(addHexPrefix(type.toString(16)))
+        calldata.push(to)
+        calldata.push(addHexPrefix(nonce.toString(16)))
+        calldata.push(addHexPrefix('0'))
+        calldata.push(addHexPrefix('0'))
         calldata.push(addHexPrefix(gasPrice.toString(16)))
         calldata.push(addHexPrefix(gasLimit.toString(16)))
         calldata.push(...safeUint256ToU256(value).map(v => addHexPrefix(v)))
 
-        const evmCalldata = to128Bits(data);
+        const evmCalldata = to128Bits(data)
         calldata.push(addHexPrefix(evmCalldata.length.toString(16)))
         calldata.push(...evmCalldata)
 
-        return calldata;
+        return calldata
       }
     } else {
       return <PrepareCalldataError>{
         message: 'Only Eip1559 or Legacy transactions are supported',
       }
     }
-  } catch(ex) {
+  } catch (ex) {
     return <PrepareCalldataError>{
       message: typeof ex === 'string' ? ex : (ex as Error).message,
     }

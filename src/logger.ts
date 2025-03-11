@@ -14,13 +14,13 @@ export function snifferOutput(
 }
 
 function getLogConfig() {
-  const logging = getConfigurationProperty("logging");
-  return logging;
+  const logging = getConfigurationProperty('logging')
+  return logging
 }
 
 export function writeLog(severity: number, text: string) {
-  const logConfig = getLogConfig();
-  if(!logConfig.active) {
+  const logConfig = getLogConfig()
+  if (!logConfig.active) {
     return
   }
 
@@ -31,11 +31,11 @@ export function writeLog(severity: number, text: string) {
     return
   }
 
-  const loggingType = logConfig.output;
+  const loggingType = logConfig.output
 
-  const logFile = logConfig.fileName;
+  const logFile = logConfig.fileName
 
-  const logFormat = logConfig.format;
+  const logFormat = logConfig.format
 
   appendLog(loggingType, logFile, logFormat, severity, text)
   return

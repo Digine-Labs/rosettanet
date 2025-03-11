@@ -31,12 +31,10 @@ export function getCachedGasPrice(): SyncedL1Gas {
 
 async function updateGasPrice() {
   try {
-
-
     const blockResponse: RPCResponse | StarknetRPCError = await callStarknet({
       jsonrpc: '2.0',
       method: 'starknet_getBlockWithTxs',
-      params: ["latest"],
+      params: ['latest'],
       id: 0,
     })
 

@@ -147,7 +147,8 @@ export async function deployRosettanetAccount(
     },
     id: 1,
   }
-  const response: RPCResponse | StarknetRPCError = await callStarknet(deployRequest)
+  const response: RPCResponse | StarknetRPCError =
+    await callStarknet(deployRequest)
 
   /*
  {
