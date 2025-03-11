@@ -10,7 +10,6 @@ import {
   safeUint256ToU256,
   Uint256ToU256,
 } from './converters/integer'
-import { StarknetCallableMethod } from './match'
 import { addHexPrefix } from './padding'
 
 // Signature will be v,r,s
@@ -61,166 +60,6 @@ function getGasObject(txn: SignedRawTransaction) {
   return gasObject
 }
 
-function prepareRosettanetCalldataForLegacyMulticall(
-  to: string,
-  nonce: number,
-  gas_limit: bigint,
-  gas_price: bigint,
-  value: bigint,
-  calldata: Array<string>,
-): string[] {
-  const finalCalldata: Array<string> = []
-
-  finalCalldata.push(addHexPrefix('0'))
-  finalCalldata.push(to)
-  finalCalldata.push(addHexPrefix(nonce.toString(16)))
-  finalCalldata.push(addHexPrefix('0'))
-  finalCalldata.push(addHexPrefix('0'))
-  finalCalldata.push(addHexPrefix(gas_price.toString(16)))
-  finalCalldata.push(addHexPrefix(gas_limit.toString(16)))
-
-  const value_u256 = Uint256ToU256(value.toString())
-  finalCalldata.push(...value_u256.map(v => addHexPrefix(v)))
-
-  finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
-  finalCalldata.push(...calldata)
-
-  return finalCalldata
-}
-
-function prepareRosettanetCalldataForEip1559Multicall(
-  to: string,
-  nonce: number,
-  max_priority_fee_per_gas: bigint,
-  max_fee_per_gas: bigint,
-  gas_limit: bigint,
-  value: bigint,
-  calldata: Array<string>,
-): string[] {
-  const finalCalldata: Array<string> = []
-
-  finalCalldata.push(addHexPrefix('2'))
-  finalCalldata.push(to)
-  finalCalldata.push(addHexPrefix(nonce.toString(16)))
-  finalCalldata.push(addHexPrefix(max_priority_fee_per_gas.toString(16)))
-  finalCalldata.push(addHexPrefix(max_fee_per_gas.toString(16)))
-  finalCalldata.push(addHexPrefix('0'))
-  finalCalldata.push(addHexPrefix(gas_limit.toString(16)))
-
-  const value_u256 = Uint256ToU256(value.toString())
-  finalCalldata.push(...value_u256.map(v => addHexPrefix(v)))
-
-  finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
-  finalCalldata.push(...calldata)
-  return finalCalldata
-}
-
-function prepareRosettanetCalldataEip1559(
-  to: string,
-  nonce: number,
-  max_priority_fee_per_gas: bigint,
-  max_fee_per_gas: bigint,
-  gas_limit: bigint,
-  value: bigint,
-  calldata: Array<string>,
-  directives: Array<number>,
-  targetFunction?: StarknetCallableMethod,
-): Array<string> {
-  // TODO add final validations for parameters
-  if (calldata.length == 0 && directives.length == 0) {
-    const finalCalldata: Array<string> = []
-
-    finalCalldata.push(addHexPrefix('2')) // Tx type
-    finalCalldata.push(to)
-    finalCalldata.push(addHexPrefix(nonce.toString(16)))
-    finalCalldata.push(addHexPrefix(max_priority_fee_per_gas.toString(16)))
-    finalCalldata.push(addHexPrefix(max_fee_per_gas.toString(16)))
-    finalCalldata.push(addHexPrefix('0')) // gas_price is not used on eip1559
-    finalCalldata.push(addHexPrefix(gas_limit.toString(16)))
-
-    const value_u256 = safeUint256ToU256(value)
-    finalCalldata.push(...value_u256.map(v => addHexPrefix(v)))
-
-    finalCalldata.push(addHexPrefix(calldata.length.toString(16))) // Calldata length zero
-
-    return finalCalldata
-  }
-
-  if (typeof targetFunction === 'undefined') {
-    throw 'Target function not empty but calldata and directives are empty'
-  }
-
-  const finalCalldata: Array<string> = []
-
-  finalCalldata.push(addHexPrefix('2'))
-  finalCalldata.push(to)
-  finalCalldata.push(addHexPrefix(nonce.toString(16)))
-  finalCalldata.push(addHexPrefix(max_priority_fee_per_gas.toString(16)))
-  finalCalldata.push(addHexPrefix(max_fee_per_gas.toString(16)))
-  finalCalldata.push(addHexPrefix('0')) // gas_price is not used on eip1559
-  finalCalldata.push(addHexPrefix(gas_limit.toString(16)))
-
-  const value_u256 = Uint256ToU256(value.toString())
-  finalCalldata.push(...value_u256.map(v => addHexPrefix(v)))
-
-  finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
-  finalCalldata.push(...calldata)
-
-  return finalCalldata
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function prepareRosettanetCalldataLegacy(
-  to: string,
-  nonce: number,
-  gas_limit: bigint,
-  gas_price: bigint,
-  value: bigint,
-  calldata: Array<string>,
-  directives: Array<number>,
-  targetFunction?: StarknetCallableMethod,
-) {
-  if (calldata.length == 0 && directives.length == 0) {
-    const finalCalldata: Array<string> = []
-
-    finalCalldata.push(addHexPrefix('0')) // Tx type
-    finalCalldata.push(to)
-    finalCalldata.push(addHexPrefix(nonce.toString(16)))
-    finalCalldata.push(addHexPrefix('0'))
-    finalCalldata.push(addHexPrefix('0'))
-    finalCalldata.push(addHexPrefix(gas_price.toString(16)))
-    finalCalldata.push(addHexPrefix(gas_limit.toString(16)))
-
-    const value_u256 = safeUint256ToU256(value)
-    finalCalldata.push(...value_u256.map(v => addHexPrefix(v)))
-
-    finalCalldata.push(addHexPrefix(calldata.length.toString(16))) // len zero
-    return finalCalldata
-  }
-
-  if (typeof targetFunction === 'undefined') {
-    throw 'Target function not empty but calldata and directives are empty'
-  }
-
-  const finalCalldata: Array<string> = []
-
-  finalCalldata.push(addHexPrefix('0'))
-  finalCalldata.push(to)
-  finalCalldata.push(addHexPrefix(nonce.toString(16)))
-  finalCalldata.push(addHexPrefix('0'))
-  finalCalldata.push(addHexPrefix('0'))
-  finalCalldata.push(addHexPrefix(gas_price.toString(16)))
-  finalCalldata.push(addHexPrefix(gas_limit.toString(16)))
-
-  const value_u256 = Uint256ToU256(value.toString())
-  finalCalldata.push(...value_u256.map(v => addHexPrefix(v)))
-
-  finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
-  finalCalldata.push(...calldata)
-
-  return finalCalldata
-}
-
 export function prepareRosettanetCalldataForEstimatingFee(
   tx: EstimateFeeTransaction,
 ): string[] {
@@ -264,8 +103,7 @@ export function prepareRosettanetCalldataForEstimatingFee(
 }
 
 // Last version of calldata preparing
-export function prepareRosettanetCalldataFinal(txn: SignedRawTransaction): string[] | PrepareCalldataError {
-  // TODO: Split calldata into u128s, first get 4 bytes
+export function prepareRosettanetCalldata(txn: SignedRawTransaction): string[] | PrepareCalldataError {
   try {
     const targetFunctionSelector: string | null = getFunctionSelectorFromCalldata(
       txn.data,
@@ -352,91 +190,6 @@ export function prepareRosettanetCalldataFinal(txn: SignedRawTransaction): strin
       }
     }
   } catch(ex) {
-    return <PrepareCalldataError>{
-      message: typeof ex === 'string' ? ex : (ex as Error).message,
-    }
-  }
-}
-
-// First calldata element must be function selector
-export function prepareRosettanetCalldata(
-  signedTransaction: SignedRawTransaction,
-  calldata: Array<string>,
-  directives: Array<number>,
-  targetFunction?: StarknetCallableMethod,
-): Array<string> | PrepareCalldataError {
-  try {
-    if (signedTransaction.type == 2) {
-      // Eip-1559
-      const { to, nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, value } =
-        signedTransaction
-      if (maxPriorityFeePerGas == null || maxFeePerGas == null) {
-        return <PrepareCalldataError>{
-          message:
-            'maxPriorityFeePerGas or maxFeePerGas fields are null on Eip1559 transaction',
-        }
-      }
-
-      const selector = signedTransaction.data.substring(0, 10)
-      if (selector === '0x76971d7f') {
-        return prepareRosettanetCalldataForEip1559Multicall(
-          to,
-          nonce,
-          maxPriorityFeePerGas,
-          maxFeePerGas,
-          gasLimit,
-          value,
-          calldata,
-        )
-      }
-      return prepareRosettanetCalldataEip1559(
-        to,
-        nonce,
-        maxPriorityFeePerGas,
-        maxFeePerGas,
-        gasLimit,
-        value,
-        calldata,
-        directives,
-        targetFunction,
-      )
-    } else if (signedTransaction.type == 0) {
-      const { to, gasLimit, nonce, gasPrice, value } = signedTransaction
-
-      if (gasPrice == null) {
-        return <PrepareCalldataError>{
-          message: 'gasPrice is not defined',
-        }
-      }
-
-      const selector = signedTransaction.data.substring(0, 10)
-      if (selector === '0x76971d7f') {
-        return prepareRosettanetCalldataForLegacyMulticall(
-          to,
-          nonce,
-          gasLimit,
-          gasPrice,
-          value,
-          calldata,
-        )
-      }
-
-      return prepareRosettanetCalldataLegacy(
-        to,
-        nonce,
-        gasLimit,
-        gasPrice,
-        value,
-        calldata,
-        directives,
-        targetFunction,
-      )
-    } else {
-      return <PrepareCalldataError>{
-        message: 'Only Eip1559 or Legacy transactions are supported',
-      }
-    }
-  } catch (ex) {
     return <PrepareCalldataError>{
       message: typeof ex === 'string' ? ex : (ex as Error).message,
     }

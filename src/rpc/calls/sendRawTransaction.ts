@@ -4,7 +4,7 @@ import { validateRawTransaction } from "../../utils/validations";
 import { isAccountDeployResult, isPrepareCalldataError, isSignedRawTransaction, isStarknetRPCError } from "../../types/typeGuards";
 import { AccountDeployError, AccountDeployResult, deployRosettanetAccount, getRosettaAccountAddress, RosettanetAccountResult } from "../../utils/rosettanet";
 import { callStarknet } from "../../utils/callHelper";
-import { prepareRosettanetCalldataFinal, prepareStarknetInvokeTransaction } from "../../utils/transaction";
+import { prepareRosettanetCalldata, prepareStarknetInvokeTransaction } from "../../utils/transaction";
 
 export async function sendRawTransactionHandler(request: RPCRequest): Promise<RPCResponse | RPCError>  {
     if (request.params.length != 1) {
@@ -76,7 +76,7 @@ export async function sendRawTransactionHandler(request: RPCRequest): Promise<RP
 
       const starknetAccountAddress = deployedAccountAddress.contractAddress;
 
-      const rosettanetCalldata = prepareRosettanetCalldataFinal(signedValidRawTransaction);
+      const rosettanetCalldata = prepareRosettanetCalldata(signedValidRawTransaction);
 
       if (isPrepareCalldataError(rosettanetCalldata)) {
         return <RPCError>{
