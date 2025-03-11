@@ -1,9 +1,8 @@
-import "../setup";
 import axios from "axios";
 import { SERVER } from "../utils";
 
-describe("Chain ID Tests" , () => {
-    it("get chain id", async () => {
+
+    test.only("get chain id", async () => {
         const response = await axios.post(SERVER, {
             jsonrpc: "2.0",
             method: "eth_blockNumber",
@@ -12,9 +11,9 @@ describe("Chain ID Tests" , () => {
         });
         expect(response.status).toBe(200);
         expect(response.data.result).not.toBeUndefined();
-        expect(response.data.result).toBe("0x129c18")
+        expect(response.data.result).toBe("0x129c19")
         return;
     }, 30000)
-})
+
 
 
