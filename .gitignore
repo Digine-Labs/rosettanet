@@ -26,3 +26,5 @@ contracts/keystore
 logs.md
 sniffs.log
 logs.log
+
+contracts/

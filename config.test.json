@@ -1,12 +1,18 @@
 {
-    "appName": "RosettaNet",
-    "port": 3000,
-    "host": "localhost",
-    "rpcUrls": ["https://starknet-sepolia.public.blastapi.io"],
-    "chainId": "0x52535453",
-    "accountClass": "0x06ac5e60302289f2e2503bf685c8d7b5dcd204fe1f08c69dd1b911d306a4a8c2",
-    "ethAddress": "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
-    "strkAddress": "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
-    "rosettanet": "0x036a4f60ea2e8b318d96f5d3935583df1d520324a4901192e470da01d700cf87"
+  "appName": "RosettaNet",
+  "port": 3000,
+  "host": "localhost",
+  "rpcUrls": ["https://starknet-sepolia.public.blastapi.io"],
+  "chainId": "0x52535453",
+  "accountClass": "0x04b7ccebfb848b8d8e62808718de698afcb529b36885c2927ae4fbafc5a18a81",
+  "ethAddress": "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
+  "strkAddress": "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
+  "rosettanet": "0x007288a71619eca9397bf0d3066d236b41de33fd6af3a420d16b2f55c93f8af7",
+  "logging" : {
+    "active": true,
+    "output": "console",
+    "minSeverity": "1",
+    "fileName": "logs.log",
+    "format": "text"
   }
-  
+}
