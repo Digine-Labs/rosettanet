@@ -2,7 +2,7 @@
 
 ## eth_accounts
 
-Returns a list of addresses owned by client.
+Returns a list of addresses owned by client
 
 **Parameters :** None
 
