@@ -7,7 +7,7 @@ describe('Test getUncleByBlockNumberAndIndexHandler', () => {
       jsonrpc: '2.0',
       method: 'eth_getUncleByBlockHashAndIndex',
       params: [
-        '0x07410ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
+        '0x10ed96ff95e62c484444431302b7531d2bf9633758e682aab567407484f9a',
         '0x02',
       ],
       id: 1,
