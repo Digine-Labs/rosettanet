@@ -8,6 +8,7 @@ import {
 import { getConfigurationProperty } from './configReader'
 import { isRPCResponse, isStarknetRPCError } from '../types/typeGuards'
 import { addHexPrefix } from './padding'
+import { writeLog } from '../logger'
 
 // Calls starknet factory contract to precalculate starknet account address
 // TODO: add custom types like in deploy function
@@ -161,6 +162,7 @@ export async function deployRosettanetAccount(
 }
  */
   if (!isRPCResponse(response)) {
+    writeLog(2, 'deployRosettanetAccount respone is in wrong format');
     return response
   }
 

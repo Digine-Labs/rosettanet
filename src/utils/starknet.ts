@@ -10,8 +10,10 @@ import {
   RPCError,
   StarknetContract,
   StarknetContractReadError,
+  StarknetRPCError,
 } from '../types/types'
 import { ConvertableType } from './converters/abiFormatter'
+import { writeLog } from '../logger'
 
 export interface CairoNamedConvertableType extends ConvertableType {
   cairoType: string
@@ -216,4 +218,16 @@ export async function getContractsAbi(snAddress: string): Promise<Abi> {
     return []
   }
   return contractAbi
+}
+
+export async function getAccountNonce(snAddress: string): Promise<string | undefined> {
+  const rpcUrl: string = getRpc()
+  const provider = new RpcProvider({ nodeUrl: rpcUrl })
+  try {
+    const nonce = await provider.getNonceForAddress(snAddress);
+    return nonce;
+  } catch (ex) {
+    writeLog(2, `Error at getAccountNonce: ${ex}`)
+    return;
+  }
 }

@@ -19,12 +19,13 @@ export function prepareStarknetInvokeTransaction(
   calldata: Array<string>,
   signature: Array<string>,
   signedRawTransaction: SignedRawTransaction,
+  nonce: string
 ) {
   const starknetTx: StarknetInvokeTransaction = {
     invoke_transaction: {
       calldata: calldata,
       fee_data_availability_mode: 'L1',
-      nonce: addHexPrefix(signedRawTransaction.nonce.toString(16)),
+      nonce: addHexPrefix(nonce),
       nonce_data_availability_mode: 'L1',
       paymaster_data: [],
       account_deployment_data: [],

@@ -26,6 +26,7 @@ import {
   prepareRosettanetCalldata,
   prepareStarknetInvokeTransaction,
 } from '../../utils/transaction'
+import { getAccountNonce } from '../../utils/starknet'
 
 export async function sendRawTransactionHandler(
   request: RPCRequest,
@@ -89,12 +90,12 @@ export async function sendRawTransactionHandler(
 
     // eslint-disable-next-line no-console
     console.log(`Account Deployed ${accountDeployResult.contractAddress}`)
-
+    /*
     return <RPCResponse>{
       jsonrpc: request.jsonrpc,
       id: request.id,
       result: accountDeployResult.transactionHash,
-    }
+    } */
   }
 
   const starknetAccountAddress = deployedAccountAddress.contractAddress
@@ -114,11 +115,25 @@ export async function sendRawTransactionHandler(
     }
   }
 
+  const accountNonce = await getAccountNonce(starknetAccountAddress);
+
+  if(typeof accountNonce === 'undefined') {
+    return <RPCError>{
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32708,
+        message: 'Error at getting account nonce.',
+      },
+    }
+  }
+
   const invokeTx = prepareStarknetInvokeTransaction(
     starknetAccountAddress,
     rosettanetCalldata,
     signedValidRawTransaction.signature.arrayified,
     signedValidRawTransaction,
+    accountNonce
   )
 
   return await broadcastTransaction(request, invokeTx)
