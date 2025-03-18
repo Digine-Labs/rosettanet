@@ -98,8 +98,9 @@ export async function sendRawTransactionHandler(
     } */
   }
 
+    
   const starknetAccountAddress = deployedAccountAddress.contractAddress
-
+  console.log(starknetAccountAddress)
   const rosettanetCalldata = prepareRosettanetCalldata(
     signedValidRawTransaction,
   )
@@ -116,6 +117,7 @@ export async function sendRawTransactionHandler(
   }
 
   const accountNonce = await getAccountNonce(starknetAccountAddress);
+  // Account deployunda 0x0 gitmis
 
   if(typeof accountNonce === 'undefined') {
     return <RPCError>{

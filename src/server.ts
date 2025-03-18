@@ -11,12 +11,13 @@ export function StartListening() {
   const app: Application = express()
   const host = getConfigurationProperty('host')
   const port = Number(getConfigurationProperty('port')) || 3000
-
+  
+  app.use(cors())
+  app.options('*', cors())
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
   app.use(parseRequest)
-  app.use(cors())
-  app.options('*', cors())
+
   app.use('/', Routes)
 
   const server = app.listen(port, host, (): void => {
