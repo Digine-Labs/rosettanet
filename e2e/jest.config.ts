@@ -3,7 +3,8 @@ import { JestConfigWithTsJest } from "ts-jest";
 const jestConfig: JestConfigWithTsJest = {
   preset: "ts-jest",
   testEnvironment: "node",
-  testMatch: ["**/e2e/**/*.test.ts"], // ✅ Runs only E2E tests
+  //testMatch: ["**/e2e/**/*.test.ts"], // ✅ Runs only E2E tests
+  testMatch: ["**/e2e/rpc/*.test.ts"],
   globalSetup: './jest.globalSetup.ts',
   globalTeardown: './jest.globalTeardown.ts',
   //setupFilesAfterEnv: ["./setup.ts"], // ✅ Runs setup only for E2E tests

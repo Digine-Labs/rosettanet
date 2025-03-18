@@ -3,7 +3,7 @@ import { initNode } from "../src/index";
 import { Devnet } from 'starknet-devnet'
 
 
-const mainnetRpc = "https://starknet-mainnet.public.blastapi.io/rpc/v0_7"
+const mainnetRpc = "https://free-rpc.nethermind.io/mainnet-juno/v0_7"
 const forkBlock = "1219608"
 const accountSeed = "1223632"
 

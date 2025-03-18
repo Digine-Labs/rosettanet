@@ -15,7 +15,7 @@
     "test:utils": "jest --watch tests/utils",
     "test:converters": "jest --watch tests/utils/converters",
     "test": "jest",
-    "test:e2e": "rm -rf ./e2e/logs.log && jest --config=./e2e/jest.config.ts",
+    "test:e2e": "rm -rf ./e2e/logs.log && jest --config ./e2e/jest.config.ts",
     "test:watch": "jest --watch",
     "start:file-logging": "npx nodemon --enable-logs --logging-type file --logging-file logs.md",
     "start:console-logging": "npx nodemon --enable-logs --logging-type console",
