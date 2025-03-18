@@ -5,7 +5,7 @@ import {
   RPCResponse,
   StarknetRPCError,
 } from '../../types/types'
-import { callStarknet } from '../../utils/callHelper'
+import { getRosettanetAccountNonce } from '../../utils/rosettanet'
 import { validateEthAddress } from '../../utils/validations'
 import { getSnAddressWithFallback } from '../../utils/wrapper'
 
@@ -47,31 +47,11 @@ export async function getTransactionCountHandler(
     }
   }
 
-  const response: RPCResponse | StarknetRPCError = await callStarknet({
-    jsonrpc: request.jsonrpc,
-    method: 'starknet_getNonce',
-    params: ['latest', snAddress],
-    id: request.id,
-  })
-
-  if (isStarknetRPCError(response)) {
-    if (response.code == 20) {
-      return <RPCResponse>{
-        jsonrpc: request.jsonrpc,
-        id: request.id,
-        result: '0x0',
-      }
-    }
-    return <RPCError>{
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      error: response,
-    }
-  }
+  const rosettanetNonce = await getRosettanetAccountNonce(snAddress);
 
   return {
     jsonrpc: '2.0',
     id: request.id,
-    result: response.result,
+    result: rosettanetNonce,
   }
 }

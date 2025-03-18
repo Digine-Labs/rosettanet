@@ -4,10 +4,10 @@
   "host": "localhost",
   "rpcUrls": ["https://starknet-sepolia.public.blastapi.io"],
   "chainId": "0x52535453",
-  "accountClass": "0x04b7ccebfb848b8d8e62808718de698afcb529b36885c2927ae4fbafc5a18a81",
+  "accountClass": "0x06211df214488198e7a6b6fbf7605d08cb4eb13b59963ea0c2dc023db5be78ae",
   "ethAddress": "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
   "strkAddress": "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
-  "rosettanet": "0x007288a71619eca9397bf0d3066d236b41de33fd6af3a420d16b2f55c93f8af7",
+  "rosettanet": "0x033d9ff643e9e964545dac77bb66d1f1828e11845fe7cac1960cb96e6b566833",
   "logging": {
     "active": true,
     "output": "console",

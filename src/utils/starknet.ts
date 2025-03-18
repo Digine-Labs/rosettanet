@@ -220,14 +220,14 @@ export async function getContractsAbi(snAddress: string): Promise<Abi> {
   return contractAbi
 }
 
-export async function getAccountNonce(snAddress: string): Promise<string | undefined> {
+export async function getAccountNonce(snAddress: string): Promise<string> {
   const rpcUrl: string = getRpc()
   const provider = new RpcProvider({ nodeUrl: rpcUrl })
   try {
     const nonce = await provider.getNonceForAddress(snAddress);
     return nonce;
   } catch (ex) {
-    writeLog(2, `Error at getAccountNonce: ${ex}`)
-    return;
+    writeLog(2, `Error at getAccountNonce: ${ex}. Falling back nonce as zero.`)
+    return '0x0'
   }
 }

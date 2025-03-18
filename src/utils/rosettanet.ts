@@ -182,7 +182,42 @@ export async function deployRosettanetAccount(
   }
 }
 
-export async function registerDeployedAccount() {
-  // Accounts need to get registered after deployed by itself
-  // We register accounts on their first transaction execution
+const nonceEntrypoint = '0x2b1577440dd7bedf920cb6de2f9fc6bf7ba98c78c85a3fa1f8311aac95e1759'
+
+export async function getRosettanetAccountNonce(snAddress: string): Promise<string> {
+  try {
+    const response = await callStarknet({
+      jsonrpc: '2.0',
+      method: 'starknet_call',
+      id: 123,
+      params: {
+        request: {
+          contract_address: snAddress,
+          calldata: [],
+          entry_point_selector: nonceEntrypoint
+        },
+        block_id: 'latest'
+      }
+    })
+
+    if(isStarknetRPCError(response)) {
+      throw response;
+    }
+
+    if(Array.isArray(response.result)) {
+      if(response.result.length > 0) {
+        return response.result[0]
+      } else {
+        writeLog(1, 'getRosettanetAccountNonce response length zero')
+        return '0x0'
+      }
+    } else {
+      writeLog(1, 'getRosettanetAccountNonce response not array')
+      return '0x0'
+    }
+
+  } catch (ex) {
+    writeLog(1, 'Error at getRosettanetAccountNonce' + (ex as Error).message)
+    return '0x0'
+  }
 }
