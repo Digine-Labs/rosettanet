@@ -1,5 +1,5 @@
 import path from 'path';
-import { Account, RpcProvider, hash } from 'starknet';
+import { Account } from 'starknet';
 import { loadContractJson } from './utils';
 
 export async function declareContract(account: Account, contractName: string): Promise<string> {
