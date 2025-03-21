@@ -21,7 +21,7 @@ export default async function globalSetup() {
 
     console.log(rosettanetAddress)
 
-    let nodeConfig = testConfig;
+    const nodeConfig = testConfig;
     nodeConfig.accountClass = accountClass;
     nodeConfig.rosettanet = rosettanetAddress
     await updateNodeConfig(JSON.stringify(nodeConfig));

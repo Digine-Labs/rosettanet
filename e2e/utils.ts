@@ -4,7 +4,7 @@ import { Devnet } from 'starknet-devnet'
 /* eslint-disable no-console */
 import { promises as fs } from 'fs';
 import path from "path";
-import { Account, RpcProvider } from "starknet";
+import { Abi, Account, RpcProvider } from "starknet";
 
 export const testConfig = {
     "appName": "RosettaNet",
@@ -57,7 +57,7 @@ export async function startNode() {
     }
 }
 
-export async function loadContractJson(path:string) {
+export async function loadContractJson(path: string) {
     try {
       const data = await fs.readFile(path, 'utf-8');
       const contractData = JSON.parse(data);
@@ -67,6 +67,19 @@ export async function loadContractJson(path:string) {
       console.error('Error reading JSON file:', error);
       throw error;
     }
+}
+
+export async function getContractAbi(contract: string): Promise<Abi> {
+    try {
+        const pt = path.resolve(__dirname, `../contracts/target/dev/rosettacontracts_${contract}.contract_class.json`);
+        const data = await fs.readFile(pt);
+        const contractData = JSON.parse(data.toString('ascii'));
+  
+        return contractData.abi;
+      } catch (error) {
+        console.error('Error reading JSON file:', error);
+        throw error;
+      }
 }
 
 // Config must be json string
@@ -83,9 +96,27 @@ export async function updateNodeConfig(config: string) {
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function readNodeConfig(): Promise<any> {
+    try {
+        const configFilePath = path.resolve(__dirname, '../config.test.json');
+
+        const config = await fs.readFile(configFilePath, 'utf-8');
+        
+        return JSON.parse(config);
+    } catch (ex) {
+        console.error('Error at updating node config:', ex);
+        throw ex; 
+    } 
+}
+
 export function getDevAccount(): Account {
     const declarerPriv = '0x00000000000000000000000000000000fe317db4aee8695217388e90cdd050e4';
     const declarerAddress = '0x021f35b600929e4932fc7b0f7631e7e13457f822986cbdd8183c3c85718df880'
-    const account = new Account(new RpcProvider({nodeUrl: 'http://127.0.0.1:6050', specVersion: '0.7.0'}), declarerAddress, declarerPriv)
+    const account = new Account(getProvider(), declarerAddress, declarerPriv, undefined, '0x3')
     return account;
+}
+
+export function getProvider(): RpcProvider {
+    return new RpcProvider({nodeUrl: 'http://127.0.0.1:6050', specVersion: '0.7.0'});
 }
