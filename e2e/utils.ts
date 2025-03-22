@@ -26,14 +26,16 @@ export const testConfig = {
   }
   
 
-const rpcList = ["https://free-rpc.nethermind.io/mainnet-juno/v0_7", "https://starknet-mainnet.public.blastapi.io/rpc/v0_7"]
+const rpcList = ["https://free-rpc.nethermind.io/mainnet-juno/v0_7"]
 export const forkBlock = "1219608"
 const accountSeed = "1223632"
 
 export const SERVER = "http://localhost:3000"
 
 async function forkDevnet() {
-    const devnet = await Devnet.spawnInstalled({ args: ["--fork-network", rpcList[Math.floor(Math.random() * rpcList.length)], "--fork-block", forkBlock, "--seed", accountSeed, "--request-body-size-limit", "3777362"] });
+    const devnet = await Devnet.spawnInstalled({ args: ["--fork-network", rpcList[Math.floor(Math.random() * rpcList.length)], 
+        "--fork-block", forkBlock, "--seed", accountSeed, 
+        "--request-body-size-limit", "3777362", "--port", "6050"] });
 
     return devnet;
 }
@@ -41,6 +43,7 @@ async function forkDevnet() {
 export async function startDevnet() {
     try { 
         const devnet = await forkDevnet()
+        
         return devnet;
     } catch (ex) {
         console.error(ex)

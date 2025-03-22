@@ -8,9 +8,10 @@ import {
   StarknetRPCError,
 } from '../types/types'
 import { getConfigurationProperty } from './configReader'
-import { U256toUint256 } from './converters/integer'
+import { safeU256ToUint256, U256toUint256 } from './converters/integer'
 import axios from 'axios'
 import { isRPCError, isStarknetRPCError } from '../types/typeGuards'
+import { addHexPrefix } from './padding'
 
 export async function callStarknet(
   request: RPCRequest,
@@ -100,10 +101,10 @@ export async function getSTRKBalance(
     }
   }
 
-  const balance = U256toUint256(response.result)
+  const balance = safeU256ToUint256(response.result)
   return <NativeBalance>{
     starknetFormat: response.result,
-    ethereumFormat: balance,
+    ethereumFormat: addHexPrefix(balance),
   }
 }
 

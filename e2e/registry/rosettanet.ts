@@ -13,7 +13,7 @@ export async function registerContractIfNotRegistered(account: Account, contract
 
     const registeredAddress = await getEthAddressFromRegistry(contractAddress);
 
-    if(registeredAddress != '0') {
+    if(registeredAddress != '0x0') {
         return addHexPrefix(registeredAddress.toLowerCase());
     }
 
@@ -23,6 +23,7 @@ export async function registerContractIfNotRegistered(account: Account, contract
 
     await contract.register_contract(contractAddress);
     const generatedAddress = await getEthAddressFromRegistry(contractAddress);
+
     return addHexPrefix(generatedAddress.toLowerCase());
 }
 
