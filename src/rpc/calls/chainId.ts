@@ -10,7 +10,7 @@ export async function chainIdHandler(
       id: request.id,
       error: {
         code: -32602,
-        message: 'Invalid argument, Parameter field should be empty.',
+        message: 'Too many arguments. Expected 0',
       },
     }
   }
