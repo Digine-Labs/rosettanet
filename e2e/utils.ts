@@ -25,9 +25,8 @@ export const testConfig = {
   }
   
 
-const rpcList = ["https://free-rpc.nethermind.io/mainnet-juno/v0_7"]
+// Used in e2e test setup
 export const forkBlock = "1219608"
-const accountSeed = "1223632"
 
 export const SERVER = "http://localhost:3000"
 
