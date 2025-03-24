@@ -17,17 +17,7 @@ let devnet: Devnet
 export default async function globalSetup() {
   try {
     console.log('\n🛠️ Global setup: Starting Devnet...')
-    
-    try {
-      devnet = await startDevnet()
-    } catch (devnetError) {
-      // If devnet fails to start, log a message and continue
-      console.log(`Forking from block: number=${forkBlock}, hash=0x36f7ab48c847372771d60be43c391916e01d5d4608b59b2f403c2760a64fbcf`)
-      // Set a dummy nodeConfig
-      const nodeConfig = testConfig
-      await updateNodeConfig(JSON.stringify(nodeConfig))
-      return
-    }
+    devnet = await startDevnet()
 
     const account = getDevAccount()
 
