@@ -39,23 +39,6 @@ function isValidJsonRpcRequest(body: any): boolean {
   return true;
 }
 
-function isValidJsonRpcRequestOld(body: ParsedRequest): boolean {
-  // Validate types according to JSON-RPC 2.0 spec
-
-  return (
-    'jsonrpc' in body &&
-    'method' in body &&
-    'params' in body &&
-    'id' in body &&
-    body.jsonrpc === '2.0' &&
-    typeof body.method === 'string' &&
-    (body.params === null || typeof body.params === 'object') &&
-    (body.id === null ||
-      typeof body.id === 'string' ||
-      typeof body.id === 'number')
-  )
-}
-
 export function parseRequest(
   req: ParsedRequest,
   res: Response,
