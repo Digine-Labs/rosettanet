@@ -7,36 +7,49 @@ describe('Server robustness tests', () => {
   // Skip all tests if server is not running
   beforeAll(async () => {
     try {
-      await axios.post(SERVER, {
-        jsonrpc: '2.0',
-        method: 'eth_chainId',
-        params: [],
-        id: 1,
-      }, { timeout: 2000 })
+      await axios.post(
+        SERVER,
+        {
+          jsonrpc: '2.0',
+          method: 'eth_chainId',
+          params: [],
+          id: 1,
+        },
+        { timeout: 2000 },
+      )
     } catch (error) {
       // Skip all tests in this suite
       jest.setTimeout(1)
     }
   })
-  
+
   // Helper function to check if server is running
   const isServerRunning = async (): Promise<boolean> => {
     try {
-      await axios.post(SERVER, {
-        jsonrpc: '2.0',
-        method: 'eth_chainId',
-        params: [],
-        id: 1,
-      }, { timeout: 2000 })
+      await axios.post(
+        SERVER,
+        {
+          jsonrpc: '2.0',
+          method: 'eth_chainId',
+          params: [],
+          id: 1,
+        },
+        { timeout: 2000 },
+      )
       return true
     } catch (error) {
       const axiosError = error as AxiosError
       // If we get a response with any status code, the server is running
-      return axiosError.response !== undefined
+      const isRunning = axiosError.response !== undefined
+
+      if (!isRunning) {
+        fail('Server is not working')
+      }
+      return isRunning
     }
   }
   // Test for malformed JSON
-  test('should handle malformed JSON without crashing', async () => {
+  test.only('should handle malformed JSON without crashing', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
@@ -63,14 +76,14 @@ describe('Server robustness tests', () => {
         expect(axiosError.response.data).toHaveProperty('error')
       }
     }
-    
+
     // Verify server is still running after the test
     const serverStillRunning = await isServerRunning()
     expect(serverStillRunning).toBe(true)
   }, 30000)
 
   // Test for extremely large request body
-  test('should handle extremely large request body', async () => {
+  test.only('should handle extremely large request body', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
@@ -93,14 +106,14 @@ describe('Server robustness tests', () => {
       // Server should respond with an error, not crash
       expect(axiosError.response || axiosError.request).toBeDefined()
     }
-    
+
     // Verify server is still running after the test
     const serverStillRunning = await isServerRunning()
     expect(serverStillRunning).toBe(true)
   }, 30000)
 
   // Test for multiple rapid requests
-  test('should handle multiple rapid requests without crashing', async () => {
+  test.only('should handle multiple rapid requests without crashing', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
@@ -111,27 +124,29 @@ describe('Server robustness tests', () => {
     // Send 50 requests in parallel (reduced from 100 to avoid overwhelming the server)
     for (let i = 0; i < 50; i++) {
       requests.push(
-        axios.post(SERVER, {
-          jsonrpc: '2.0',
-          method: 'eth_chainId',
-          params: [],
-          id: i,
-        }).catch(error => {
-          // Catch errors to prevent test from failing if some requests fail
-          return { status: 'rejected', reason: error }
-        })
+        axios
+          .post(SERVER, {
+            jsonrpc: '2.0',
+            method: 'eth_chainId',
+            params: [],
+            id: i,
+          })
+          .catch(error => {
+            // Catch errors to prevent test from failing if some requests fail
+            return { status: 'rejected', reason: error }
+          }),
       )
     }
 
     await Promise.all(requests)
-    
+
     // Verify server is still running after the test
     const serverStillRunning = await isServerRunning()
     expect(serverStillRunning).toBe(true)
   }, 60000)
 
   // Test for invalid content type
-  test('should handle invalid content type without crashing', async () => {
+  test.only('should handle invalid content type without crashing', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
@@ -158,14 +173,14 @@ describe('Server robustness tests', () => {
       const axiosError = error as AxiosError
       expect(axiosError.response || axiosError.request).toBeDefined()
     }
-    
+
     // Verify server is still running after the test
     const serverStillRunning = await isServerRunning()
     expect(serverStillRunning).toBe(true)
   }, 30000)
 
   // Test for extremely long method name
-  test('should handle extremely long method name', async () => {
+  test.only('should handle extremely long method name', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
@@ -191,20 +206,20 @@ describe('Server robustness tests', () => {
       const axiosError = error as AxiosError
       expect(axiosError.request).toBeDefined()
     }
-    
+
     // Verify server is still running after the test
     const serverStillRunning = await isServerRunning()
     expect(serverStillRunning).toBe(true)
   }, 30000)
 
   // Test for nested JSON objects
-  test('should handle deeply nested JSON objects', async () => {
+  test.only('should handle deeply nested JSON objects', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
       return
     }
-    
+
     // Create a deeply nested object (100 levels)
     let nestedObject: Record<string, unknown> = { value: 1 }
     for (let i = 0; i < 100; i++) {
@@ -226,20 +241,20 @@ describe('Server robustness tests', () => {
       const axiosError = error as AxiosError
       expect(axiosError.request).toBeDefined()
     }
-    
+
     // Verify server is still running after the test
     const serverStillRunning = await isServerRunning()
     expect(serverStillRunning).toBe(true)
   }, 30000)
 
   // Test for special characters in parameters
-  test('should handle special characters in parameters', async () => {
+  test.only('should handle special characters in parameters', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
       return
     }
-    
+
     const specialChars = '!@#$%^&*()_+{}|:"<>?~`-=[]\\;\',./😀🔥💯'
 
     try {
@@ -257,20 +272,20 @@ describe('Server robustness tests', () => {
       const axiosError = error as AxiosError
       expect(axiosError.request).toBeDefined()
     }
-    
+
     // Verify server is still running after the test
     const serverStillRunning = await isServerRunning()
     expect(serverStillRunning).toBe(true)
   }, 30000)
 
   // Test for null values in unexpected places
-  test('should handle null values in unexpected places', async () => {
+  test.only('should handle null values in unexpected places', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
       return
     }
-    
+
     try {
       const response = await axios.post(SERVER, {
         jsonrpc: null,
@@ -286,20 +301,20 @@ describe('Server robustness tests', () => {
       const axiosError = error as AxiosError
       expect(axiosError.request).toBeDefined()
     }
-    
+
     // Verify server is still running after the test
     const serverStillRunning = await isServerRunning()
     expect(serverStillRunning).toBe(true)
   }, 30000)
 
   // Test for empty request body
-  test('should handle empty request body', async () => {
+  test.only('should handle empty request body', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
       return
     }
-    
+
     try {
       await axios.post(SERVER, '', {
         headers: {
@@ -311,20 +326,20 @@ describe('Server robustness tests', () => {
       const axiosError = error as AxiosError
       expect(axiosError.request).toBeDefined()
     }
-    
+
     // Verify server is still running after the test
     const serverStillRunning = await isServerRunning()
     expect(serverStillRunning).toBe(true)
   }, 30000)
 
   // Test for extremely long request
-  test('should handle extremely long request URL', async () => {
+  test.only('should handle extremely long request URL', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
       return
     }
-    
+
     try {
       // Create a URL with a very long query string
       const longQueryParam = 'a'.repeat(10000)
@@ -334,7 +349,7 @@ describe('Server robustness tests', () => {
       const axiosError = error as AxiosError
       expect(axiosError.request).toBeDefined()
     }
-    
+
     // Verify server is still running after the test
     const serverStillRunning = await isServerRunning()
     expect(serverStillRunning).toBe(true)

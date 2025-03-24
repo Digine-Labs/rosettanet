@@ -2,7 +2,6 @@ import axios from 'axios'
 import { forkBlock, SERVER } from '../utils'
 
 test.only('Get block number', async () => {
-  await new Promise(resolve => setTimeout(resolve, 5000)) // Wait node to sync
   const response = await axios.post(SERVER, {
     jsonrpc: '2.0',
     method: 'eth_blockNumber',
