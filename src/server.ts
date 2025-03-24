@@ -5,7 +5,6 @@ import cors from 'cors'
 import Routes from './rpc/calls'
 import { getConfigurationProperty } from './utils/configReader'
 import { writeLog } from './logger'
-import { readFile } from 'fs'
 
 export function StartListening() {
   const app: Application = express()
