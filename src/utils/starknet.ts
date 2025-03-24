@@ -227,7 +227,7 @@ export async function getAccountNonce(snAddress: string): Promise<string> {
     const nonce = await provider.getNonceForAddress(snAddress)
     return nonce
   } catch (ex) {
-    writeLog(2, `Error at getAccountNonce: ${ex}. Falling back nonce as zero.`)
+    writeLog(0, `Error at getAccountNonce: ${ex}. Falling back nonce as zero.`)
     return '0x0'
   }
 }
