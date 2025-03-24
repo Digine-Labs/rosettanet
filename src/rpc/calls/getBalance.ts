@@ -9,12 +9,14 @@ import { getSTRKBalance } from '../../utils/callHelper'
 import { validateEthAddress } from '../../utils/validations'
 import { getSnAddressWithFallback } from '../../utils/wrapper'
 import { isStarknetRPCError } from '../../types/typeGuards'
+import { getCachedBlockNumber } from '../../cache/blockNumber'
 
 export async function getBalanceHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
   // Handle both array and object format params
   let ethAddress: string;
+  let blockParameter: string = 'latest'; // Default to latest
   
   if (Array.isArray(request.params)) {
     if (request.params.length == 0) {
@@ -29,6 +31,11 @@ export async function getBalanceHandler(
       }
     }
     ethAddress = request.params[0] as string;
+    
+    // Get block parameter if provided
+    if (request.params.length > 1) {
+      blockParameter = request.params[1] as string;
+    }
   } else if (typeof request.params === 'object' && request.params !== null) {
     // Handle object format params
     ethAddress = (request.params as Record<string, unknown>).address as string;
@@ -42,6 +49,12 @@ export async function getBalanceHandler(
         },
       }
     }
+    
+    // Get block parameter if provided
+    const objParams = request.params as Record<string, unknown>;
+    if (objParams.blockParameter) {
+      blockParameter = objParams.blockParameter as string;
+    }
   } else {
     return {
       jsonrpc: '2.0',
@@ -52,14 +65,76 @@ export async function getBalanceHandler(
       },
     }
   }
+  
+  // Validate Ethereum address
   if (!validateEthAddress(ethAddress)) {
     return {
-      jsonrpc: request.jsonrpc,
+      jsonrpc: '2.0',
       id: request.id,
       error: {
         code: -32602,
         message:
           'Invalid argument, Parameter should be a valid Ethereum Address.',
+      },
+    }
+  }
+  
+  // Validate block parameter
+  if (typeof blockParameter === 'string') {
+    // Check if it's a valid string specifier
+    if (blockParameter !== 'latest' && 
+        blockParameter !== 'pending' && 
+        blockParameter !== 'earliest' &&
+        blockParameter !== 'safe' &&
+        blockParameter !== 'finalized') {
+      
+      // Check if it's a valid hex block number
+      if (blockParameter.startsWith('0x')) {
+        try {
+          const blockNumber = parseInt(blockParameter, 16);
+          const cachedBlockNumber = parseInt(getCachedBlockNumber(), 16);
+          
+          // Check if block number is higher than cached block
+          if (blockNumber > cachedBlockNumber) {
+            return {
+              jsonrpc: '2.0',
+              id: request.id,
+              error: {
+                code: -32000,
+                message: 'header not found',
+              },
+            }
+          }
+        } catch (e) {
+          return {
+            jsonrpc: '2.0',
+            id: request.id,
+            error: {
+              code: -32602,
+              message: 'Invalid block parameter',
+            },
+          }
+        }
+      } else {
+        // Not a valid string specifier or hex block number
+        return {
+          jsonrpc: '2.0',
+          id: request.id,
+          error: {
+            code: -32602,
+            message: 'Invalid block parameter',
+          },
+        }
+      }
+    }
+  } else if (blockParameter !== undefined) {
+    // Block parameter is not a string
+    return {
+      jsonrpc: '2.0',
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid block parameter',
       },
     }
   }
@@ -75,7 +150,7 @@ export async function getBalanceHandler(
       }
     }
     return <RPCError>{
-      jsonrpc: request.jsonrpc,
+      jsonrpc: '2.0',
       id: request.id,
       error: snAddress,
     }
@@ -86,7 +161,7 @@ export async function getBalanceHandler(
 
   if (isStarknetRPCError(balance)) {
     return <RPCError>{
-      jsonrpc: request.jsonrpc,
+      jsonrpc: '2.0',
       id: request.id,
       error: balance,
     }
