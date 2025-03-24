@@ -47,7 +47,7 @@ export async function getTransactionCountHandler(
     }
   }
 
-  const rosettanetNonce = await getRosettanetAccountNonce(snAddress);
+  const rosettanetNonce = await getRosettanetAccountNonce(snAddress)
 
   return {
     jsonrpc: '2.0',

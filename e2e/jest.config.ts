@@ -1,22 +1,25 @@
-import { JestConfigWithTsJest } from "ts-jest";
+import { JestConfigWithTsJest } from 'ts-jest'
 
 const jestConfig: JestConfigWithTsJest = {
-  preset: "ts-jest",
-  testEnvironment: "node",
+  preset: 'ts-jest',
+  testEnvironment: 'node',
   //testMatch: ["**/e2e/**/*.test.ts"], // ✅ Runs only E2E tests
-  testMatch: ["**/e2e/rpc/*.test.ts", "**/e2e/rosettanet/*.test.ts"],
+  testMatch: ['**/e2e/rpc/*.test.ts', '**/e2e/rosettanet/*.test.ts'],
   globalSetup: './jest.globalSetup.ts',
   globalTeardown: './jest.globalTeardown.ts',
   //setupFilesAfterEnv: ["./setup.ts"], // ✅ Runs setup only for E2E tests
   testTimeout: 30000, // Increase timeout for long-running tests
-  extensionsToTreatAsEsm: [".ts"], // ✅ Treat .ts files as ES modules
+  extensionsToTreatAsEsm: ['.ts'], // ✅ Treat .ts files as ES modules
   transform: {
-    '^.+\\.tsx?$': ['ts-jest', { tsconfig: 'tsconfig.json', isolatedModules: true }]
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      { tsconfig: 'tsconfig.json', isolatedModules: true },
+    ],
   },
   forceExit: true,
-  resetMocks: false,  // Set to false if not needed
+  resetMocks: false, // Set to false if not needed
   resetModules: false, // Avoid resetting modules if unnecessary
-  clearMocks: true,  
-};
+  clearMocks: true,
+}
 
-export default jestConfig;
+export default jestConfig

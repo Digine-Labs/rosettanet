@@ -11,7 +11,7 @@ export function StartListening() {
   const app: Application = express()
   const host = getConfigurationProperty('host')
   const port = Number(getConfigurationProperty('port')) || 3000
-  
+
   app.use(cors())
   app.options('*', cors())
   app.use(express.json())
@@ -36,11 +36,11 @@ export function StartListening() {
     })
   })
 
-  process.on("SIGINT", () => {
-    writeLog(1,"🛑 Stopping Node...");
+  process.on('SIGINT', () => {
+    writeLog(1, '🛑 Stopping Node...')
     server.close(() => {
-      writeLog(1, "✅ Server stopped.");
-      process.exit(0);
-    });
-  });
+      writeLog(1, '✅ Server stopped.')
+      process.exit(0)
+    })
+  })
 }

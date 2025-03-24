@@ -1,4 +1,4 @@
-import{promises as fs} from 'fs'
+import { promises as fs } from 'fs'
 import * as path from 'path'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,10 +38,9 @@ export async function initConfig(configPath: string): Promise<boolean> {
   if (path.extname(configPath) !== '.json') {
     throw new Error(`Configuration file is not a JSON file: ${configPath}`)
   }
-  
+
   // Check if the file has read access
   try {
-    
     await fs.access(configPath, fs.constants.R_OK)
   } catch (error) {
     throw new Error(`Configuration file is not readable: ${configPath}`)
@@ -71,5 +70,5 @@ export async function initConfig(configPath: string): Promise<boolean> {
   }
 
   configuration = config
-  return true;
+  return true
 }

@@ -74,11 +74,9 @@ export async function sendRawTransactionHandler(
   const deployedAccountAddress: RosettanetAccountResult =
     await getRosettaAccountAddress(signedValidRawTransaction.from)
   if (!deployedAccountAddress.isDeployed) {
-
-    return deployAndBroadcastTransaction(request, signedValidRawTransaction);
+    return deployAndBroadcastTransaction(request, signedValidRawTransaction)
   }
 
-    
   const starknetAccountAddress = deployedAccountAddress.contractAddress
   // console.log(starknetAccountAddress)
   const rosettanetCalldata = prepareRosettanetCalldata(
@@ -96,14 +94,14 @@ export async function sendRawTransactionHandler(
     }
   }
 
-  const accountNonce = await getAccountNonce(starknetAccountAddress);
+  const accountNonce = await getAccountNonce(starknetAccountAddress)
 
   const invokeTx = prepareStarknetInvokeTransaction(
     starknetAccountAddress,
     rosettanetCalldata,
     signedValidRawTransaction.signature.arrayified,
     signedValidRawTransaction,
-    accountNonce
+    accountNonce,
   )
 
   return await broadcastTransaction(request, invokeTx)
@@ -154,28 +152,28 @@ async function broadcastTransaction(
   return response
 }
 
-async function deployAndBroadcastTransaction(request: RPCRequest, txn: SignedRawTransaction): Promise<RPCResponse | RPCError> {
-  const starknetNonce = '0x1';
+async function deployAndBroadcastTransaction(
+  request: RPCRequest,
+  txn: SignedRawTransaction,
+): Promise<RPCResponse | RPCError> {
+  const starknetNonce = '0x1'
 
   // This means account is not registered on rosettanet registry. Lets deploy the address
   const accountDeployResult: AccountDeployResult | AccountDeployError =
-      await deployRosettanetAccount(txn)
+    await deployRosettanetAccount(txn)
   if (!isAccountDeployResult(accountDeployResult)) {
-    writeLog(2, 'Error at account deployment : ' + accountDeployResult.message,)
+    writeLog(2, 'Error at account deployment : ' + accountDeployResult.message)
     return {
       jsonrpc: request.jsonrpc,
       id: request.id,
       error: {
         code: -32003,
-        message:
-          'Error at account deployment : ' + accountDeployResult.message,
+        message: 'Error at account deployment : ' + accountDeployResult.message,
       },
     }
   }
 
-  const rosettanetCalldata = prepareRosettanetCalldata(
-    txn,
-  )
+  const rosettanetCalldata = prepareRosettanetCalldata(txn)
   if (isPrepareCalldataError(rosettanetCalldata)) {
     return <RPCError>{
       jsonrpc: request.jsonrpc,
@@ -192,7 +190,7 @@ async function deployAndBroadcastTransaction(request: RPCRequest, txn: SignedRaw
     rosettanetCalldata,
     txn.signature.arrayified,
     txn,
-    starknetNonce
+    starknetNonce,
   )
 
   return await broadcastTransaction(request, invokeTx)

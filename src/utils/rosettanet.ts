@@ -162,7 +162,7 @@ export async function deployRosettanetAccount(
 }
  */
   if (!isRPCResponse(response)) {
-    writeLog(2, 'deployRosettanetAccount respone is in wrong format');
+    writeLog(2, 'deployRosettanetAccount respone is in wrong format')
     return response
   }
 
@@ -182,9 +182,12 @@ export async function deployRosettanetAccount(
   }
 }
 
-const nonceEntrypoint = '0x2b1577440dd7bedf920cb6de2f9fc6bf7ba98c78c85a3fa1f8311aac95e1759'
+const nonceEntrypoint =
+  '0x2b1577440dd7bedf920cb6de2f9fc6bf7ba98c78c85a3fa1f8311aac95e1759'
 
-export async function getRosettanetAccountNonce(snAddress: string): Promise<string> {
+export async function getRosettanetAccountNonce(
+  snAddress: string,
+): Promise<string> {
   try {
     const response = await callStarknet({
       jsonrpc: '2.0',
@@ -194,18 +197,18 @@ export async function getRosettanetAccountNonce(snAddress: string): Promise<stri
         request: {
           contract_address: snAddress,
           calldata: [],
-          entry_point_selector: nonceEntrypoint
+          entry_point_selector: nonceEntrypoint,
         },
-        block_id: 'latest'
-      }
+        block_id: 'latest',
+      },
     })
 
-    if(isStarknetRPCError(response)) {
-      throw response;
+    if (isStarknetRPCError(response)) {
+      throw response
     }
 
-    if(Array.isArray(response.result)) {
-      if(response.result.length > 0) {
+    if (Array.isArray(response.result)) {
+      if (response.result.length > 0) {
         return response.result[0]
       } else {
         writeLog(1, 'getRosettanetAccountNonce response length zero')
@@ -215,7 +218,6 @@ export async function getRosettanetAccountNonce(snAddress: string): Promise<stri
       writeLog(1, 'getRosettanetAccountNonce response not array')
       return '0x0'
     }
-
   } catch (ex) {
     writeLog(1, 'Error at getRosettanetAccountNonce' + (ex as Error).message)
     return '0x0'
