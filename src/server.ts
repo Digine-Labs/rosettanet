@@ -12,6 +12,20 @@ export function StartListening() {
   const host = getConfigurationProperty('host')
   const port = Number(getConfigurationProperty('port')) || 3000
 
+  
+  app.use((req, res, next) => {
+    if (req.method !== 'POST') {
+      return res.status(405).json({
+        jsonrpc: '2.0',
+        id: null,
+        error: {
+          code: -32600,
+          message: 'Invalid Request',
+        },
+      })
+    }
+    next()
+  })
   // Handle text/plain content type
   app.use((req, res, next) => {
     if (req.headers['content-type'] === 'text/plain') {
@@ -103,20 +117,6 @@ export function StartListening() {
   app.use(parseRequest)
 
   // Handle HTTP method validation - only allow POST for JSON-RPC
-  app.use((req, res, next) => {
-    if (req.method !== 'POST') {
-      return res.status(405).json({
-        jsonrpc: '2.0',
-        id: null,
-        error: {
-          code: -32600,
-          message: 'Invalid Request',
-        },
-      })
-    }
-    next()
-  })
-
   app.use('/', Routes)
 
   const server = app.listen(port, host, (): void => {
