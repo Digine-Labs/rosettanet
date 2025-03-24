@@ -192,13 +192,13 @@ describe('eth_chainId RPC method', () => {
       ])
 
       expect(response.status).toBe(200)
-      
+
       // If the server doesn't support batch requests, it might return a single error
       if (!Array.isArray(response.data)) {
         expect(response.data.error).toBeDefined()
-        return;
+        return
       }
-      
+
       expect(Array.isArray(response.data)).toBe(true)
       expect(response.data.length).toBe(2)
 

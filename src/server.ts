@@ -12,7 +12,6 @@ export function StartListening() {
   const host = getConfigurationProperty('host')
   const port = Number(getConfigurationProperty('port')) || 3000
 
-  
   app.use((req, res, next) => {
     if (req.method !== 'POST') {
       return res.status(405).json({
@@ -82,23 +81,25 @@ export function StartListening() {
 
   app.use(cors())
   app.options('*', cors())
-  
+
   // Express error handler for JSON parsing errors
-  app.use(express.json({
-    strict: true,
-    limit: '1mb',
-    verify: (req, res, buf) => {
-      try {
-        JSON.parse(buf.toString());
-      } catch (e) {
-        throw new Error('Invalid JSON');
-      }
-    }
-  }));
-  
+  app.use(
+    express.json({
+      strict: true,
+      limit: '1mb',
+      verify: (req, res, buf) => {
+        try {
+          JSON.parse(buf.toString())
+        } catch (e) {
+          throw new Error('Invalid JSON')
+        }
+      },
+    }),
+  )
+
   // Standard express error handler
-  app.use(express.json());
-  
+  app.use(express.json())
+
   // Error handler for JSON parsing errors
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof SyntaxError && 'body' in err) {
@@ -109,10 +110,10 @@ export function StartListening() {
           code: -32700,
           message: 'Parse error',
         },
-      });
+      })
     }
-    next(err);
-  });
+    next(err)
+  })
   app.use(express.urlencoded({ extended: true }))
   app.use(parseRequest)
 

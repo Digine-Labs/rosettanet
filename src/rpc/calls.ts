@@ -256,19 +256,26 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
     }
 
     // Check if all requests are notifications (no ID)
-    const allNotifications = req.body.every(item => !('id' in item) || item.id === null || item.id === undefined)
+    const allNotifications = req.body.every(
+      item => !('id' in item) || item.id === null || item.id === undefined,
+    )
     if (allNotifications) {
       // Process notifications but don't return anything
       await Promise.all(
-        req.body.map(async (item) => {
-          if (item && typeof item === 'object' && 'jsonrpc' in item && 'method' in item) {
+        req.body.map(async item => {
+          if (
+            item &&
+            typeof item === 'object' &&
+            'jsonrpc' in item &&
+            'method' in item
+          ) {
             const singleRequest = {
               jsonrpc: item.jsonrpc,
               method: item.method,
               params: item.params || [],
               id: null,
             }
-            
+
             // Process notification without returning result
             if (singleRequest.method) {
               const methodFirstLetters = singleRequest.method.substring(0, 8)
@@ -286,23 +293,28 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
               }
             }
           }
-        })
+        }),
       )
-      
+
       // Return empty array for notification-only batches
       return res.status(200).send([])
     }
 
     // Process regular batch requests
     const batchResults = await Promise.all(
-      req.body.map(async (item) => {
+      req.body.map(async item => {
         // Skip processing for notifications (requests without an id)
         if (!('id' in item) || item.id === null || item.id === undefined) {
           return null // Don't include notifications in the response
         }
 
         // Validate basic JSON-RPC structure
-        if (!item || typeof item !== 'object' || !('jsonrpc' in item) || !('method' in item)) {
+        if (
+          !item ||
+          typeof item !== 'object' ||
+          !('jsonrpc' in item) ||
+          !('method' in item)
+        ) {
           return {
             jsonrpc: '2.0',
             id: item.id ?? null,
@@ -374,12 +386,12 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
         }
 
         return result
-      })
+      }),
     )
 
     // Filter out null responses (notifications)
     const filteredResults = batchResults.filter(result => result !== null)
-    
+
     // Return empty array if all were notifications
     res.send(filteredResults.length > 0 ? filteredResults : [])
     return
@@ -387,9 +399,12 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
 
   // Handle single requests
   const request = req.rpcRequest
-  
+
   // Handle notification (no ID)
-  if (request && (!('id' in request) || request.id === null || request.id === undefined)) {
+  if (
+    request &&
+    (!('id' in request) || request.id === null || request.id === undefined)
+  ) {
     // Process notification without returning a response
     if (request?.method) {
       const methodFirstLetters: string = request.method.substring(0, 8)
@@ -410,10 +425,10 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
     return res.status(200).send({
       jsonrpc: '2.0',
       id: null,
-      result: request?.method === 'eth_chainId' ? '0x52535453' : null
+      result: request?.method === 'eth_chainId' ? '0x52535453' : null,
     })
   }
-  
+
   // Handle regular requests with method
   if (request?.method) {
     const methodFirstLetters: string = request.method.substring(0, 8)

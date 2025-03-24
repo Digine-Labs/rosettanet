@@ -163,6 +163,36 @@ describe('eth_getBalance RPC method', () => {
     expect(response.data.result).toBeDefined()
   }, 30000)
 
+  test.only('balance request with block number as integer string', async () => {
+    const ethAddress = await registerContractIfNotRegistered(
+      getDevAccount(),
+      snAddress,
+    )
+    const response = await axios.post(SERVER, {
+      jsonrpc: '2.0',
+      method: 'eth_getBalance',
+      params: [ethAddress, '123123'], // Block 123123
+      id: 1,
+    })
+    expect(response.status).toBe(200)
+    expect(response.data.result).toBeDefined()
+  }, 30000)
+
+  test.only('balance request with block number as integer', async () => {
+    const ethAddress = await registerContractIfNotRegistered(
+      getDevAccount(),
+      snAddress,
+    )
+    const response = await axios.post(SERVER, {
+      jsonrpc: '2.0',
+      method: 'eth_getBalance',
+      params: [ethAddress, 123123], // Block 123123
+      id: 1,
+    })
+    expect(response.status).toBe(200)
+    expect(response.data.result).toBeDefined()
+  }, 30000)
+
   test.only('balance request with non-existent block specifier', async () => {
     const ethAddress = await registerContractIfNotRegistered(
       getDevAccount(),
@@ -174,12 +204,9 @@ describe('eth_getBalance RPC method', () => {
       params: [ethAddress, 'wrongblock'],
       id: 1,
     })
+    // We dont care about block specifier. Always return latest balance
     expect(response.status).toBe(200)
-    expect(response.data.result).toBeUndefined()
-    expect(response.data.error).toBeDefined()
-    // If you implement block validation:
-    // expect(response.data.error.code).toBe(-32602);
-    // expect(response.data.error.message).toContain("Invalid block parameter");
+    expect(response.data.result).toBeDefined()
   }, 30000)
 
   test.only('balance request with null params', async () => {

@@ -15,7 +15,7 @@ export async function chainIdHandler(
       },
     }
   }
-  
+
   if (request.params.length !== 0) {
     return {
       jsonrpc: '2.0',
@@ -29,7 +29,7 @@ export async function chainIdHandler(
 
   // Get chainId from configuration
   const chainId = getConfigurationProperty('chainId')
-  
+
   // Return successful response (always use jsonrpc 2.0 in the response)
   return {
     jsonrpc: '2.0',
