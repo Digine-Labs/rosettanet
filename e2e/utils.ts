@@ -25,9 +25,10 @@ export const testConfig = {
   }
   
 
-const rpcList = ["https://free-rpc.nethermind.io/mainnet-juno/v0_7"]
+// These values are used in the devnet setup script
+// export const rpcList = ["https://free-rpc.nethermind.io/mainnet-juno/v0_7"]
 export const forkBlock = "1219608"
-const accountSeed = "1223632"
+// export const accountSeed = "1223632"
 
 export const SERVER = "http://localhost:3000"
 
