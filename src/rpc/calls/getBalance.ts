@@ -13,19 +13,45 @@ import { isStarknetRPCError } from '../../types/typeGuards'
 export async function getBalanceHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  if (request.params.length == 0) {
+  // Handle both array and object format params
+  let ethAddress: string;
+  
+  if (Array.isArray(request.params)) {
+    if (request.params.length == 0) {
+      return {
+        jsonrpc: '2.0',
+        id: request.id,
+        error: {
+          code: -32602,
+          message:
+            'Invalid argument, Parameter should be a valid Ethereum Address and block parameter.',
+        },
+      }
+    }
+    ethAddress = request.params[0] as string;
+  } else if (typeof request.params === 'object' && request.params !== null) {
+    // Handle object format params
+    ethAddress = (request.params as any).address as string;
+    if (!ethAddress) {
+      return {
+        jsonrpc: '2.0',
+        id: request.id,
+        error: {
+          code: -32602,
+          message: 'Invalid params: missing address parameter',
+        },
+      }
+    }
+  } else {
     return {
-      jsonrpc: request.jsonrpc,
+      jsonrpc: '2.0',
       id: request.id,
       error: {
         code: -32602,
-        message:
-          'Invalid argument, Parameter should be a valid Ethereum Address and block parameter.',
+        message: 'Invalid params',
       },
     }
   }
-
-  const ethAddress = request.params[0] as string
   if (!validateEthAddress(ethAddress)) {
     return {
       jsonrpc: request.jsonrpc,
