@@ -7,7 +7,6 @@ import {
   startNode,
   testConfig,
   updateNodeConfig,
-  forkBlock,
 } from './utils'
 import { declareContract, deployContract } from './transaction'
 import { STRK_ADDRESS } from './constants'
