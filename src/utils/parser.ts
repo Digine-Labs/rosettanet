@@ -1,7 +1,45 @@
 import { Response, NextFunction } from 'express'
 import { ParsedRequest, RPCError } from '../types/types'
 
-function isValidJsonRpcRequest(body: ParsedRequest): boolean {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isValidJsonRpcRequest(body: any): boolean {
+  // Check if body exists
+  if (!body) return false;
+
+  // Check required fields (jsonrpc and method are required)
+  if (!('jsonrpc' in body) || !('method' in body)) return false;
+  
+  // Validate jsonrpc version (must be exactly "2.0")
+  if (body.jsonrpc !== '2.0') return false;
+  
+  // Method must be a non-empty string
+  if (typeof body.method !== 'string' || body.method.trim() === '') return false;
+  
+  // Params must be an array or object if present (can be omitted)
+  if ('params' in body && body.params !== null) {
+    if (!Array.isArray(body.params) && typeof body.params !== 'object') return false;
+  }
+  
+  // ID validation - ID can be missing (notification), string, number, or null (but not undefined)
+  // Note: Fractional numbers are allowed by spec but often not recommended
+  if ('id' in body) {
+    const idType = typeof body.id;
+    if (body.id !== null && 
+        idType !== 'string' && 
+        idType !== 'number') {
+      return false;
+    }
+    
+    // Check for NaN or Infinity which are not valid per JSON spec
+    if (idType === 'number' && (!isFinite(body.id) || Math.floor(body.id) !== body.id)) {
+      return false;
+    }
+  }
+  
+  return true;
+}
+
+function isValidJsonRpcRequestOld(body: ParsedRequest): boolean {
   // Validate types according to JSON-RPC 2.0 spec
 
   return (
@@ -18,28 +56,6 @@ function isValidJsonRpcRequest(body: ParsedRequest): boolean {
   )
 }
 
-const nonParamMethods = [
-  'eth_gasPrice',
-  'eth_chainId',
-  'web3_clientVersion',
-  'net_version',
-  'net_listening',
-  'net_peerCount',
-  'eth_protocolVersion',
-  'eth_syncing',
-  'eth_coinbase',
-  'eth_mining',
-  'eth_hashrate',
-  'eth_accounts',
-  'eth_blockNumber',
-
-  'starknet_blockNumber',
-  'starknet_chainId',
-  'starknet_blockHashAndNumber',
-  'starknet_specVersion',
-  'starknet_syncing',
-]
-
 export function parseRequest(
   req: ParsedRequest,
   res: Response,
@@ -51,24 +67,17 @@ export function parseRequest(
     req.rpcRequest = { jsonrpc, method, params, id }
     next()
     return
-  } else {
-    const { jsonrpc, method, id } = req.body
-    if (nonParamMethods.indexOf(method) > -1) {
-      req.rpcRequest = { jsonrpc, method, params: [], id }
-      next()
-      return
-    }
   }
   const error: RPCError = {
-    jsonrpc: req.body.jsonrpc,
+    jsonrpc: "2.0",
     id: req.body.id ? req.body.id : null,
     error: {
-      code: -32700,
-      message: 'Parse error',
+      code: -32600,
+      message: 'Invalid Request',
     },
   }
 
-  revertWithError(res, 405, error)
+  revertWithError(res, 200, error)
 }
 
 export function revertWithError(

@@ -12,7 +12,7 @@ describe('eth_chainId RPC method', () => {
       });
       
       expect(response.status).toBe(200);
-      expect(response.data.result).not.toBeUndefined();
+      expect(response.data.result).toBeDefined();
       expect(response.data.result).toBe('0x52535453');
       expect(response.data.jsonrpc).toBe('2.0');
       expect(response.data.id).toBe(1);
@@ -83,8 +83,9 @@ describe('eth_chainId RPC method', () => {
       });
       
       expect(response.status).toBe(200);
-      expect(response.data.error).not.toBeUndefined();
+      expect(response.data.error).toBeDefined();
       expect(response.data.error.code).toBe(-32602);
+      expect(response.data.error.message).toBe('Too many arguments. Expected 0');
     }, 30000);
   
     test.only('should handle object as parameter', async () => {
@@ -98,10 +99,11 @@ describe('eth_chainId RPC method', () => {
       expect(response.status).toBe(200);
       expect(response.data.error).not.toBeUndefined();
       expect(response.data.error.code).toBe(-32602);
+      expect(response.data.error.message).toBe('Too many arguments. Expected 0');
     }, 30000);
   
     // JSON-RPC version tests
-    test.only('should work with jsonrpc 1.0', async () => {
+    test.only('should fail with jsonrpc 1.0', async () => {
       const response = await axios.post(SERVER, {
         jsonrpc: '1.0',
         method: 'eth_chainId',
@@ -109,10 +111,12 @@ describe('eth_chainId RPC method', () => {
         id: 1,
       });
       
-      // Should still work but return 2.0 as per your implementation
+      // Should return error for invalid version
       expect(response.status).toBe(200);
-      expect(response.data.jsonrpc).toBe('2.0');
-      expect(response.data.result).toBe('0x52535453');
+      expect(response.data.error).not.toBeUndefined();
+      expect(response.data.error.code).toBe(-32600); // Invalid Request
+      expect(response.data.error.message).toContain('Invalid Request');
+      expect(response.data.id).toBe(1); // Should return the original request ID
     }, 30000);
   
     // Malformed request tests
