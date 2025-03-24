@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  rosettanet:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "3000:3000"
+      - "6050:6050"
+    volumes:
+      - ../:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=test
+    command: >
+      bash -c "
+        yarn contracts &&
+        starknet-devnet --fork-network https://free-rpc.nethermind.io/mainnet-juno/v0_7 --fork-block 1219608 --seed 1223632 --port 6050 &
+        sleep 5 &&
+        yarn test:e2e
+      "
