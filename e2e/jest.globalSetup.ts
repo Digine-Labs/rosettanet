@@ -23,7 +23,6 @@ export default async function globalSetup() {
     } catch (devnetError) {
       // If devnet fails to start, log a message and continue
       console.log(`Forking from block: number=${forkBlock}, hash=0x36f7ab48c847372771d60be43c391916e01d5d4608b59b2f403c2760a64fbcf`)
-      console.error('Devnet startup error:', devnetError)
       // Set a dummy nodeConfig
       const nodeConfig = testConfig
       await updateNodeConfig(JSON.stringify(nodeConfig))
