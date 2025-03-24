@@ -12,13 +12,19 @@ describe('Tests registry contract', () => {
     const ethAddress = await getEthAddressFromSnAddress(SN_ADDRESS)
 
     // In CI environment, address mapping might be different or not set up
-    // Either returns a valid address or an error object
+    // Test passes if either:
+    // 1. We get a valid Ethereum address (any address, not necessarily the expected one)
+    // 2. We get an error object with code and message properties
     if (typeof ethAddress === 'object') {
+      // If we get an error object
       expect(ethAddress).toHaveProperty('code')
       expect(ethAddress).toHaveProperty('message')
-    } else {
-      expect(typeof ethAddress).toBe('string')
+    } else if (typeof ethAddress === 'string') {
+      // If we get a string address
       expect(ethAddress).toMatch(/^0x[0-9a-f]*$/)
+    } else {
+      // Fail if we get anything else
+      fail('Expected either a string address or an error object')
     }
   })
 
@@ -26,13 +32,19 @@ describe('Tests registry contract', () => {
     const snAddress = await getSnAddressFromEthAddress(ETH_ADDRESS)
 
     // In CI environment, address mapping might be different or not set up
-    // Either returns a valid address or an error object
+    // Test passes if either:
+    // 1. We get a valid Starknet address (any address, not necessarily the expected one)
+    // 2. We get an error object with code and message properties
     if (typeof snAddress === 'object') {
+      // If we get an error object
       expect(snAddress).toHaveProperty('code')
       expect(snAddress).toHaveProperty('message')
-    } else {
-      expect(typeof snAddress).toBe('string')
+    } else if (typeof snAddress === 'string') {
+      // If we get a string address
       expect(snAddress).toMatch(/^0x[0-9a-f]*$/)
+    } else {
+      // Fail if we get anything else
+      fail('Expected either a string address or an error object')
     }
   })
 })
