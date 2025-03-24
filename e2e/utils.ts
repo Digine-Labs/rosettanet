@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 import { initNode } from "../src/index";
-import { Devnet } from 'starknet-devnet'
 /* eslint-disable no-console */
 import { promises as fs } from 'fs';
 import path from "path";
@@ -31,25 +30,6 @@ export const forkBlock = "1219608"
 const accountSeed = "1223632"
 
 export const SERVER = "http://localhost:3000"
-
-async function forkDevnet() {
-    const devnet = await Devnet.spawnInstalled({ args: ["--fork-network", rpcList[Math.floor(Math.random() * rpcList.length)], 
-        "--fork-block", forkBlock, "--seed", accountSeed, 
-        "--request-body-size-limit", "3777362", "--port", "6050"] });
-
-    return devnet;
-}
-
-export async function startDevnet() {
-    try { 
-        const devnet = await forkDevnet()
-        
-        return devnet;
-    } catch (ex) {
-        console.error(ex)
-        process.exit(0);
-    }
-}
 
 export async function startNode() {
     try { 
