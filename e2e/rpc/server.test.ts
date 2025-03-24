@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from 'axios'
+import axios, { AxiosError } from 'axios'
 import { SERVER } from '../utils'
 
 // These tests verify that the server remains stable when receiving malformed requests
@@ -14,7 +14,6 @@ describe('Server robustness tests', () => {
         id: 1,
       }, { timeout: 2000 })
     } catch (error) {
-      console.log('Server not running, skipping all tests')
       // Skip all tests in this suite
       jest.setTimeout(1)
     }
@@ -41,7 +40,6 @@ describe('Server robustness tests', () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
-      console.log('Server not running, skipping test')
       return
     }
 
@@ -76,7 +74,6 @@ describe('Server robustness tests', () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
-      console.log('Server not running, skipping test')
       return
     }
 
@@ -107,11 +104,10 @@ describe('Server robustness tests', () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
-      console.log('Server not running, skipping test')
       return
     }
 
-    const requests: Promise<any>[] = []
+    const requests: Promise<unknown>[] = []
     // Send 50 requests in parallel (reduced from 100 to avoid overwhelming the server)
     for (let i = 0; i < 50; i++) {
       requests.push(
@@ -139,7 +135,6 @@ describe('Server robustness tests', () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
-      console.log('Server not running, skipping test')
       return
     }
 
@@ -174,7 +169,6 @@ describe('Server robustness tests', () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
-      console.log('Server not running, skipping test')
       return
     }
 
@@ -208,12 +202,11 @@ describe('Server robustness tests', () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
-      console.log('Server not running, skipping test')
       return
     }
     
     // Create a deeply nested object (100 levels)
-    let nestedObject: any = { value: 1 }
+    let nestedObject: Record<string, unknown> = { value: 1 }
     for (let i = 0; i < 100; i++) {
       nestedObject = { nested: nestedObject }
     }
@@ -244,7 +237,6 @@ describe('Server robustness tests', () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
-      console.log('Server not running, skipping test')
       return
     }
     
@@ -276,7 +268,6 @@ describe('Server robustness tests', () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
-      console.log('Server not running, skipping test')
       return
     }
     
@@ -306,7 +297,6 @@ describe('Server robustness tests', () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
-      console.log('Server not running, skipping test')
       return
     }
     
@@ -332,7 +322,6 @@ describe('Server robustness tests', () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
-      console.log('Server not running, skipping test')
       return
     }
     
