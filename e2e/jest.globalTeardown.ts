@@ -1,10 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-console */
 export default async function globalTeardown() {
-  console.log('\n🛠️ Global teardown: Stopping Devnet...')
+  console.log('\n🛠️ Global teardown: Tests are done. Exiting...')
 
-  const devnet = (global as any).__DEVNET__
-  if (devnet) {
-    await devnet.kill()
-  }
 }
