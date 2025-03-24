@@ -123,17 +123,6 @@ export function StartListening() {
   const server = app.listen(port, host, (): void => {
     // eslint-disable-next-line no-console
     writeLog(0, `Server started at ${host}:${port}`)
-
-    app.get('/logs', (req, res) => {
-      const logging = getConfigurationProperty('logging')
-      readFile(logging.fileName, 'utf8', (err, data) => {
-        if (err) {
-          return res.status(500).send('Error reading log file')
-        }
-        res.setHeader('Content-Type', 'text/plain')
-        res.send(data)
-      })
-    })
   })
 
   process.on('SIGINT', () => {
