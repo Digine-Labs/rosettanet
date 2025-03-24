@@ -73,7 +73,7 @@ export function StartListening() {
   app.use(express.json({
     strict: true,
     limit: '1mb',
-    verify: (req, res, buf, encoding) => {
+    verify: (req, res, buf) => {
       try {
         JSON.parse(buf.toString());
       } catch (e) {
@@ -86,7 +86,7 @@ export function StartListening() {
   app.use(express.json());
   
   // Error handler for JSON parsing errors
-  app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof SyntaxError && 'body' in err) {
       return res.status(400).json({
         jsonrpc: '2.0',

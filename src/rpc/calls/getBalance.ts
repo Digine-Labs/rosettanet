@@ -31,7 +31,7 @@ export async function getBalanceHandler(
     ethAddress = request.params[0] as string;
   } else if (typeof request.params === 'object' && request.params !== null) {
     // Handle object format params
-    ethAddress = (request.params as any).address as string;
+    ethAddress = (request.params as Record<string, unknown>).address as string;
     if (!ethAddress) {
       return {
         jsonrpc: '2.0',
