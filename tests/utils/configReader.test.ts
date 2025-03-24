@@ -2,10 +2,11 @@ import {
   initConfig,
   getConfigurationProperty,
 } from '../../src/utils/configReader'
+import path from 'path'
 
 describe('Config file check', () => {
   it('returning AppName in config', () => {
-    initConfig()
+    initConfig(path.resolve(__dirname, '../../config.json'))
     expect(getConfigurationProperty('appName')).toBe('RosettaNet')
   })
 

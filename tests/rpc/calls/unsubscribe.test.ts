@@ -1,5 +1,6 @@
 import { unsubscribeHandler } from '../../../src/rpc/calls/unsubscribe'
 import { RPCError, RPCResponse } from '../../../src/types/types'
+import { assertError } from '../../utils/assertResponse'
 
 describe('Test getWork handler', () => {
   it('Returns not available', async () => {
@@ -9,10 +10,11 @@ describe('Test getWork handler', () => {
       params: ['0x0'],
       id: 1,
     }
-    const result: RPCResponse | RPCError = <RPCResponse>(
-      await unsubscribeHandler(request)
-    )
-    expect(result.error?.message).toBe(
+    const result: RPCResponse | RPCError = await unsubscribeHandler(request)
+
+    // Use the new assertion helper
+    assertError(
+      result,
       'the method eth_unsubscribe does not exist/is not available',
     )
   })
@@ -24,11 +26,9 @@ describe('Test getWork handler', () => {
       params: [],
       id: 1,
     }
-    const result: RPCResponse | RPCError = <RPCResponse>(
-      await unsubscribeHandler(request)
-    )
-    expect(result.error?.message).toBe(
-      'Invalid argument, Parameter lenght should be 1.',
-    )
+    const result: RPCResponse | RPCError = await unsubscribeHandler(request)
+
+    // Use the new assertion helper
+    assertError(result, 'Invalid argument, Parameter lenght should be 1.')
   })
 })

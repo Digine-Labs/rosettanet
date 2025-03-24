@@ -1,5 +1,6 @@
 import { netListeningHandler } from '../../../src/rpc/calls/netListening'
 import { RPCError, RPCResponse } from '../../../src/types/types'
+import { assertError } from '../../utils/assertResponse'
 
 describe('Test net_listening handler', () => {
   it('Returns true', async () => {
@@ -22,11 +23,9 @@ describe('Test net_listening handler', () => {
       params: ['0x0'],
       id: 1,
     }
-    const result: RPCResponse | RPCError = <RPCResponse>(
-      await netListeningHandler(request)
-    )
-    expect(result.error?.message).toBe(
-      'Invalid argument, Parameter should length 0.',
-    )
+    const result: RPCResponse | RPCError = await netListeningHandler(request)
+
+    // Use the new assertion helper
+    assertError(result, 'Invalid argument, Parameter should length 0.')
   })
 })

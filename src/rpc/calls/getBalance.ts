@@ -7,7 +7,7 @@ import {
 } from '../../types/types'
 import { getSTRKBalance } from '../../utils/callHelper'
 import { validateEthAddress } from '../../utils/validations'
-import { getSnAddressWithFallback, precalculateStarknetAccountAddress } from '../../utils/wrapper'
+import { getSnAddressWithFallback } from '../../utils/wrapper'
 import { isStarknetRPCError } from '../../types/typeGuards'
 
 export async function getBalanceHandler(
@@ -37,7 +37,7 @@ export async function getBalanceHandler(
       },
     }
   }
-  
+
   const snAddress: string | StarknetRPCError =
     await getSnAddressWithFallback(ethAddress)
   if (isStarknetRPCError(snAddress)) {

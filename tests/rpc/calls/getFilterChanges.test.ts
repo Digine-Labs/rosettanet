@@ -1,5 +1,6 @@
 import { getFilterChangesHandler } from '../../../src/rpc/calls/getFilterChanges'
 import { RPCError, RPCResponse } from '../../../src/types/types'
+import { assertError } from '../../utils/assertResponse'
 
 describe('Test newBlockFilterHandler', () => {
   it('Returns not available', async () => {
@@ -9,10 +10,12 @@ describe('Test newBlockFilterHandler', () => {
       params: [],
       id: 1,
     }
-    const result: RPCResponse | RPCError = <RPCResponse>(
+    const result: RPCResponse | RPCError =
       await getFilterChangesHandler(request)
-    )
-    expect(result.error?.message).toBe(
+
+    // Use the new assertion helper
+    assertError(
+      result,
       'the method eth_getFilterChanges does not exist/is not available',
     )
   })

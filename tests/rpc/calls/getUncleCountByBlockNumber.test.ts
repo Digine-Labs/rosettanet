@@ -1,5 +1,6 @@
 import { getUncleCountByBlockNumberHandler } from '../../../src/rpc/calls/getUncleCountByBlockNumber'
 import { RPCError, RPCResponse } from '../../../src/types/types'
+import { assertError } from '../../utils/assertResponse'
 
 describe('Test getUncleCountByBlockNumberHandler', () => {
   it('Returns not available', async () => {
@@ -11,10 +12,12 @@ describe('Test getUncleCountByBlockNumberHandler', () => {
       ],
       id: 1,
     }
-    const result: RPCResponse | RPCError = <RPCResponse>(
+    const result: RPCResponse | RPCError =
       await getUncleCountByBlockNumberHandler(request)
-    )
-    expect(result.error?.message).toBe(
+
+    // Use the new assertion helper
+    assertError(
+      result,
       'the method eth_getUncleCountByBlockNumber does not exist/is not available',
     )
   })
@@ -28,10 +31,11 @@ describe('Test getUncleCountByBlockNumberHandler', () => {
       ],
       id: 1,
     }
-    const result: RPCResponse | RPCError = <RPCResponse>(
+    const result: RPCResponse | RPCError =
       await getUncleCountByBlockNumberHandler(request)
-    )
-    expect(result.error?.message).toBe('Invalid argument, Invalid blockNumber.')
+
+    // Use the new assertion helper
+    assertError(result, 'Invalid argument, Invalid blockNumber.')
   })
 
   it('Gives error when parameter length != 1', async () => {
@@ -41,11 +45,10 @@ describe('Test getUncleCountByBlockNumberHandler', () => {
       params: ['0x0', '0x0'],
       id: 1,
     }
-    const result: RPCResponse | RPCError = <RPCResponse>(
+    const result: RPCResponse | RPCError =
       await getUncleCountByBlockNumberHandler(request)
-    )
-    expect(result.error?.message).toBe(
-      'Invalid argument, Parameter lenght should be 1.',
-    )
+
+    // Use the new assertion helper
+    assertError(result, 'Invalid argument, Parameter lenght should be 1.')
   })
 })

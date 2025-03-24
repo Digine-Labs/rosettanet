@@ -1,5 +1,6 @@
 import { web3clientVersionHandler } from '../../../src/rpc/calls/web3clientVersion'
 import { RPCError, RPCResponse } from '../../../src/types/types'
+import { assertError } from '../../utils/assertResponse'
 
 describe('Test client version handler', () => {
   it('Returns client version', async () => {
@@ -24,12 +25,10 @@ describe('Test client version handler', () => {
       params: ['0x0'],
       id: 1,
     }
-    const response: RPCResponse | RPCError = <RPCResponse>(
+    const response: RPCResponse | RPCError =
       await web3clientVersionHandler(request)
-    )
 
-    expect(response.error?.message).toBe(
-      'Invalid argument, Parameter field should be empty.',
-    )
+    // Use the new assertion helper
+    assertError(response, 'Invalid argument, Parameter field should be empty.')
   })
 })

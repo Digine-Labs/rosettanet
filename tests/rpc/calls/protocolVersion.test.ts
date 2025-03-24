@@ -1,5 +1,6 @@
 import { protocolVersionHandler } from '../../../src/rpc/calls/protocolVersion'
 import { RPCError, RPCResponse } from '../../../src/types/types'
+import { assertError } from '../../utils/assertResponse'
 
 describe('Test protocol version handler', () => {
   it('Returns protocol version', async () => {
@@ -24,12 +25,10 @@ describe('Test protocol version handler', () => {
       params: ['0x0'],
       id: 1,
     }
-    const response: RPCResponse | RPCError = <RPCResponse>(
+    const response: RPCResponse | RPCError =
       await protocolVersionHandler(request)
-    )
 
-    expect(response.error?.message).toBe(
-      'Invalid argument, Parameter field should be empty.',
-    )
+    // Use the new assertion helper
+    assertError(response, 'Invalid argument, Parameter field should be empty.')
   })
 })
