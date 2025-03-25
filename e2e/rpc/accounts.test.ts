@@ -54,8 +54,8 @@ describe('eth_accounts RPC method', () => {
     })
 
     expect(response.status).toBe(200)
-    // The implementation returns null for result with null ID
-    expect(response.data.result).toBe(null)
+    // For null ID, the result should be an empty array according to Ethereum RPC standard
+    expect(response.data.result).toEqual([])
     expect(response.data.id).toBe(null)
   }, 30000)
 
