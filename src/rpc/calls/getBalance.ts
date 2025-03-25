@@ -7,28 +7,56 @@ import {
 } from '../../types/types'
 import { getSTRKBalance } from '../../utils/callHelper'
 import { validateEthAddress } from '../../utils/validations'
-import { getSnAddressWithFallback, precalculateStarknetAccountAddress } from '../../utils/wrapper'
+import { getSnAddressWithFallback } from '../../utils/wrapper'
 import { isStarknetRPCError } from '../../types/typeGuards'
 
 export async function getBalanceHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  if (request.params.length == 0) {
+  // Handle both array and object format params
+  let ethAddress: string
+
+  if (Array.isArray(request.params)) {
+    if (request.params.length !== 2) {
+      return {
+        jsonrpc: '2.0',
+        id: request.id,
+        error: {
+          code: -32602,
+          message:
+            'Invalid argument, Parameter should be a valid Ethereum Address and block parameter.',
+        },
+      }
+    }
+    ethAddress = request.params[0] as string
+  } else if (typeof request.params === 'object' && request.params !== null) {
+    // Handle object format params
+    ethAddress = (request.params as Record<string, unknown>).address as string
+    if (!ethAddress) {
+      return {
+        jsonrpc: '2.0',
+        id: request.id,
+        error: {
+          code: -32602,
+          message: 'Invalid params: missing address parameter',
+        },
+      }
+    }
+  } else {
     return {
-      jsonrpc: request.jsonrpc,
+      jsonrpc: '2.0',
       id: request.id,
       error: {
         code: -32602,
-        message:
-          'Invalid argument, Parameter should be a valid Ethereum Address and block parameter.',
+        message: 'Invalid params',
       },
     }
   }
 
-  const ethAddress = request.params[0] as string
+  // Validate Ethereum address
   if (!validateEthAddress(ethAddress)) {
     return {
-      jsonrpc: request.jsonrpc,
+      jsonrpc: '2.0',
       id: request.id,
       error: {
         code: -32602,
@@ -37,7 +65,7 @@ export async function getBalanceHandler(
       },
     }
   }
-  
+
   const snAddress: string | StarknetRPCError =
     await getSnAddressWithFallback(ethAddress)
   if (isStarknetRPCError(snAddress)) {
@@ -49,7 +77,7 @@ export async function getBalanceHandler(
       }
     }
     return <RPCError>{
-      jsonrpc: request.jsonrpc,
+      jsonrpc: '2.0',
       id: request.id,
       error: snAddress,
     }
@@ -60,7 +88,7 @@ export async function getBalanceHandler(
 
   if (isStarknetRPCError(balance)) {
     return <RPCError>{
-      jsonrpc: request.jsonrpc,
+      jsonrpc: '2.0',
       id: request.id,
       error: balance,
     }

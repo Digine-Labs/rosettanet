@@ -19,7 +19,7 @@ export function prepareStarknetInvokeTransaction(
   calldata: Array<string>,
   signature: Array<string>,
   signedRawTransaction: SignedRawTransaction,
-  nonce: string
+  nonce: string,
 ) {
   const starknetTx: StarknetInvokeTransaction = {
     invoke_transaction: {

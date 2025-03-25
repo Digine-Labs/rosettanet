@@ -1,37 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-console */
-import { Devnet } from "starknet-devnet";
-import { getDevAccount, startDevnet, startNode, testConfig, updateNodeConfig } from "./utils"
-import { declareContract, deployContract } from "./transaction";
-import { STRK_ADDRESS } from "./constants";
-
-let devnet: Devnet;
+import { getDevAccount, startNode, testConfig, updateNodeConfig } from './utils'
+import { declareContract, deployContract } from './transaction'
+import { STRK_ADDRESS } from './constants'
 
 export default async function globalSetup() {
   try {
-    console.log("\n🛠️ Global setup: Starting Devnet...");
-    devnet = await startDevnet();
+    const account = getDevAccount()
 
-    const account = getDevAccount();
+    const rosettanetClass = await declareContract(account, 'Rosettanet')
+    const accountClass = await declareContract(account, 'RosettaAccount')
 
-    const rosettanetClass = await declareContract(account, "Rosettanet");
-    const accountClass = await declareContract(account, "RosettaAccount");
-
-    const rosettanetAddress = await deployContract(account, rosettanetClass, [accountClass, account.address, STRK_ADDRESS]);
+    const rosettanetAddress = await deployContract(account, rosettanetClass, [
+      accountClass,
+      account.address,
+      STRK_ADDRESS,
+    ])
 
     console.log(rosettanetAddress)
 
-    const nodeConfig = testConfig;
-    nodeConfig.accountClass = accountClass;
+    const nodeConfig = testConfig
+    nodeConfig.accountClass = accountClass
     nodeConfig.rosettanet = rosettanetAddress
-    await updateNodeConfig(JSON.stringify(nodeConfig));
-    
-    await startNode();
+    await updateNodeConfig(JSON.stringify(nodeConfig))
 
-    // Store the instance globally so it can be accessed later
-    (global as any).__DEVNET__ = devnet;
-  } catch(ex) {
+    await startNode()
+  } catch (ex) {
     console.error(ex)
   }
-
 }

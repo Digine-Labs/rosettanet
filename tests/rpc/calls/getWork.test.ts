@@ -1,1 +1,0 @@
-describe('Test getWork handler', () => {})

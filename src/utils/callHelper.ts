@@ -8,7 +8,7 @@ import {
   StarknetRPCError,
 } from '../types/types'
 import { getConfigurationProperty } from './configReader'
-import { safeU256ToUint256, U256toUint256 } from './converters/integer'
+import { safeU256ToUint256 } from './converters/integer'
 import axios from 'axios'
 import { isRPCError, isStarknetRPCError } from '../types/typeGuards'
 import { addHexPrefix } from './padding'

@@ -241,7 +241,195 @@ Methods.set('eth_createAccessList', {
 })
 
 router.post('/', async function (req: ParsedRequest, res: Response) {
+  // Handle batch requests
+  if (Array.isArray(req.body)) {
+    // Check for empty batch
+    if (req.body.length === 0) {
+      return res.status(200).send({
+        jsonrpc: '2.0',
+        id: null,
+        error: {
+          code: -32600,
+          message: 'Invalid Request',
+        },
+      })
+    }
+
+    // Check if all requests are notifications (no ID)
+    const allNotifications = req.body.every(
+      item => !('id' in item) || item.id === null || item.id === undefined,
+    )
+    if (allNotifications) {
+      // Process notifications but don't return anything
+      await Promise.all(
+        req.body.map(async item => {
+          if (
+            item &&
+            typeof item === 'object' &&
+            'jsonrpc' in item &&
+            'method' in item
+          ) {
+            const singleRequest = {
+              jsonrpc: item.jsonrpc,
+              method: item.method,
+              params: item.params || [],
+              id: null,
+            }
+
+            // Process notification without returning result
+            if (singleRequest.method) {
+              const methodFirstLetters = singleRequest.method.substring(0, 8)
+              if (methodFirstLetters === 'starknet') {
+                await starknetCallHandler(singleRequest)
+              } else if (Methods.has(singleRequest.method)) {
+                const handler = Methods.get(singleRequest.method)
+                if (handler) {
+                  try {
+                    await handler.handler(singleRequest)
+                  } catch (ex) {
+                    // Ignore errors for notifications
+                  }
+                }
+              }
+            }
+          }
+        }),
+      )
+
+      // Return empty array for notification-only batches
+      return res.status(200).send([])
+    }
+
+    // Process regular batch requests
+    const batchResults = await Promise.all(
+      req.body.map(async item => {
+        // Skip processing for notifications (requests without an id)
+        if (!('id' in item) || item.id === null || item.id === undefined) {
+          return null // Don't include notifications in the response
+        }
+
+        // Validate basic JSON-RPC structure
+        if (
+          !item ||
+          typeof item !== 'object' ||
+          !('jsonrpc' in item) ||
+          !('method' in item)
+        ) {
+          return {
+            jsonrpc: '2.0',
+            id: item.id ?? null,
+            error: {
+              code: -32600,
+              message: 'Invalid Request',
+            },
+          }
+        }
+
+        // Create a single request object
+        const singleRequest = {
+          jsonrpc: item.jsonrpc,
+          method: item.method,
+          params: item.params || [],
+          id: item.id,
+        }
+
+        // Process the individual request
+        let result
+        if (singleRequest.method) {
+          const methodFirstLetters = singleRequest.method.substring(0, 8)
+          if (methodFirstLetters === 'starknet') {
+            result = await starknetCallHandler(singleRequest)
+          } else if (Methods.has(singleRequest.method)) {
+            const handler = Methods.get(singleRequest.method)
+            if (handler) {
+              try {
+                result = await handler.handler(singleRequest)
+              } catch (ex) {
+                result = {
+                  jsonrpc: '2.0',
+                  id: item.id,
+                  error: {
+                    code: -32500,
+                    message: 'Internal server error',
+                  },
+                }
+              }
+            } else {
+              result = {
+                jsonrpc: '2.0',
+                id: item.id,
+                error: {
+                  code: -32601,
+                  message: 'Method not found',
+                },
+              }
+            }
+          } else {
+            result = {
+              jsonrpc: '2.0',
+              id: item.id,
+              error: {
+                code: -32601,
+                message: 'Method not found',
+              },
+            }
+          }
+        } else {
+          result = {
+            jsonrpc: '2.0',
+            id: item.id,
+            error: {
+              code: -32600,
+              message: 'Invalid Request',
+            },
+          }
+        }
+
+        return result
+      }),
+    )
+
+    // Filter out null responses (notifications)
+    const filteredResults = batchResults.filter(result => result !== null)
+
+    // Return empty array if all were notifications
+    res.send(filteredResults.length > 0 ? filteredResults : [])
+    return
+  }
+
+  // Handle single requests
   const request = req.rpcRequest
+
+  // Handle notification (no ID)
+  if (
+    request &&
+    (!('id' in request) || request.id === null || request.id === undefined)
+  ) {
+    // Process notification without returning a response
+    if (request?.method) {
+      const methodFirstLetters: string = request.method.substring(0, 8)
+      if (methodFirstLetters === 'starknet') {
+        await starknetCallHandler(request)
+      } else if (Methods.has(request.method)) {
+        const handler = Methods.get(request.method)
+        if (handler) {
+          try {
+            await handler.handler(request)
+          } catch (ex) {
+            // Ignore errors for notifications
+          }
+        }
+      }
+    }
+    // Return empty response for notifications with null ID
+    return res.status(200).send({
+      jsonrpc: '2.0',
+      id: null,
+      result: request?.method === 'eth_chainId' ? '0x52535453' : null,
+    })
+  }
+
+  // Handle regular requests with method
   if (request?.method) {
     const methodFirstLetters: string = request.method.substring(0, 8)
     if (methodFirstLetters === 'starknet') {
@@ -250,7 +438,7 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
       return
     }
   }
-  if (request?.method && request?.params && Methods.has(request.method)) {
+  if (request?.method && Methods.has(request.method)) {
     const handler: ResponseHandler | undefined = Methods.get(request.method)
     if (handler) {
       try {
@@ -291,19 +479,16 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
       }
     }
   } else {
+    // Method not found error
     const error: RPCError = {
-      id: req.body.id,
-      jsonrpc: req.body.jsonrpc,
+      id: request?.id || (req.body && req.body.id) || null,
+      jsonrpc: '2.0',
       error: {
         code: -32601,
         message: 'Method not found',
       },
     }
-    res.send({
-      jsonrpc: '2.0',
-      id: req.body.id,
-      error: error,
-    })
+    res.send(error)
     return
   }
 })

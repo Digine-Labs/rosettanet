@@ -4,12 +4,12 @@ import { StartListening } from './server'
 import { initConfig } from './utils/configReader'
 
 export async function initNode(configFile: string) {
-    await initConfig(configFile)
-    syncBlockNumber()
-    syncGasPrice()
-    StartListening()
+  await initConfig(configFile)
+  syncBlockNumber()
+  syncGasPrice()
+  StartListening()
 }
 
 if (require.main === module) {
-    initNode("config.json")
+  initNode('config.json')
 }
