@@ -405,28 +405,37 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
     request &&
     (!('id' in request) || request.id === null || request.id === undefined)
   ) {
-    // Process notification without returning a response
+    // Process notification by calling the appropriate handler
     if (request?.method) {
       const methodFirstLetters: string = request.method.substring(0, 8)
       if (methodFirstLetters === 'starknet') {
-        await starknetCallHandler(request)
+        const result = await starknetCallHandler(request)
+        return res.status(200).send({
+          jsonrpc: '2.0',
+          id: null,
+          result: isRPCError(result) ? null : result.result,
+        })
       } else if (Methods.has(request.method)) {
         const handler = Methods.get(request.method)
         if (handler) {
           try {
-            await handler.handler(request)
+            const result = await handler.handler(request)
+            return res.status(200).send({
+              jsonrpc: '2.0',
+              id: null,
+              result: isRPCError(result) ? null : result.result,
+            })
           } catch (ex) {
             // Ignore errors for notifications
           }
         }
       }
     }
-    // Return empty response for notifications with null ID
+    // Fallback for methods without handlers
     return res.status(200).send({
       jsonrpc: '2.0',
       id: null,
-      result: request?.method === 'eth_chainId' ? '0x52535453' : 
-              request?.method === 'eth_accounts' ? [] : null,
+      result: null,
     })
   }
 
