@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios'
-import { SERVER } from '../utils'
+import { SERVER, fail } from '../utils'
 
 // These tests verify that the server remains stable when receiving malformed requests
 // The server should return appropriate errors but should not crash
@@ -19,7 +19,7 @@ describe('Server robustness tests', () => {
       )
     } catch (error) {
       // Skip all tests in this suite
-      jest.setTimeout(1)
+      fail('server is not working')
     }
   })
 

@@ -121,3 +121,7 @@ export function getProvider(): RpcProvider {
     specVersion: '0.7.0',
   })
 }
+
+export function fail(msg: string) {
+  throw new Error(msg);
+}

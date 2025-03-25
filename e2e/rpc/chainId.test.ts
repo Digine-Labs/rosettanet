@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios'
-import { SERVER } from '../utils'
+import { SERVER, fail } from '../utils'
 
 describe('eth_chainId RPC method', () => {
   // Standard valid case

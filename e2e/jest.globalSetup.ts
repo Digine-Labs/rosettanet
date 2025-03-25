@@ -17,8 +17,6 @@ export default async function globalSetup() {
       STRK_ADDRESS,
     ])
 
-    console.log(rosettanetAddress)
-
     const nodeConfig = testConfig
     nodeConfig.accountClass = accountClass
     nodeConfig.rosettanet = rosettanetAddress
