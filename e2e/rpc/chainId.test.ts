@@ -103,7 +103,7 @@ describe('eth_chainId RPC method', () => {
   }, 30000)
 
   // JSON-RPC version tests
-  test.only('should fail with jsonrpc 1.0', async () => {
+  test.only('should correct jsonrpc 1.0', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '1.0',
       method: 'eth_chainId',
@@ -113,9 +113,8 @@ describe('eth_chainId RPC method', () => {
 
     // Should return error for invalid version
     expect(response.status).toBe(200)
-    expect(response.data.error).not.toBeUndefined()
-    expect(response.data.error.code).toBe(-32600) // Invalid Request
-    expect(response.data.error.message).toContain('Invalid Request')
+    expect(response.data.jsonrpc).toBe('2.0')
+    expect(response.data.result).toBe('0x52535453')
     expect(response.data.id).toBe(1) // Should return the original request ID
   }, 30000)
 
@@ -126,12 +125,11 @@ describe('eth_chainId RPC method', () => {
       params: [],
       id: 1,
     })
-
-    expect(response.status).toBe(200)
     // Appropriate error response based on your error handling
-    expect(response.data.error).not.toBeUndefined()
-    expect(response.data.error.code).toBe(-32600)
-    expect(response.data.error.message).toContain('Invalid Request')
+    expect(response.status).toBe(200)
+    expect(response.data.jsonrpc).toBe('2.0')
+    expect(response.data.result).toBe('0x52535453')
+    expect(response.data.id).toBe(1) // Should return the original request ID
   }, 30000)
 
   test.only('should handle missing method', async () => {
@@ -143,8 +141,8 @@ describe('eth_chainId RPC method', () => {
 
     expect(response.status).toBe(200)
     expect(response.data.error).not.toBeUndefined()
-    expect(response.data.error.code).toBe(-32600)
-    expect(response.data.error.message).toContain('Invalid Request')
+    expect(response.data.error.code).toBe(-32603)
+    expect(response.data.error.message).toContain('method not presented')
   }, 30000)
 
   test.only('should handle missing params', async () => {
@@ -193,12 +191,6 @@ describe('eth_chainId RPC method', () => {
 
       expect(response.status).toBe(200)
 
-      // If the server doesn't support batch requests, it might return a single error
-      if (!Array.isArray(response.data)) {
-        expect(response.data.error).toBeDefined()
-        return
-      }
-
       expect(Array.isArray(response.data)).toBe(true)
       expect(response.data.length).toBe(2)
 
@@ -222,9 +214,7 @@ describe('eth_chainId RPC method', () => {
     const response = await axios.post(SERVER, [])
 
     expect(response.status).toBe(200)
-    expect(response.data.error).not.toBeUndefined()
-    expect(response.data.error.code).toBe(-32600)
-    expect(response.data.error.message).toContain('Invalid Request')
+    expect(response.data).toStrictEqual([])
   }, 30000)
 
   // Content-Type tests

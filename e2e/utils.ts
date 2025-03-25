@@ -123,5 +123,5 @@ export function getProvider(): RpcProvider {
 }
 
 export function fail(msg: string) {
-  throw new Error(msg);
+  throw new Error(msg)
 }
