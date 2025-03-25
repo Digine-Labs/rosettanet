@@ -425,7 +425,8 @@ router.post('/', async function (req: ParsedRequest, res: Response) {
     return res.status(200).send({
       jsonrpc: '2.0',
       id: null,
-      result: request?.method === 'eth_chainId' ? '0x52535453' : null,
+      result: request?.method === 'eth_chainId' ? '0x52535453' : 
+              request?.method === 'eth_accounts' ? [] : null,
     })
   }
 
