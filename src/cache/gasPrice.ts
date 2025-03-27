@@ -73,7 +73,7 @@ async function updateGasPrice() {
 
 export async function initialSyncGasPrice() {
   await updateGasPrice()
-  return;
+  return
 }
 
 export async function syncGasPrice() {

@@ -31,7 +31,7 @@ async function updateBlockNumber() {
 
 export async function initialSyncBlockNumber() {
   await updateBlockNumber()
-  return;
+  return
 }
 
 export async function syncBlockNumber() {

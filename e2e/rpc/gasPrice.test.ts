@@ -16,7 +16,7 @@ describe('eth_gasPrice RPC method', () => {
     expect(response.data.id).toBe(1)
     expect(typeof response.data.result).toBe('string')
     expect(response.data.result.startsWith('0x')).toBe(true)
-    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0));
+    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0))
   }, 30000)
 
   test.only('should work with numeric ID', async () => {
@@ -32,7 +32,7 @@ describe('eth_gasPrice RPC method', () => {
     expect(response.data.id).toBe(9999)
     expect(typeof response.data.result).toBe('string')
     expect(response.data.result.startsWith('0x')).toBe(true)
-    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0));
+    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0))
   }, 30000)
 
   test.only('should work with string ID', async () => {
@@ -48,7 +48,7 @@ describe('eth_gasPrice RPC method', () => {
     expect(response.data.id).toBe('test-id-string')
     expect(typeof response.data.result).toBe('string')
     expect(response.data.result.startsWith('0x')).toBe(true)
-    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0));
+    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0))
   }, 30000)
 
   test.only('should work with null ID', async () => {
@@ -64,7 +64,7 @@ describe('eth_gasPrice RPC method', () => {
     expect(response.data.id).toBe(null)
     expect(typeof response.data.result).toBe('string')
     expect(response.data.result.startsWith('0x')).toBe(true)
-    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0));
+    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0))
   }, 30000)
 
   test.only('should return error when params is not empty', async () => {
@@ -106,7 +106,7 @@ describe('eth_gasPrice RPC method', () => {
     expect(response.data.jsonrpc).toBe('2.0')
     expect(response.data.result).not.toBeUndefined()
     expect(response.data.id).toBe(1)
-    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0));
+    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0))
   }, 30000)
 
   test.only('should return error when missing method', async () => {
@@ -121,7 +121,6 @@ describe('eth_gasPrice RPC method', () => {
     expect(response.data.error.code).toBe(-32603)
     expect(response.data.error.message).toContain('method not presented')
     expect(response.data.id).toBe(1)
-    
   }, 30000)
 
   test.only('should return error when missing params', async () => {
@@ -138,30 +137,29 @@ describe('eth_gasPrice RPC method', () => {
   }, 30000)
 
   test.only('should handle batch requests with valid and invalid requests', async () => {
-      const response = await axios.post(SERVER, [
-        {
-          jsonrpc: '2.0',
-          method: 'eth_gasPrice',
-          params: [],
-          id: 1,
-        },
-        {
-          jsonrpc: '2.0',
-          method: 'eth_gasPrice',
-          params: ['invalid'],
-          id: 2,
-        },
-      ])
+    const response = await axios.post(SERVER, [
+      {
+        jsonrpc: '2.0',
+        method: 'eth_gasPrice',
+        params: [],
+        id: 1,
+      },
+      {
+        jsonrpc: '2.0',
+        method: 'eth_gasPrice',
+        params: ['invalid'],
+        id: 2,
+      },
+    ])
 
-      expect(response.status).toBe(200)
-      expect(Array.isArray(response.data)).toBe(true)
-      expect(response.data.length).toBe(2)
-      expect(response.data[0].result).not.toBeUndefined()
-      expect(response.data[0].id).toBe(1)
-      expect(response.data[1].error).not.toBeUndefined()
-      expect(response.data[1].error.code).toBe(-32602)
-      expect(response.data[1].id).toBe(2)
-
+    expect(response.status).toBe(200)
+    expect(Array.isArray(response.data)).toBe(true)
+    expect(response.data.length).toBe(2)
+    expect(response.data[0].result).not.toBeUndefined()
+    expect(response.data[0].id).toBe(1)
+    expect(response.data[1].error).not.toBeUndefined()
+    expect(response.data[1].error.code).toBe(-32602)
+    expect(response.data[1].id).toBe(2)
   }, 30000)
 
   test.only('should work with application/json content-type', async () => {
@@ -179,7 +177,7 @@ describe('eth_gasPrice RPC method', () => {
     )
 
     expect(response.status).toBe(200)
-    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0));
+    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0))
   }, 30000)
 
   test.only('should work with text/plain content-type', async () => {
@@ -197,7 +195,7 @@ describe('eth_gasPrice RPC method', () => {
     )
 
     expect(response.status).toBe(200)
-    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0));
+    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0))
   }, 30000)
 
   test.only('should reject GET requests', async () => {
@@ -212,7 +210,9 @@ describe('eth_gasPrice RPC method', () => {
       })
       fail('Expected GET request to fail')
     } catch (error) {
-      const axiosError = error as AxiosError<{error?: {code: number; message: string}}>
+      const axiosError = error as AxiosError<{
+        error?: { code: number; message: string }
+      }>
       expect(axiosError.response?.status).toBe(405) // Method Not Allowed
     }
   }, 30000)
@@ -243,7 +243,9 @@ describe('eth_gasPrice RPC method', () => {
       )
       fail('Expected malformed JSON to fail')
     } catch (error) {
-      const axiosError = error as AxiosError<{error?: {code: number; message: string}}>
+      const axiosError = error as AxiosError<{
+        error?: { code: number; message: string }
+      }>
       expect(axiosError.response?.status).toBe(400) // Bad Request
       expect(axiosError.response?.data?.error).not.toBeUndefined()
       expect(axiosError.response?.data?.error?.code).toBe(-32700) // Parse error
