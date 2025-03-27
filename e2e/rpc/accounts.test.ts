@@ -3,7 +3,7 @@ import { SERVER, fail } from '../utils'
 
 describe('eth_accounts RPC method', () => {
   // Standard valid case
-  test('should return empty array with valid request', async () => {
+  test.only('should return empty array with valid request', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_accounts',
@@ -19,7 +19,7 @@ describe('eth_accounts RPC method', () => {
   }, 30000)
 
   // Test with different ID types
-  test('should work with numeric ID', async () => {
+  test.only('should work with numeric ID', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_accounts',
@@ -32,7 +32,7 @@ describe('eth_accounts RPC method', () => {
     expect(response.data.id).toBe(9999)
   }, 30000)
 
-  test('should work with string ID', async () => {
+  test.only('should work with string ID', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_accounts',
@@ -45,7 +45,7 @@ describe('eth_accounts RPC method', () => {
     expect(response.data.id).toBe('test-id-string')
   }, 30000)
 
-  test('should work with null ID', async () => {
+  test.only('should work with null ID', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_accounts',
@@ -60,7 +60,7 @@ describe('eth_accounts RPC method', () => {
   }, 30000)
 
   // Invalid params tests
-  test('should return error when params is not empty', async () => {
+  test.only('should return error when params is not empty', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_accounts',
@@ -75,7 +75,7 @@ describe('eth_accounts RPC method', () => {
     expect(response.data.id).toBe(1)
   }, 30000)
 
-  test('should handle array with multiple parameters', async () => {
+  test.only('should handle array with multiple parameters', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_accounts',
@@ -89,7 +89,7 @@ describe('eth_accounts RPC method', () => {
     expect(response.data.error.message).toBe('Invalid argument, Parameter field should be empty.')
   }, 30000)
 
-  test('should handle object as parameter', async () => {
+  test.only('should handle object as parameter', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_accounts',
@@ -104,7 +104,7 @@ describe('eth_accounts RPC method', () => {
   }, 30000)
 
   // JSON-RPC version tests
-  test('should fail with jsonrpc 1.0', async () => {
+  test.only('should fail with jsonrpc 1.0', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '1.0',
       method: 'eth_accounts',
@@ -121,7 +121,7 @@ describe('eth_accounts RPC method', () => {
   }, 30000)
 
   // Malformed request tests
-  test('should handle missing jsonrpc version', async () => {
+  test.only('should handle missing jsonrpc version', async () => {
     const response = await axios.post(SERVER, {
       method: 'eth_accounts',
       params: [],
@@ -134,7 +134,7 @@ describe('eth_accounts RPC method', () => {
     expect(response.data.error.message).toContain('Invalid Request')
   }, 30000)
 
-  test('should handle missing method', async () => {
+  test.only('should handle missing method', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       params: [],
@@ -147,7 +147,7 @@ describe('eth_accounts RPC method', () => {
     expect(response.data.error.message).toContain('Invalid Request')
   }, 30000)
 
-  test('should handle missing params', async () => {
+  test.only('should handle missing params', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_accounts',
@@ -159,7 +159,7 @@ describe('eth_accounts RPC method', () => {
     expect(response.data.result).toEqual([])
   }, 30000)
 
-  test('should handle missing ID', async () => {
+  test.only('should handle missing ID', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_accounts',
@@ -175,7 +175,7 @@ describe('eth_accounts RPC method', () => {
   }, 30000)
 
   // Content-Type tests
-  test('should handle application/json content type', async () => {
+  test.only('should handle application/json content type', async () => {
     const response = await axios.post(
       SERVER,
       {
@@ -193,7 +193,7 @@ describe('eth_accounts RPC method', () => {
     expect(response.data.result).toEqual([])
   }, 30000)
 
-  test('should handle text/plain content type', async () => {
+  test.only('should handle text/plain content type', async () => {
     const response = await axios.post(
       SERVER,
       JSON.stringify({
@@ -212,7 +212,7 @@ describe('eth_accounts RPC method', () => {
   }, 30000)
 
   // HTTP method tests
-  test('should reject GET requests', async () => {
+  test.only('should reject GET requests', async () => {
     try {
       await axios.get(SERVER, {
         params: {
@@ -230,7 +230,7 @@ describe('eth_accounts RPC method', () => {
   }, 30000)
 
   // Batch request tests
-  test('should handle batch requests', async () => {
+  test.only('should handle batch requests', async () => {
     try {
       const response = await axios.post(SERVER, [
         {
@@ -278,7 +278,7 @@ describe('eth_accounts RPC method', () => {
   }, 30000)
 
   // Non-existent method test
-  test('should handle non-existent method differently than eth_accounts', async () => {
+  test.only('should handle non-existent method differently than eth_accounts', async () => {
     const accountsResponse = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_accounts',
@@ -304,7 +304,7 @@ describe('eth_accounts RPC method', () => {
   }, 30000)
 
   // Notification test (no ID)
-  test('should handle notification requests properly', async () => {
+  test.only('should handle notification requests properly', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_accounts',
