@@ -195,7 +195,7 @@ describe('eth_blockNumber RPC method', () => {
       expect(response.data[1].error.code).toBe(-32602)
       expect(response.data[1].id).toBe(2)
     } catch (error) {
-      const axiosError = error as AxiosError<any>
+      const axiosError = error as AxiosError<{error?: {code: number; message: string}}>
       expect(axiosError.response?.status).toBe(200)
       expect(axiosError.response?.data?.error).toBeDefined()
     }
@@ -287,7 +287,7 @@ describe('eth_blockNumber RPC method', () => {
       )
       fail('Expected malformed JSON to fail')
     } catch (error) {
-      const axiosError = error as AxiosError<any>
+      const axiosError = error as AxiosError<{error?: {code: number; message: string}}>
       expect(axiosError.response?.status).toBe(400) // Bad Request
       expect(axiosError.response?.data?.error).not.toBeUndefined()
       expect(axiosError.response?.data?.error?.code).toBe(-32700) // Parse error
