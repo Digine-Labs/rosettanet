@@ -1,10 +1,12 @@
-import { syncBlockNumber } from './cache/blockNumber'
-import { syncGasPrice } from './cache/gasPrice'
+import { initialSyncBlockNumber, syncBlockNumber } from './cache/blockNumber'
+import { initialSyncGasPrice, syncGasPrice } from './cache/gasPrice'
 import { StartListening } from './server'
 import { initConfig } from './utils/configReader'
 
 export async function initNode(configFile: string) {
   await initConfig(configFile)
+  await initialSyncBlockNumber()
+  await initialSyncGasPrice()
   syncBlockNumber()
   syncGasPrice()
   StartListening()

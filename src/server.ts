@@ -1,5 +1,5 @@
 import express, { Application, Request, Response, NextFunction } from 'express'
-import { parseRequest } from './utils/parser'
+//import { parseRequest } from './utils/parser'
 import cors from 'cors'
 
 import Routes from './rpc/calls'
@@ -114,7 +114,7 @@ export function StartListening() {
     next(err)
   })
   app.use(express.urlencoded({ extended: true }))
-  app.use(parseRequest)
+  //app.use(parseRequest)
 
   // Handle HTTP method validation - only allow POST for JSON-RPC
   app.use('/', Routes)

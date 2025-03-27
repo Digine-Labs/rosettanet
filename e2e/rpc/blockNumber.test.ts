@@ -14,7 +14,7 @@ describe('eth_blockNumber RPC method', () => {
     expect(response.data.result).not.toBeUndefined()
     expect(response.data.jsonrpc).toBe('2.0')
     expect(response.data.id).toBe(1)
-    expect(BigInt(response.data.result) > BigInt(forkBlock)).toBe(true)
+    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(forkBlock))
   }, 30000)
 
   test.only('should work with numeric ID', async () => {

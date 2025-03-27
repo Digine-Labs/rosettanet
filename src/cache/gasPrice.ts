@@ -71,10 +71,15 @@ async function updateGasPrice() {
   }
 }
 
+export async function initialSyncGasPrice() {
+  await updateGasPrice()
+  return;
+}
+
 export async function syncGasPrice() {
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    await updateGasPrice()
     await new Promise<void>(resolve => setTimeout(resolve, 10000)) // Sync new blocks in every 10 seconds
+    await updateGasPrice()
   }
 }
