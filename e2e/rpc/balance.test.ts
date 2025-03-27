@@ -5,7 +5,7 @@ import { registerContractIfNotRegistered } from '../registry/rosettanet'
 const snAddress =
   '0x06419f7dea356b74bc1443bd1600ab3831b7808d1ef897789facfad11a172da7'
 describe('eth_getBalance RPC method', () => {
-  test.only('balance request in array', async () => {
+  test('balance request in array', async () => {
     const ethAddress = await registerContractIfNotRegistered(
       getDevAccount(),
       snAddress,
@@ -21,7 +21,7 @@ describe('eth_getBalance RPC method', () => {
     expect(response.data.result).toBeDefined() // Accept any valid balance
   }, 30000)
 
-  test.only('balance request in object format', async () => {
+  test('balance request in object format', async () => {
     const ethAddress = await registerContractIfNotRegistered(
       getDevAccount(),
       snAddress,
@@ -40,7 +40,7 @@ describe('eth_getBalance RPC method', () => {
     expect(response.data.result).toBeDefined() // Accept any valid balance
   }, 30000)
 
-  test.only('balance request with wrong address', async () => {
+  test('balance request with wrong address', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
@@ -56,7 +56,7 @@ describe('eth_getBalance RPC method', () => {
     )
   }, 30000)
 
-  test.only('balance request with wrong address in object format', async () => {
+  test('balance request with wrong address in object format', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
@@ -76,7 +76,7 @@ describe('eth_getBalance RPC method', () => {
   }, 30000)
 
   // Todo: specify error message
-  test.only('balance request with missing address', async () => {
+  test('balance request with missing address', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
@@ -89,7 +89,7 @@ describe('eth_getBalance RPC method', () => {
     expect(response.data.error.code).toBe(-32602)
   }, 30000)
 
-  test.only('balance request with missing address in object format', async () => {
+  test('balance request with missing address in object format', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
@@ -104,7 +104,7 @@ describe('eth_getBalance RPC method', () => {
     expect(response.data.error.code).toBe(-32602)
   }, 30000)
 
-  test.only('balance request with empty object', async () => {
+  test('balance request with empty object', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
@@ -117,7 +117,7 @@ describe('eth_getBalance RPC method', () => {
     expect(response.data.error.code).toBe(-32602)
   }, 30000)
 
-  test.only('balance request with earliest block specifier', async () => {
+  test('balance request with earliest block specifier', async () => {
     const ethAddress = await registerContractIfNotRegistered(
       getDevAccount(),
       snAddress,
@@ -133,7 +133,7 @@ describe('eth_getBalance RPC method', () => {
     expect(response.data.result).toBeDefined()
   }, 30000)
 
-  test.only('balance request with pending block specifier', async () => {
+  test('balance request with pending block specifier', async () => {
     const ethAddress = await registerContractIfNotRegistered(
       getDevAccount(),
       snAddress,
@@ -148,7 +148,7 @@ describe('eth_getBalance RPC method', () => {
     expect(response.data.result).toBeDefined()
   }, 30000)
 
-  test.only('balance request with block number', async () => {
+  test('balance request with block number', async () => {
     const ethAddress = await registerContractIfNotRegistered(
       getDevAccount(),
       snAddress,
@@ -163,7 +163,7 @@ describe('eth_getBalance RPC method', () => {
     expect(response.data.result).toBeDefined()
   }, 30000)
 
-  test.only('balance request with block number as integer string', async () => {
+  test('balance request with block number as integer string', async () => {
     const ethAddress = await registerContractIfNotRegistered(
       getDevAccount(),
       snAddress,
@@ -178,7 +178,7 @@ describe('eth_getBalance RPC method', () => {
     expect(response.data.result).toBeDefined()
   }, 30000)
 
-  test.only('balance request with block number as integer', async () => {
+  test('balance request with block number as integer', async () => {
     const ethAddress = await registerContractIfNotRegistered(
       getDevAccount(),
       snAddress,
@@ -193,7 +193,7 @@ describe('eth_getBalance RPC method', () => {
     expect(response.data.result).toBeDefined()
   }, 30000)
 
-  test.only('balance request with non-existent block specifier', async () => {
+  test('balance request with non-existent block specifier', async () => {
     const ethAddress = await registerContractIfNotRegistered(
       getDevAccount(),
       snAddress,
@@ -209,7 +209,7 @@ describe('eth_getBalance RPC method', () => {
     expect(response.data.result).toBeDefined()
   }, 30000)
 
-  test.only('balance request with null params', async () => {
+  test('balance request with null params', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
@@ -221,7 +221,7 @@ describe('eth_getBalance RPC method', () => {
     expect(response.data.error.code).toBe(-32602)
   }, 30000)
 
-  test.only('balance request with malformed object', async () => {
+  test('balance request with malformed object', async () => {
     const ethAddress = await registerContractIfNotRegistered(
       getDevAccount(),
       snAddress,

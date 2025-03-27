@@ -49,7 +49,7 @@ describe('Server robustness tests', () => {
     }
   }
   // Test for malformed JSON
-  test.only('should handle malformed JSON without crashing', async () => {
+  test('should handle malformed JSON without crashing', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
@@ -83,7 +83,7 @@ describe('Server robustness tests', () => {
   }, 30000)
 
   // Test for extremely large request body
-  test.only('should handle extremely large request body', async () => {
+  test('should handle extremely large request body', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
@@ -113,7 +113,7 @@ describe('Server robustness tests', () => {
   }, 30000)
 
   // Test for multiple rapid requests
-  test.only('should handle multiple rapid requests without crashing', async () => {
+  test('should handle multiple rapid requests without crashing', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
@@ -146,7 +146,7 @@ describe('Server robustness tests', () => {
   }, 60000)
 
   // Test for invalid content type
-  test.only('should handle invalid content type without crashing', async () => {
+  test('should handle invalid content type without crashing', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
@@ -180,7 +180,7 @@ describe('Server robustness tests', () => {
   }, 30000)
 
   // Test for extremely long method name
-  test.only('should handle extremely long method name', async () => {
+  test('should handle extremely long method name', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
@@ -213,7 +213,7 @@ describe('Server robustness tests', () => {
   }, 30000)
 
   // Test for nested JSON objects
-  test.only('should handle deeply nested JSON objects', async () => {
+  test('should handle deeply nested JSON objects', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
@@ -248,7 +248,7 @@ describe('Server robustness tests', () => {
   }, 30000)
 
   // Test for special characters in parameters
-  test.only('should handle special characters in parameters', async () => {
+  test('should handle special characters in parameters', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
@@ -279,7 +279,7 @@ describe('Server robustness tests', () => {
   }, 30000)
 
   // Test for null values in unexpected places
-  test.only('should handle null values in unexpected places', async () => {
+  test('should handle null values in unexpected places', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
@@ -308,7 +308,7 @@ describe('Server robustness tests', () => {
   }, 30000)
 
   // Test for empty request body
-  test.only('should handle empty request body', async () => {
+  test('should handle empty request body', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
@@ -333,7 +333,7 @@ describe('Server robustness tests', () => {
   }, 30000)
 
   // Test for extremely long request
-  test.only('should handle extremely long request URL', async () => {
+  test('should handle extremely long request URL', async () => {
     // Skip test if server is not running
     const serverRunning = await isServerRunning()
     if (!serverRunning) {
