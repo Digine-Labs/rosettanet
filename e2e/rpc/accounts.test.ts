@@ -70,9 +70,7 @@ describe('eth_accounts RPC method', () => {
     expect(response.status).toBe(200)
     expect(response.data.error).toBeDefined()
     expect(response.data.error.code).toBe(-32602) // Invalid params
-    expect(response.data.error.message).toBe(
-      'Too many arguments. Expected 0',
-    )
+    expect(response.data.error.message).toBe('Too many arguments. Expected 0')
     expect(response.data.id).toBe(1)
   }, 30000)
 
@@ -87,9 +85,7 @@ describe('eth_accounts RPC method', () => {
     expect(response.status).toBe(200)
     expect(response.data.error).toBeDefined()
     expect(response.data.error.code).toBe(-32602) // Invalid params
-    expect(response.data.error.message).toBe(
-      'Too many arguments. Expected 0',
-    )
+    expect(response.data.error.message).toBe('Too many arguments. Expected 0')
   }, 30000)
 
   test.only('should handle object as parameter', async () => {
@@ -103,9 +99,7 @@ describe('eth_accounts RPC method', () => {
     expect(response.status).toBe(200)
     expect(response.data.error).toBeDefined()
     expect(response.data.error.code).toBe(-32602) // Invalid params
-    expect(response.data.error.message).toBe(
-      'Too many arguments. Expected 0',
-    )
+    expect(response.data.error.message).toBe('Too many arguments. Expected 0')
   }, 30000)
 
   // JSON-RPC version tests
