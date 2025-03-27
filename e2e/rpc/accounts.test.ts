@@ -3,7 +3,7 @@ import { SERVER, fail } from '../utils'
 
 describe('eth_accounts RPC method', () => {
   // Standard valid case
-  test('should return empty array with valid request', async () => {
+  test.only('should return empty array with valid request', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_accounts',
@@ -19,7 +19,7 @@ describe('eth_accounts RPC method', () => {
   }, 30000)
 
   // Test with different ID types
-  test('should work with numeric ID', async () => {
+  test.only('should work with numeric ID', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_accounts',
@@ -32,7 +32,7 @@ describe('eth_accounts RPC method', () => {
     expect(response.data.id).toBe(9999)
   }, 30000)
 
-  test('should work with string ID', async () => {
+  test.only('should work with string ID', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_accounts',
@@ -45,7 +45,7 @@ describe('eth_accounts RPC method', () => {
     expect(response.data.id).toBe('test-id-string')
   }, 30000)
 
-  test('should work with null ID', async () => {
+  test.only('should work with null ID', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_accounts',
@@ -60,7 +60,7 @@ describe('eth_accounts RPC method', () => {
   }, 30000)
 
   // Invalid params tests
-  test('should return error when params is not empty', async () => {
+  test.only('should return error when params is not empty', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_accounts',
@@ -75,7 +75,7 @@ describe('eth_accounts RPC method', () => {
     expect(response.data.id).toBe(1)
   }, 30000)
 
-  test('should handle array with multiple parameters', async () => {
+  test.only('should handle array with multiple parameters', async () => {
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_accounts',
