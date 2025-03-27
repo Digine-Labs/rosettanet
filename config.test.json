@@ -1,18 +1,1 @@
-{
-  "appName": "RosettaNet",
-  "port": 3000,
-  "host": "localhost",
-  "rpcUrls": ["http://127.0.0.1:6050"],
-  "chainId": "0x52535453",
-  "accountClass": "0xa46c267d23c9614e7c848627fe5eeffc556938634229e96af79da34397dc07",
-  "ethAddress": "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
-  "strkAddress": "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
-  "rosettanet": "0x1cb317daaf658616a24b0fd5bba04d8d3ca13ef52aab94052f48eab732f0dea",
-  "logging": {
-    "active": true,
-    "output": "file",
-    "minSeverity": "1",
-    "fileName": "./e2e/logs.log",
-    "format": "text"
-  }
-}
+{"appName":"RosettaNet","port":3000,"host":"localhost","rpcUrls":["http://127.0.0.1:6050"],"chainId":"0x52535453","accountClass":"0xa46c267d23c9614e7c848627fe5eeffc556938634229e96af79da34397dc07","ethAddress":"0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7","strkAddress":"0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d","rosettanet":"0x4ba7df842742b31af2f8a01b93b6201cb7698cee4656c9e17096c79e02d6a0c","logging":{"active":true,"output":"file","minSeverity":"1","fileName":"./e2e/logs.log","format":"text"}}

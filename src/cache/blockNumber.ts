@@ -29,11 +29,15 @@ async function updateBlockNumber() {
   return
 }
 
+export async function initialSyncBlockNumber() {
+  await updateBlockNumber()
+  return;
+}
+
 export async function syncBlockNumber() {
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    await updateBlockNumber()
-
     await new Promise<void>(resolve => setTimeout(resolve, 10000)) // Sync new blocks in every 10 seconds
+    await updateBlockNumber()
   }
 }
