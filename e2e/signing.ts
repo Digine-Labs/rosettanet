@@ -1,4 +1,4 @@
-import { Wallet, Transaction, JsonRpcProvider, ethers } from 'ethers'
+import { Wallet, JsonRpcProvider, ethers } from 'ethers'
 import { promises as fs } from 'fs'
 import path from 'path'
 
@@ -35,6 +35,9 @@ export interface EthereumTransaction {
  * Signs an EIP-1559 transaction with a private key
  * @param privateKey - The private key to sign with
  * @param transaction - Transaction parameters
+ * @param functionName - Name of the function to call
+ * @param params - Parameters for the function call
+ * @param abiPath - Path to the ABI file (relative to e2e/abis)
  * @param nonce - Transaction nonce (optional, will be fetched if not provided)
  * @param provider - JSON RPC provider for fetching nonce (optional)
  * @returns Raw signed transaction string
@@ -44,16 +47,20 @@ export async function signEip1559Transaction(
   transaction: {
     to: string
     value?: string
-    data?: string
     gasLimit?: string
     maxFeePerGas?: string
     maxPriorityFeePerGas?: string
     chainId?: string
   },
+  functionName: string,
+  params: unknown[],
+  abiPath: string,
   nonce?: number,
   provider?: JsonRpcProvider
 ): Promise<string> {
   const wallet = new Wallet(privateKey)
+  
+  const data = await prepareCalldata(transaction.to, functionName, params, abiPath)
   
   // If nonce is not provided and provider is available, fetch the nonce
   if (nonce === undefined && provider) {
@@ -66,7 +73,7 @@ export async function signEip1559Transaction(
   const tx = {
     to: transaction.to,
     value: transaction.value || '0x0',
-    data: transaction.data || '0x',
+    data,
     gasLimit: transaction.gasLimit || '0x100000',
     maxFeePerGas: transaction.maxFeePerGas || '0x1000000000',
     maxPriorityFeePerGas: transaction.maxPriorityFeePerGas || '0x1000000000',
@@ -82,6 +89,9 @@ export async function signEip1559Transaction(
  * Signs a Legacy transaction with a private key
  * @param privateKey - The private key to sign with
  * @param transaction - Transaction parameters
+ * @param functionName - Name of the function to call
+ * @param params - Parameters for the function call
+ * @param abiPath - Path to the ABI file (relative to e2e/abis)
  * @param nonce - Transaction nonce (optional, will be fetched if not provided)
  * @param provider - JSON RPC provider for fetching nonce (optional)
  * @returns Raw signed transaction string
@@ -91,15 +101,19 @@ export async function signLegacyTransaction(
   transaction: {
     to: string
     value?: string
-    data?: string
     gasLimit?: string
     gasPrice?: string
     chainId?: string
   },
+  functionName: string,
+  params: unknown[],
+  abiPath: string,
   nonce?: number,
   provider?: JsonRpcProvider
 ): Promise<string> {
   const wallet = new Wallet(privateKey)
+  
+  const data = await prepareCalldata(transaction.to, functionName, params, abiPath)
   
   // If nonce is not provided and provider is available, fetch the nonce
   if (nonce === undefined && provider) {
@@ -112,7 +126,7 @@ export async function signLegacyTransaction(
   const tx = {
     to: transaction.to,
     value: transaction.value || '0x0',
-    data: transaction.data || '0x',
+    data,
     gasLimit: transaction.gasLimit || '0x100000',
     gasPrice: transaction.gasPrice || '0x1000000000',
     nonce,
