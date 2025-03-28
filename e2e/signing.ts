@@ -37,7 +37,7 @@ export interface EthereumTransaction {
  * @param transaction - Transaction parameters
  * @param nonce - Transaction nonce (optional, will be fetched if not provided)
  * @param provider - JSON RPC provider for fetching nonce (optional)
- * @returns Signed transaction
+ * @returns Raw signed transaction string
  */
 export async function signEip1559Transaction(
   privateKey: string,
@@ -52,7 +52,7 @@ export async function signEip1559Transaction(
   },
   nonce?: number,
   provider?: JsonRpcProvider
-): Promise<EthereumTransaction> {
+): Promise<string> {
   const wallet = new Wallet(privateKey)
   
   // If nonce is not provided and provider is available, fetch the nonce
@@ -75,32 +75,7 @@ export async function signEip1559Transaction(
     chainId: transaction.chainId ? parseInt(transaction.chainId, 16) : 1,
   }
   
-  // Sign the transaction
-  const signedTx = await wallet.signTransaction(tx)
-  const parsedTx = Transaction.from(signedTx)
-  
-  // Extract signature components
-  const signature: EthereumSignature = {
-    v: parsedTx.signature.v,
-    r: parsedTx.signature.r,
-    s: parsedTx.signature.s,
-  }
-  
-  // Return the signed transaction
-  return {
-    chainId: '0x' + parsedTx.chainId.toString(16),
-    type: '0x' + parsedTx.type.toString(16),
-    hash: parsedTx.hash,
-    nonce: parsedTx.nonce,
-    gasLimit: parsedTx.gasLimit.toString(),
-    maxFeePerGas: parsedTx.maxFeePerGas?.toString(),
-    maxPriorityFeePerGas: parsedTx.maxPriorityFeePerGas?.toString(),
-    from: wallet.address,
-    to: parsedTx.to,
-    data: parsedTx.data,
-    value: parsedTx.value.toString(),
-    signature,
-  }
+  return await wallet.signTransaction(tx)
 }
 
 /**
@@ -109,7 +84,7 @@ export async function signEip1559Transaction(
  * @param transaction - Transaction parameters
  * @param nonce - Transaction nonce (optional, will be fetched if not provided)
  * @param provider - JSON RPC provider for fetching nonce (optional)
- * @returns Signed transaction
+ * @returns Raw signed transaction string
  */
 export async function signLegacyTransaction(
   privateKey: string,
@@ -123,7 +98,7 @@ export async function signLegacyTransaction(
   },
   nonce?: number,
   provider?: JsonRpcProvider
-): Promise<EthereumTransaction> {
+): Promise<string> {
   const wallet = new Wallet(privateKey)
   
   // If nonce is not provided and provider is available, fetch the nonce
@@ -145,31 +120,7 @@ export async function signLegacyTransaction(
     chainId: transaction.chainId ? parseInt(transaction.chainId, 16) : 1,
   }
   
-  // Sign the transaction
-  const signedTx = await wallet.signTransaction(tx)
-  const parsedTx = Transaction.from(signedTx)
-  
-  // Extract signature components
-  const signature: EthereumSignature = {
-    v: parsedTx.signature.v,
-    r: parsedTx.signature.r,
-    s: parsedTx.signature.s,
-  }
-  
-  // Return the signed transaction
-  return {
-    chainId: '0x' + parsedTx.chainId.toString(16),
-    type: '0x' + parsedTx.type.toString(16),
-    hash: parsedTx.hash,
-    nonce: parsedTx.nonce,
-    gasLimit: parsedTx.gasLimit.toString(),
-    gasPrice: parsedTx.gasPrice?.toString(),
-    from: wallet.address,
-    to: parsedTx.to,
-    data: parsedTx.data,
-    value: parsedTx.value.toString(),
-    signature,
-  }
+  return await wallet.signTransaction(tx)
 }
 
 /**
@@ -183,7 +134,7 @@ export async function signLegacyTransaction(
 export async function prepareCalldata(
   contractAddress: string,
   functionName: string,
-  params: any[],
+  params: unknown[],
   abiPath: string
 ): Promise<string> {
   // Load ABI from file
