@@ -1,3 +1,8 @@
+import axios from 'axios'
+import { getDevAccount, SERVER } from '../utils'
+import { registerContractIfNotRegistered } from '../registry/rosettanet'
+import { ETH_ADDRESS } from '../constants'
+import { encodeCalldata } from '../calldata'
 /*
 Parameters
 
@@ -10,10 +15,69 @@ value: QUANTITY - (optional) Integer of the value sent with this transaction
 input: DATA - (optional) Hash of the method signature and encoded parameters. For details see Ethereum Contract ABI in the Solidity documentation(opens in a new tab).
 QUANTITY|TAG - integer block number, or the string "latest", "earliest", "pending", "safe" or "finalized", see the default block parameter
 */
-
+const snAddress =
+  '0x06419f7dea356b74bc1443bd1600ab3831b7808d1ef897789facfad11a172da7'
 describe('eth_accounts RPC method', () => {
-    test.only('Should return ETH balance of the account in EVM format', async () => {
+    test.only('Should return ETH balance of the account in EVM format. Input in input prop', async () => {
+        const ethAddress = await registerContractIfNotRegistered(
+            getDevAccount(),
+            snAddress,
+        )
 
-    })
+        const ethTokenAddress = await registerContractIfNotRegistered(getDevAccount(), ETH_ADDRESS);
+
+        const calldata = encodeCalldata('balanceOf(address)', [ethAddress])
+
+        const response = await axios.post(SERVER, {
+            jsonrpc: '2.0',
+            method: 'eth_call',
+            params: [{to: ethTokenAddress, input: calldata}, 'latest'],
+            id: 1,
+        })
+        
+        expect(response.status).toBe(200)
+        expect(response.data.result).toBeDefined()
+        expect(response.data.result).toBe('0x00000000000000000000000000000000000000000000000000053184796409f4')
+        expect(response.data.jsonrpc).toBe('2.0')
+        expect(response.data.id).toBe(1)
+    }, 30000)
+
+    test.only('Should return ETH balance of the account in EVM format. Input in data prop', async () => {
+        const ethAddress = await registerContractIfNotRegistered(
+            getDevAccount(),
+            snAddress,
+        )
+
+        const ethTokenAddress = await registerContractIfNotRegistered(getDevAccount(), ETH_ADDRESS);
+        const calldata = encodeCalldata('balanceOf(address)', [ethAddress])
+        const response = await axios.post(SERVER, {
+            jsonrpc: '2.0',
+            method: 'eth_call',
+            params: [{to: ethTokenAddress, data: calldata}, 'latest'],
+            id: 1,
+        })
+        
+        expect(response.status).toBe(200)
+        expect(response.data.result).toBeDefined()
+        expect(response.data.result).toBe('0x00000000000000000000000000000000000000000000000000053184796409f4')
+        expect(response.data.jsonrpc).toBe('2.0')
+        expect(response.data.id).toBe(1)
+    }, 30000)
+
+    test.only('no input field. must return 0x', async () => {
+        const ethTokenAddress = await registerContractIfNotRegistered(getDevAccount(), ETH_ADDRESS);
+        const response = await axios.post(SERVER, {
+            jsonrpc: '2.0',
+            method: 'eth_call',
+            params: [{to: ethTokenAddress}, 'latest'],
+            id: 1,
+        })
+        
+        expect(response.status).toBe(200)
+        expect(response.data.result).toBeDefined()
+        expect(response.data.result).toBe('0x')
+        expect(response.data.jsonrpc).toBe('2.0')
+        expect(response.data.id).toBe(1)
+    }, 30000)
     // TODO: add test cases with using some params optional and some not
 })

@@ -49,6 +49,7 @@ export interface EthCallParameters {
   gasPrice?: string | number | bigint
   value?: string | number | bigint
   data?: string
+  input?: string
 }
 
 export function isEthCallParameters(
@@ -109,13 +110,15 @@ export async function ethCallHandler(
       },
     }
   }
+
+  const calldata = parameters.input ?? parameters.data ?? null
   const targetFunctionSelector: string | null = getFunctionSelectorFromCalldata(
-    parameters.data,
+    calldata,
   )
 
   if (
     targetFunctionSelector == null ||
-    typeof parameters.data === 'undefined'
+    typeof calldata === 'undefined' || calldata == null
   ) {
     return {
       jsonrpc: request.jsonrpc,
@@ -173,11 +176,11 @@ export async function ethCallHandler(
       contractTypeMapping,
     )
 
-  const calldata = parameters.data.slice(10)
+  const inputs = calldata.slice(10)
   const EVMCalldataDecode: EVMDecodeResult | EVMDecodeError =
     await decodeEVMCalldataWithAddressConversion(
       starknetFunctionEthereumInputTypes,
-      calldata,
+      inputs,
       targetFunctionSelector,
     )
 
