@@ -40,4 +40,20 @@ describe('Using ethers.js with Rosettanet RPC', () => {
         expect(balance).toBe(BigInt(1461819925596660))
         expect(decimals).toBe(BigInt(18))
     }, 30000)
+
+    test.only('Sends simple STRK transfer transaction. This may deploy account contract initially.', async () => {
+
+    })
+
+    test.only('ERC20 transfer transaction. This may deploy account contract initially.', async () => {
+        
+    })
+
+    test.only('ERC20 transfer transaction. From already deployed account contract.', async () => {
+        
+    })
+
+    test.only('Multicall transaction that transfers erc20 to two different accounts', async () => {
+        
+    })
 })
