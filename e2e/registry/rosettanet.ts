@@ -15,7 +15,6 @@ export async function registerContractIfNotRegistered(
   const nodeConfig = await readNodeConfig()
 
   const registeredAddress = await getEthAddressFromRegistry(contractAddress)
-
   if (registeredAddress != '0x0') {
     return addHexPrefix(registeredAddress.toLowerCase())
   }

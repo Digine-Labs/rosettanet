@@ -22,7 +22,7 @@ export const testConfig = {
   logging: {
     active: true,
     output: 'file',
-    minSeverity: '1',
+    minSeverity: '0',
     fileName: './e2e/logs.log',
     format: 'text',
   },
