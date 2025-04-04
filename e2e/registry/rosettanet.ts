@@ -42,6 +42,17 @@ export async function getEthAddressFromRegistry(
   )
 }
 
+export async function precalculateStarknetAddress(ethAddress: string): Promise<string> {
+  const abi: Abi = await getContractAbi('Rosettanet')
+  const nodeConfig = await readNodeConfig()
+
+  const contract = new Contract(abi, nodeConfig.rosettanet, getProvider())
+
+  return addHexPrefix(
+    BigInt(await contract.precalculate_starknet_account(ethAddress)).toString(16),
+  )
+}
+
 // Placeholder for future implementation of Ethereum types enum
 // Function will be implemented in future updates
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
