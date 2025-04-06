@@ -24,6 +24,18 @@ export async function getBlockByHashHandler(request: RPCRequest): Promise<RPCRes
           },
         }
     }
+    
+    /*
+    Alttaki blocknumber ve burasi icin ayni olabilir
+    latest ve pending parametre olarak gelebilir mi kontrol et ?
+  const params =
+    blockNumber === 'latest' || blockNumber === 'pending'
+      ? [blockNumber]
+      : isHexString(blockNumber)
+        ? [{ block_number: parseInt(blockNumber, 16) }]
+        : [{ block_number: blockNumber }]
+
+    */
 
     const blockHash = request.params[0] as string;
     const txDetails = request.params[1] as boolean;
