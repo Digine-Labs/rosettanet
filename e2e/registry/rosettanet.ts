@@ -15,7 +15,6 @@ export async function registerContractIfNotRegistered(
   const nodeConfig = await readNodeConfig()
 
   const registeredAddress = await getEthAddressFromRegistry(contractAddress)
-
   if (registeredAddress != '0x0') {
     return addHexPrefix(registeredAddress.toLowerCase())
   }
@@ -40,6 +39,17 @@ export async function getEthAddressFromRegistry(
 
   return addHexPrefix(
     BigInt(await contract.get_ethereum_address(account)).toString(16),
+  )
+}
+
+export async function precalculateStarknetAddress(ethAddress: string): Promise<string> {
+  const abi: Abi = await getContractAbi('Rosettanet')
+  const nodeConfig = await readNodeConfig()
+
+  const contract = new Contract(abi, nodeConfig.rosettanet, getProvider())
+
+  return addHexPrefix(
+    BigInt(await contract.precalculate_starknet_account(ethAddress)).toString(16),
   )
 }
 

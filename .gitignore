@@ -28,3 +28,4 @@ sniffs.log
 logs.log
 
 contracts/
+config.test.json

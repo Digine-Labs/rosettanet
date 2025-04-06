@@ -20,7 +20,7 @@ export async function getBlockByHashHandler(
       id: request.id,
       error: {
         code: -32602,
-        message: 'Invalid argument, Parameter lenght should be 2.',
+        message: 'Invalid argument, Parameter length should be 2.',
       },
     }
   }

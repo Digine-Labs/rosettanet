@@ -3,7 +3,8 @@ import { initNode } from '../src/index'
 /* eslint-disable no-console */
 import { promises as fs } from 'fs'
 import path from 'path'
-import { Abi, Account, RpcProvider } from 'starknet'
+import { Abi, Account, BigNumberish, RpcProvider, uint256 } from 'starknet'
+import { STRK_ADDRESS } from './constants'
 
 export const testConfig = {
   appName: 'RosettaNet',
@@ -22,7 +23,7 @@ export const testConfig = {
   logging: {
     active: true,
     output: 'file',
-    minSeverity: '1',
+    minSeverity: '0',
     fileName: './e2e/logs.log',
     format: 'text',
   },
@@ -113,6 +114,14 @@ export function getDevAccount(): Account {
     '0x3',
   )
   return account
+}
+
+export async function sendStrksFromSnAccount(account: Account, recipient: string, amount: BigNumberish) {
+  await account.execute({
+    contractAddress: STRK_ADDRESS,
+    entrypoint: 'transfer',
+    calldata: [recipient, uint256.bnToUint256(amount).low, uint256.bnToUint256(amount).high]
+  })
 }
 
 export function getProvider(): RpcProvider {
