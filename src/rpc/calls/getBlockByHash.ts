@@ -86,7 +86,7 @@ export async function getBlockByHashHandler(request: RPCRequest): Promise<RPCRes
     return parseBlockData(request, blockData, txDetails);
 }
 
-function parseBlockData(request: RPCRequest, starknetData: any, txDetails: boolean): RPCResponse {
+export function parseBlockData(request: RPCRequest, starknetData: any, txDetails: boolean): RPCResponse {
   const baseFeePerGas = starknetData.l1_gas_price?.price_in_wei ?? '0x0';
   if(!txDetails) {
     const txList = starknetData.transactions;

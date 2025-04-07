@@ -60,4 +60,10 @@ export function numberToHex(val: number) {
   return '0x' + hex;
 }
 
+export function hexToDecimal(hexString: string) {
+  // parseInt ile 16 tabanında çeviriyoruz
+  return parseInt(hexString, 16);
+}
+
+
 // TODO: support signed integers
