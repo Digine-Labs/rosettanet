@@ -52,4 +52,12 @@ export function BnToU256(value: bigint): Array<string> {
   )
 }
 
+export function numberToHex(val: number) {
+  // Sayıyı hexadecimal stringe çevir
+  const hex = val.toString(16);
+
+  // İstersen başına '0x' ekleyelim
+  return '0x' + hex;
+}
+
 // TODO: support signed integers

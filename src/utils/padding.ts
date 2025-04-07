@@ -52,3 +52,18 @@ export function removeHexPrefix(hex: string): string {
 export function addHexPrefix(hex: string): string {
   return `0x${removeHexPrefix(hex)}`
 }
+// data must be 256 bits
+export function getLast160Bits(data: string): string {
+  if (data.startsWith('0x')) {
+    data = data.slice(2);
+  }
+
+  if (data.length !== 64) {
+    throw new Error('Input must be 256 bits (64 hex characters)');
+  }
+
+  const last160Bits = data.slice(-40);
+
+  return '0x' + last160Bits;
+  
+}
