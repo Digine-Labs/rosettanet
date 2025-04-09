@@ -121,6 +121,7 @@ async function broadcastTransaction(
     method: 'starknet_addInvokeTransaction',
   })
   if (isStarknetRPCError(response)) {
+    writeLog(1, 'Starknet RPC returned error at broadcastTransaction: ' + JSON.stringify(response))
     if (response.code == 55) {
       return <RPCError>{
         jsonrpc: request.jsonrpc,
