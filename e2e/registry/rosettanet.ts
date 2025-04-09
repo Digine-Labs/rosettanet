@@ -11,6 +11,9 @@ export async function registerContractIfNotRegistered(
   account: Account,
   contractAddress: string,
 ): Promise<string> {
+  const provider = getProvider();
+  const classHash = await provider.getClassAt(contractAddress);
+  console.log(classHash)
   const abi: Abi = await getContractAbi('Rosettanet')
   const nodeConfig = await readNodeConfig()
 

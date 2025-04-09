@@ -3,6 +3,7 @@
 import { getDevAccount, getEthStrkHolderAccount, sendERC20FromSnAccount, sendStrksFromSnAccount, startNode, testConfig, updateNodeConfig } from './utils'
 import { declareContract, deployContract } from './transaction'
 import { ETH_ADDRESS, SN_ADDRESS_TEST_1, STRK_ADDRESS } from './constants'
+import { updateRegistry } from './registers'
 
 export default async function globalSetup() {
   try {
@@ -17,13 +18,14 @@ export default async function globalSetup() {
       STRK_ADDRESS,
     ])
 
+    await updateRegistry(account, rosettanetAddress);
+
     await fundAccountsForBalanceTests();
 
     const nodeConfig = testConfig
     nodeConfig.accountClass = accountClass
     nodeConfig.rosettanet = rosettanetAddress
     await updateNodeConfig(JSON.stringify(nodeConfig))
-
     await startNode()
   } catch (ex) {
     console.error(ex)

@@ -1,20 +1,16 @@
 import axios from 'axios'
 import { getDevAccount, SERVER } from '../utils'
 import { registerContractIfNotRegistered } from '../registry/rosettanet'
+import { getAddress } from '../registers'
 
-const snAddress =
-  '0x06419f7dea356b74bc1443bd1600ab3831b7808d1ef897789facfad11a172da7'
 describe('eth_getBalance RPC method', () => {
   test.only('balance request in array', async () => {
-    const ethAddress = await registerContractIfNotRegistered(
-      getDevAccount(),
-      snAddress,
-    )
+    const testAccount = await getAddress('TEST1');
 
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
-      params: [ethAddress, 'latest'],
+      params: [testAccount.ethereum, 'latest'],
       id: 1,
     })
     expect(response.status).toBe(200)
@@ -22,16 +18,13 @@ describe('eth_getBalance RPC method', () => {
   }, 30000)
 
   test.only('balance request in object format', async () => {
-    const ethAddress = await registerContractIfNotRegistered(
-      getDevAccount(),
-      snAddress,
-    )
+    const testAccount = await getAddress('TEST1');
 
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
       params: {
-        address: ethAddress,
+        address: testAccount.ethereum,
         blockParameter: 'latest',
       },
       id: 1,
@@ -118,14 +111,11 @@ describe('eth_getBalance RPC method', () => {
   }, 30000)
 
   test.only('balance request with earliest block specifier', async () => {
-    const ethAddress = await registerContractIfNotRegistered(
-      getDevAccount(),
-      snAddress,
-    )
+    const testAccount = await getAddress('TEST1')
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
-      params: [ethAddress, 'earliest'],
+      params: [testAccount.ethereum, 'earliest'],
       id: 1,
     })
     expect(response.status).toBe(200)
@@ -134,14 +124,11 @@ describe('eth_getBalance RPC method', () => {
   }, 30000)
 
   test.only('balance request with pending block specifier', async () => {
-    const ethAddress = await registerContractIfNotRegistered(
-      getDevAccount(),
-      snAddress,
-    )
+    const testAccount = await getAddress('TEST1')
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
-      params: [ethAddress, 'pending'],
+      params: [testAccount.ethereum, 'pending'],
       id: 1,
     })
     expect(response.status).toBe(200)
@@ -149,14 +136,11 @@ describe('eth_getBalance RPC method', () => {
   }, 30000)
 
   test.only('balance request with block number', async () => {
-    const ethAddress = await registerContractIfNotRegistered(
-      getDevAccount(),
-      snAddress,
-    )
+    const testAccount = await getAddress('TEST1')
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
-      params: [ethAddress, '0x1'], // Block 1
+      params: [testAccount.ethereum, '0x1'], // Block 1
       id: 1,
     })
     expect(response.status).toBe(200)
@@ -164,14 +148,11 @@ describe('eth_getBalance RPC method', () => {
   }, 30000)
 
   test.only('balance request with block number as integer string', async () => {
-    const ethAddress = await registerContractIfNotRegistered(
-      getDevAccount(),
-      snAddress,
-    )
+    const testAccount = await getAddress('TEST1')
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
-      params: [ethAddress, '123123'], // Block 123123
+      params: [testAccount.ethereum, '123123'], // Block 123123
       id: 1,
     })
     expect(response.status).toBe(200)
@@ -179,14 +160,11 @@ describe('eth_getBalance RPC method', () => {
   }, 30000)
 
   test.only('balance request with block number as integer', async () => {
-    const ethAddress = await registerContractIfNotRegistered(
-      getDevAccount(),
-      snAddress,
-    )
+    const testAccount = await getAddress('TEST1')
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
-      params: [ethAddress, 123123], // Block 123123
+      params: [testAccount.ethereum, 123123], // Block 123123
       id: 1,
     })
     expect(response.status).toBe(200)
@@ -194,14 +172,11 @@ describe('eth_getBalance RPC method', () => {
   }, 30000)
 
   test.only('balance request with non-existent block specifier', async () => {
-    const ethAddress = await registerContractIfNotRegistered(
-      getDevAccount(),
-      snAddress,
-    )
+    const testAccount = await getAddress('TEST1')
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
-      params: [ethAddress, 'wrongblock'],
+      params: [testAccount.ethereum, 'wrongblock'],
       id: 1,
     })
     // We dont care about block specifier. Always return latest balance
@@ -222,14 +197,11 @@ describe('eth_getBalance RPC method', () => {
   }, 30000)
 
   test.only('balance request with malformed object', async () => {
-    const ethAddress = await registerContractIfNotRegistered(
-      getDevAccount(),
-      snAddress,
-    )
+    const testAccount = await getAddress('TEST1')
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
-      params: { wrongKey: ethAddress },
+      params: { wrongKey: testAccount.ethereum },
       id: 1,
     })
     expect(response.status).toBe(200)

@@ -3,6 +3,7 @@ import { getDevAccount, getEthStrkHolderAccount, sendERC20FromSnAccount, SERVER 
 import { registerContractIfNotRegistered } from '../registry/rosettanet'
 import { ETH_ADDRESS, SN_ADDRESS_TEST_1 } from '../constants'
 import { encodeCalldata } from '../calldata'
+import { getAddress } from '../registers'
 /*
 Parameters
 
@@ -15,21 +16,17 @@ value: QUANTITY - (optional) Integer of the value sent with this transaction
 input: DATA - (optional) Hash of the method signature and encoded parameters. For details see Ethereum Contract ABI in the Solidity documentation(opens in a new tab).
 QUANTITY|TAG - integer block number, or the string "latest", "earliest", "pending", "safe" or "finalized", see the default block parameter
 */
-describe('eth_accounts RPC method', () => {
+describe('eth_call RPC method', () => {
     test.only('Should return ETH balance of the account in EVM format. Input in input prop', async () => {
-        const ethAddress = await registerContractIfNotRegistered(
-            getDevAccount(),
-            SN_ADDRESS_TEST_1,
-        )
+        const testAccount = await getAddress('TEST1');
+        const ethToken = await getAddress('ETH');
 
-        const ethTokenAddress = await registerContractIfNotRegistered(getDevAccount(), ETH_ADDRESS);
-
-        const calldata = encodeCalldata('balanceOf(address)', [ethAddress])
+        const calldata = encodeCalldata('balanceOf(address)', [testAccount.ethereum])
 
         const response = await axios.post(SERVER, {
             jsonrpc: '2.0',
             method: 'eth_call',
-            params: [{to: ethTokenAddress, input: calldata}, 'latest'],
+            params: [{to: ethToken.ethereum, input: calldata}, 'latest'],
             id: 1,
         })
         
@@ -41,17 +38,14 @@ describe('eth_accounts RPC method', () => {
     }, 30000)
 
     test.only('Should return ETH balance of the account in EVM format. Input in data prop', async () => {
-        const ethAddress = await registerContractIfNotRegistered(
-            getDevAccount(),
-            SN_ADDRESS_TEST_1,
-        )
+        const testAccount = await getAddress('TEST1');
+        const ethToken = await getAddress('ETH');
 
-        const ethTokenAddress = await registerContractIfNotRegistered(getDevAccount(), ETH_ADDRESS);
-        const calldata = encodeCalldata('balanceOf(address)', [ethAddress])
+        const calldata = encodeCalldata('balanceOf(address)', [testAccount.ethereum])
         const response = await axios.post(SERVER, {
             jsonrpc: '2.0',
             method: 'eth_call',
-            params: [{to: ethTokenAddress, data: calldata}, 'latest'],
+            params: [{to: ethToken.ethereum, data: calldata}, 'latest'],
             id: 1,
         })
         
@@ -63,11 +57,11 @@ describe('eth_accounts RPC method', () => {
     }, 30000)
 
     test.only('no input field. must return 0x', async () => {
-        const ethTokenAddress = await registerContractIfNotRegistered(getDevAccount(), ETH_ADDRESS);
+        const ethToken = await getAddress('ETH');
         const response = await axios.post(SERVER, {
             jsonrpc: '2.0',
             method: 'eth_call',
-            params: [{to: ethTokenAddress}, 'latest'],
+            params: [{to: ethToken.ethereum}, 'latest'],
             id: 1,
         })
         

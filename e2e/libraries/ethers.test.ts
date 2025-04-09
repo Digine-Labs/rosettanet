@@ -2,16 +2,14 @@ import { getDevAccount, sendStrksFromSnAccount, SERVER } from '../utils'
 import { precalculateStarknetAddress, registerContractIfNotRegistered } from '../registry/rosettanet'
 import { ethers } from 'ethers';
 import { ETH_ADDRESS, SN_ADDRESS_TEST_1, STRK_ADDRESS } from '../constants';
+import { getAddress } from '../registers';
 
 
 describe('Using ethers.js with Rosettanet RPC', () => {
     test.only('Retrive balance of the account', async () => {
-        const ethAddress = await registerContractIfNotRegistered(
-            getDevAccount(),
-            SN_ADDRESS_TEST_1,
-          );
+        const TestAccount1 = await getAddress('TEST1');
         const provider = new ethers.JsonRpcProvider(SERVER);
-        const balanceWei = await provider.getBalance(ethAddress);
+        const balanceWei = await provider.getBalance(TestAccount1.ethereum);
   
         // Convert balance to Ether string
         const balanceEther = ethers.formatEther(balanceWei);
@@ -19,20 +17,17 @@ describe('Using ethers.js with Rosettanet RPC', () => {
     }, 30000)
 
     test.only('Retrive eth balance using erc20 contract', async () => {
-        const ethAddress = await registerContractIfNotRegistered(
-            getDevAccount(),
-            SN_ADDRESS_TEST_1,
-          );
-        const ethTokenAddress = await registerContractIfNotRegistered(getDevAccount(), ETH_ADDRESS);
+        const TestAccount1 = await getAddress('TEST1');
+        const EthToken = await getAddress('ETH')
         const provider = new ethers.JsonRpcProvider(SERVER);
         const ERC20_ABI = [
             'function balanceOf(address owner) view returns (uint256)',
             'function decimals() view returns (uint8)'
           ];
-        const tokenContract = new ethers.Contract(ethTokenAddress, ERC20_ABI, provider);
+        const tokenContract = new ethers.Contract(EthToken.ethereum, ERC20_ABI, provider);
         
         // Get balance
-        const balance = await tokenContract.balanceOf(ethAddress);
+        const balance = await tokenContract.balanceOf(TestAccount1.ethereum);
         
         // Get token decimals
         const decimals = await tokenContract.decimals();
@@ -74,7 +69,7 @@ describe('Using ethers.js with Rosettanet RPC', () => {
             'function balanceOf(address owner) view returns (uint256)',
             'function decimals() view returns (uint8)'
           ];
-          const strkTokenAddress = await registerContractIfNotRegistered(getDevAccount(), STRK_ADDRESS);
+        const strkTokenAddress = await registerContractIfNotRegistered(getDevAccount(), STRK_ADDRESS);
         const strkContract = new ethers.Contract(strkTokenAddress, ERC20_ABI, provider);
 
         const balance = await strkContract.balanceOf(toAddress);
