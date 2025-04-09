@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios'
-import { forkBlock, SERVER, fail } from '../utils'
+import { SERVER, fail } from '../utils'
 
 describe('eth_blockNumber RPC method', () => {
   test.only('should return correct block number with valid request', async () => {
@@ -14,7 +14,7 @@ describe('eth_blockNumber RPC method', () => {
     expect(response.data.result).not.toBeUndefined()
     expect(response.data.jsonrpc).toBe('2.0')
     expect(response.data.id).toBe(1)
-    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(forkBlock))
+    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0))
   }, 30000)
 
   test.only('should work with numeric ID', async () => {
@@ -28,7 +28,7 @@ describe('eth_blockNumber RPC method', () => {
     expect(response.status).toBe(200)
     expect(response.data.result).not.toBeUndefined()
     expect(response.data.id).toBe(9999)
-    expect(BigInt(response.data.result) > BigInt(forkBlock)).toBe(true)
+    expect(BigInt(response.data.result) > BigInt(0)).toBe(true)
   }, 30000)
 
   test.only('should work with string ID', async () => {
@@ -42,7 +42,7 @@ describe('eth_blockNumber RPC method', () => {
     expect(response.status).toBe(200)
     expect(response.data.result).not.toBeUndefined()
     expect(response.data.id).toBe('test-id-string')
-    expect(BigInt(response.data.result) > BigInt(forkBlock)).toBe(true)
+    expect(BigInt(response.data.result) > BigInt(0)).toBe(true)
   }, 30000)
 
   test.only('should work with null ID', async () => {
@@ -56,7 +56,7 @@ describe('eth_blockNumber RPC method', () => {
     expect(response.status).toBe(200)
     expect(response.data.result).not.toBeUndefined()
     expect(response.data.id).toBe(null)
-    expect(BigInt(response.data.result) > BigInt(forkBlock)).toBe(true)
+    expect(BigInt(response.data.result) > BigInt(0)).toBe(true)
   }, 30000)
 
   test.only('should return error when params is not empty', async () => {
@@ -151,7 +151,7 @@ describe('eth_blockNumber RPC method', () => {
 
     expect(response.status).toBe(200)
     expect(response.data.result).not.toBeUndefined()
-    expect(BigInt(response.data.result) > BigInt(forkBlock)).toBe(true)
+    expect(BigInt(response.data.result) > BigInt(0)).toBe(true)
   }, 30000)
 
   test.only('should handle missing ID', async () => {

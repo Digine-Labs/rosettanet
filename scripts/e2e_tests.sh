@@ -1,8 +1,6 @@
 #!/bin/bash
 
 # Constants for Starknet Devnet configuration
-FORK_NETWORK="https://free-rpc.nethermind.io/mainnet-juno/v0_7"
-FORK_BLOCK=1219608
 SEED=1223632
 REQUEST_BODY_SIZE_LIMIT=3777362
 PORT=6050
@@ -11,8 +9,6 @@ PORT=6050
 start_devnet() {
     echo "Starting Starknet Devnet..."
     starknet-devnet \
-        --fork-network "$FORK_NETWORK" \
-        --fork-block "$FORK_BLOCK" \
         --seed "$SEED" \
         --request-body-size-limit "$REQUEST_BODY_SIZE_LIMIT" \
         --port "$PORT" &
