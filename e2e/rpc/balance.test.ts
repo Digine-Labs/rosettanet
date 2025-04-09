@@ -1,11 +1,12 @@
 import axios from 'axios'
 import { getDevAccount, SERVER } from '../utils'
 import { registerContractIfNotRegistered } from '../registry/rosettanet'
-import { getAddress } from '../registers'
+import { getEthAddress } from '../registers'
+import { SN_ADDRESS_TEST_1 } from '../constants'
 
 describe('eth_getBalance RPC method', () => {
   test.only('balance request in array', async () => {
-    const testAccount = await getAddress('TEST1');
+    const testAccount = await getEthAddress(SN_ADDRESS_TEST_1);
 
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
@@ -18,7 +19,7 @@ describe('eth_getBalance RPC method', () => {
   }, 30000)
 
   test.only('balance request in object format', async () => {
-    const testAccount = await getAddress('TEST1');
+    const testAccount = await getEthAddress(SN_ADDRESS_TEST_1);
 
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
@@ -111,7 +112,7 @@ describe('eth_getBalance RPC method', () => {
   }, 30000)
 
   test.only('balance request with earliest block specifier', async () => {
-    const testAccount = await getAddress('TEST1')
+    const testAccount = await getEthAddress(SN_ADDRESS_TEST_1)
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
@@ -124,7 +125,7 @@ describe('eth_getBalance RPC method', () => {
   }, 30000)
 
   test.only('balance request with pending block specifier', async () => {
-    const testAccount = await getAddress('TEST1')
+    const testAccount = await getEthAddress(SN_ADDRESS_TEST_1)
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
@@ -136,7 +137,7 @@ describe('eth_getBalance RPC method', () => {
   }, 30000)
 
   test.only('balance request with block number', async () => {
-    const testAccount = await getAddress('TEST1')
+    const testAccount = await getEthAddress(SN_ADDRESS_TEST_1)
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
@@ -148,7 +149,7 @@ describe('eth_getBalance RPC method', () => {
   }, 30000)
 
   test.only('balance request with block number as integer string', async () => {
-    const testAccount = await getAddress('TEST1')
+    const testAccount = await getEthAddress(SN_ADDRESS_TEST_1)
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
@@ -160,7 +161,7 @@ describe('eth_getBalance RPC method', () => {
   }, 30000)
 
   test.only('balance request with block number as integer', async () => {
-    const testAccount = await getAddress('TEST1')
+    const testAccount = await getEthAddress(SN_ADDRESS_TEST_1)
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
@@ -172,7 +173,7 @@ describe('eth_getBalance RPC method', () => {
   }, 30000)
 
   test.only('balance request with non-existent block specifier', async () => {
-    const testAccount = await getAddress('TEST1')
+    const testAccount = await getEthAddress(SN_ADDRESS_TEST_1)
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
@@ -197,7 +198,7 @@ describe('eth_getBalance RPC method', () => {
   }, 30000)
 
   test.only('balance request with malformed object', async () => {
-    const testAccount = await getAddress('TEST1')
+    const testAccount = await getEthAddress(SN_ADDRESS_TEST_1)
     const response = await axios.post(SERVER, {
       jsonrpc: '2.0',
       method: 'eth_getBalance',

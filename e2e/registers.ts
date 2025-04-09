@@ -20,16 +20,19 @@ export async function updateRegistry(account: Account, rosettanetAddress: string
     
         const testAddress1 = await registerContract(account, SN_ADDRESS_TEST_1, rosettanetAddress);
 
-        await saveAddresses({
-            'ETH': {
-                starknet: ETH_ADDRESS, ethereum: ethAddress
-            },'STRK': {
-                starknet: STRK_ADDRESS, ethereum: strkAddress
-            }, 'TEST1': {
-                starknet: SN_ADDRESS_TEST_1, ethereum: testAddress1
-            }
-        })
-        
+        // Burda bi problem var
+        /*
+            LibraryError: RPC: starknet_call with params {
+            "request": {
+                "contract_address": "0x75407eee73c40c481db2d7bc0423c2120f0a2af3641297257a849fe10b1cdd1",
+                "entry_point_selector": "0x1d5cede02897d15d9053653ef3e41f52394e444218efdfdec3dfaf529dcf5dd",
+                "calldata": [
+                "0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"
+                ]
+            },
+            "block_id": "pending"
+            } 20: Contract not found: undefined
+        */
         console.log('Registry updated.')
         return;
     } catch (ex) {
@@ -51,31 +54,10 @@ async function registerContract(account: Account, contractAddress: string, roset
     return addHexPrefix(generatedAddress.toLowerCase())
 }
 
-async function saveAddresses(obj: any) {
-    const objAsJson = JSON.stringify(obj);
-    const filePath = path.resolve(__dirname, '../e2e/addresses.json')
-    try {
-        await unlink(filePath);
-        console.log('Old addresses.json deleted.');
-    } catch (err: any) {
-        if (err.code !== 'ENOENT') {
-            console.error('Failed to delete old addresses.json:', err);
-            throw err;
-        }
-        // ENOENT hatasıysa (dosya yoksa) sorun yok, devam et
+export async function getEthAddress(snAddress: string): Promise<RosettanetCompatibleAddress> {
+    const generatedAddress = await getEthAddressFromRegistry(snAddress)
+    return {
+        starknet: snAddress,
+        ethereum: generatedAddress
     }
-    await writeFile(filePath, objAsJson);
-    return;
-}
-
-export async function getAddress(key: string): Promise<RosettanetCompatibleAddress> {
-    const filePath = path.resolve(__dirname, '../e2e/addresses.json')
-    try {
-        const data = await readFile(filePath, 'utf-8');
-        const obj = JSON.parse(data);
-        return obj[key];
-      } catch (err) {
-        console.error('Failed to load addresses.json:', err);
-        throw err;
-      }
 }
