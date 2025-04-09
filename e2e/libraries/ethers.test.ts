@@ -1,28 +1,27 @@
 import { getDevAccount, sendStrksFromSnAccount, SERVER } from '../utils'
 import { precalculateStarknetAddress, registerContractIfNotRegistered } from '../registry/rosettanet'
 import { ethers } from 'ethers';
-import { ETH_ADDRESS, STRK_ADDRESS } from '../constants';
+import { ETH_ADDRESS, SN_ADDRESS_TEST_1, STRK_ADDRESS } from '../constants';
 
-const snAddress =
-  '0x06419f7dea356b74bc1443bd1600ab3831b7808d1ef897789facfad11a172da7'
+
 describe('Using ethers.js with Rosettanet RPC', () => {
     test.only('Retrive balance of the account', async () => {
         const ethAddress = await registerContractIfNotRegistered(
             getDevAccount(),
-            snAddress,
+            SN_ADDRESS_TEST_1,
           );
         const provider = new ethers.JsonRpcProvider(SERVER);
         const balanceWei = await provider.getBalance(ethAddress);
   
         // Convert balance to Ether string
         const balanceEther = ethers.formatEther(balanceWei);
-        expect(balanceEther).toBe("249.210533684940172681")
+        expect(balanceEther).toBe("250.0")
     }, 30000)
 
     test.only('Retrive eth balance using erc20 contract', async () => {
         const ethAddress = await registerContractIfNotRegistered(
             getDevAccount(),
-            snAddress,
+            SN_ADDRESS_TEST_1,
           );
         const ethTokenAddress = await registerContractIfNotRegistered(getDevAccount(), ETH_ADDRESS);
         const provider = new ethers.JsonRpcProvider(SERVER);

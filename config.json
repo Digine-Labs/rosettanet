@@ -10,6 +10,7 @@
   "rosettanet": "0x033d9ff643e9e964545dac77bb66d1f1828e11845fe7cac1960cb96e6b566833",
   "logging": {
     "active": true,
+    "sniffer": true,
     "output": "console",
     "minSeverity": "1",
     "fileName": "logs.log",

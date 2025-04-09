@@ -22,6 +22,7 @@ export const testConfig = {
     '0x007288a71619eca9397bf0d3066d236b41de33fd6af3a420d16b2f55c93f8af7',
   logging: {
     active: true,
+    sniffer: true,
     output: 'file',
     minSeverity: '0',
     fileName: './e2e/logs.log',
@@ -31,7 +32,6 @@ export const testConfig = {
 
 // These values are used in the devnet setup script
 // export const rpcList = ["https://free-rpc.nethermind.io/mainnet-juno/v0_7"]
-export const forkBlock = '1219608'
 // export const accountSeed = "1223632"
 
 export const SERVER = 'http://localhost:3000'
@@ -116,9 +116,29 @@ export function getDevAccount(): Account {
   return account
 }
 
+export function getEthStrkHolderAccount(): Account {
+  const account = new Account(
+    getProvider(),
+    '0x0431c9dc987fde5f7a88a0aff061082d2db737be7e81e9a6f090d7b03083b5ef',
+    '0x00000000000000000000000000000000ce4a3adf51d4f7852c582b8e2b10df04',
+    undefined,
+    '0x3',
+  )
+
+  return account;
+}
+
 export async function sendStrksFromSnAccount(account: Account, recipient: string, amount: BigNumberish) {
   await account.execute({
     contractAddress: STRK_ADDRESS,
+    entrypoint: 'transfer',
+    calldata: [recipient, uint256.bnToUint256(amount).low, uint256.bnToUint256(amount).high]
+  })
+}
+
+export async function sendERC20FromSnAccount(account: Account, erc20Contract: string, recipient: string, amount: BigNumberish) {
+  await account.execute({
+    contractAddress: erc20Contract,
     entrypoint: 'transfer',
     calldata: [recipient, uint256.bnToUint256(amount).low, uint256.bnToUint256(amount).high]
   })

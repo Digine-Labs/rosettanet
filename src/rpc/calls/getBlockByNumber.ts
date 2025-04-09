@@ -5,6 +5,7 @@ import { hexToDecimal } from "../../utils/converters/integer";
 import { callStarknet } from "../../utils/callHelper";
 import { isStarknetRPCError } from "../../types/typeGuards";
 import { parseBlockData } from "./getBlockByHash";
+import { writeLog } from "../../logger";
 
 export async function getBlockByNumberHandler(request: RPCRequest): Promise<RPCResponse | RPCError> {
     if(!Array.isArray(request.params)) {
@@ -30,7 +31,7 @@ export async function getBlockByNumberHandler(request: RPCRequest): Promise<RPCR
 
     const blockNumber = blockNumberParameter(request.params[0]);
     const txDetails = request.params[1] as boolean;
-
+    writeLog(1, "Blocknumber: " + blockNumber)
     let blockData;
 
     if(txDetails == false) {

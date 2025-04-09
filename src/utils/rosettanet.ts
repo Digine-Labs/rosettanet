@@ -125,7 +125,7 @@ export async function deployRosettanetAccount(
       deploy_account_transaction: {
         type: 'DEPLOY_ACCOUNT',
         version: '0x3',
-        signature: ['0'],
+        signature: ['0x0'],
         nonce: '0x0',
         contract_address_salt: txn.from,
         class_hash: accountClass,
@@ -136,8 +136,8 @@ export async function deployRosettanetAccount(
             max_price_per_unit: addHexPrefix(actualGasPrice.toString(16)),
           },
           l2_gas: {
-            max_amount: '0',
-            max_price_per_unit: '0',
+            max_amount: '0x0',
+            max_price_per_unit: '0x0',
           },
         },
         tip: '0x0',

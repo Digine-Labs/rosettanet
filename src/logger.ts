@@ -3,7 +3,7 @@ import { RPCError, RPCRequest, RPCResponse } from './types/types'
 import { getConfigurationProperty } from './utils/configReader'
 
 export function isSnifferActive(): boolean {
-  return process.argv.slice(2).indexOf('--sniffer') > -1
+  return getLogConfig()?.sniffer ?? false;
 }
 
 export function snifferOutput(

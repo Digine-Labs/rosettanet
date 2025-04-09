@@ -58,12 +58,35 @@ export function getLast160Bits(data: string): string {
     data = data.slice(2);
   }
 
-  if (data.length !== 64) {
-    throw new Error('Input must be 256 bits (64 hex characters)');
+  // Eğer 64 karakterden kısaysa başa sıfır ekleyerek tamamla
+  if (data.length < 64) {
+    data = data.padStart(64, '0');
+  } else if (data.length > 64) {
+    // İstersen fazla gelen datayı da kesebiliriz (bu isteğe bağlı)
+    data = data.slice(-64);
   }
 
   const last160Bits = data.slice(-40);
 
   return '0x' + last160Bits;
-  
+}
+
+export function padHashTo64(data: string): string {
+  // Eğer '0x' ile başlıyorsa çıkar
+  let hex = data.startsWith('0x') ? data.slice(2) : data;
+
+  // Sadece hex karakterlerden oluşuyor mu diye kontrol (opsiyonel ama iyi olur)
+  if (!/^[0-9a-fA-F]*$/.test(hex)) {
+    throw new Error('Invalid characters in hash');
+  }
+
+  // Eğer çok uzun olursa hata verelim
+  if (hex.length > 64) {
+    throw new Error(`Hash too long: ${hex.length} characters`);
+  }
+
+  // Eğer kısa ise, başa sıfır ekle
+  hex = hex.padStart(64, '0');
+
+  return '0x' + hex;
 }

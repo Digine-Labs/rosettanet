@@ -271,6 +271,8 @@ async function handleRequest(request: any): Promise<RPCResponse | RPCError> {
               }
               return result
             } catch (ex) {
+              const errorMessage = ex instanceof Error ? ex.message : String(ex);
+              writeLog(2, JSON.stringify({request, error: errorMessage}))
               return <RPCError>{
                 jsonrpc: '2.0',
                 id: id,
