@@ -28,6 +28,7 @@ import {
 } from '../../utils/transaction'
 import { getAccountNonce } from '../../utils/starknet'
 import { writeLog } from '../../logger'
+import { write } from 'fs'
 
 export async function sendRawTransactionHandler(
   request: RPCRequest,
@@ -59,6 +60,8 @@ export async function sendRawTransactionHandler(
 
   const signedValidRawTransaction: SignedRawTransaction | ValidationError =
     validateRawTransaction(tx)
+    writeLog(1, 'signed valid tx')
+    writeLog(1, JSON.stringify(signedValidRawTransaction,(k, v) => typeof v === 'bigint' ? v.toString() : v))
   //console.log(signedValidRawTransaction)
   if (!isSignedRawTransaction(signedValidRawTransaction)) {
     return {
@@ -74,6 +77,7 @@ export async function sendRawTransactionHandler(
   const deployedAccountAddress: RosettanetAccountResult =
     await getRosettaAccountAddress(signedValidRawTransaction.from)
   if (!deployedAccountAddress.isDeployed) {
+    writeLog(0, JSON.stringify(signedValidRawTransaction,(k, v) => typeof v === 'bigint' ? v.toString() : v))
     return deployAndBroadcastTransaction(request, signedValidRawTransaction)
   }
 
@@ -104,6 +108,8 @@ export async function sendRawTransactionHandler(
     accountNonce,
   )
 
+  writeLog(0, JSON.stringify(invokeTx,(k, v) => typeof v === 'bigint' ? v.toString() : v))
+
   return await broadcastTransaction(request, invokeTx)
 }
 
@@ -121,7 +127,7 @@ async function broadcastTransaction(
     method: 'starknet_addInvokeTransaction',
   })
   if (isStarknetRPCError(response)) {
-    writeLog(1, 'Starknet RPC returned error at broadcastTransaction: ' + JSON.stringify(response))
+    writeLog(1, 'Starknet RPC returned error at broadcastTransaction: ' + JSON.stringify(response,(k, v) => typeof v === 'bigint' ? v.toString() : v))
     if (response.code == 55) {
       return <RPCError>{
         jsonrpc: request.jsonrpc,
@@ -158,6 +164,7 @@ async function deployAndBroadcastTransaction(
   txn: SignedRawTransaction,
 ): Promise<RPCResponse | RPCError> {
   const starknetNonce = '0x1'
+  writeLog(0,'will be deployed and executed')
 
   // This means account is not registered on rosettanet registry. Lets deploy the address
   const accountDeployResult: AccountDeployResult | AccountDeployError =
@@ -175,6 +182,7 @@ async function deployAndBroadcastTransaction(
   }
 
   const rosettanetCalldata = prepareRosettanetCalldata(txn)
+
   if (isPrepareCalldataError(rosettanetCalldata)) {
     return <RPCError>{
       jsonrpc: request.jsonrpc,
@@ -193,6 +201,7 @@ async function deployAndBroadcastTransaction(
     txn,
     starknetNonce,
   )
-
+  writeLog(0, 'invoke tx')
+  writeLog(0,JSON.stringify(invokeTx,(k, v) => typeof v === 'bigint' ? v.toString() : v))
   return await broadcastTransaction(request, invokeTx)
 }

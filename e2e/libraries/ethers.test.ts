@@ -45,25 +45,30 @@ describe('Using ethers.js with Rosettanet RPC', () => {
 
         // Fund initial address first
         const devAcc = getDevAccount();
-        const precalculatedSnAddress = await precalculateStarknetAddress('0xAE97807Cf37BeF18e8347aD7B47658d6d96c503D');
-        await sendStrksFromSnAccount(devAcc, precalculatedSnAddress, '100000000000000000000') // sends 100 strk
-
-
         const privateKey = '0x9979f9c93cbca19e905a21ce4d6ee9233948bcfe67d95c11de664ebe4b78c505'; // 0xAE97807Cf37BeF18e8347aD7B47658d6d96c503D
         const wallet = new ethers.Wallet(privateKey, provider);
 
+        const precalculatedSnAddress = await precalculateStarknetAddress(wallet.address);
+        await sendStrksFromSnAccount(devAcc, precalculatedSnAddress, '100000000000000000000') // sends 100 strk
+        console.log('Precalculate Starknet address: ' + precalculatedSnAddress)
+        
 
         const toAddress = '0x8b4ee3F7a16ed6b793BD7907f87778AC11624c27';
 
-        const tx = await wallet.sendTransaction({
+        // We cant directly send transaction with wallet.sendTransaction. Because it expects precalculated tx hash from rpc.
+        // And it reverts if hash is different.
+        // TODO: In future we may return directly ethereum type eth hash and scanners matches them with actual starknet tx hashes?
+        const signedTx = await wallet.signTransaction({
             to: toAddress,
             value: ethers.parseEther('1.0')  // 1 STRK
-          });
+        });
         
-          console.log('Transaction sent! Hash:', tx.hash);
+        const tx = await provider.send('eth_sendRawTransaction', [signedTx])
+        
+          console.log('Transaction sent! Hash:', tx);
         
           // Wait for the transaction to be mined
-          await tx.wait();
+          //await tx.wait();
 
           const ERC20_ABI = [
             'function balanceOf(address owner) view returns (uint256)',
