@@ -1,4 +1,4 @@
-import { getDevAccount, sendStrksFromSnAccount, SERVER } from '../utils'
+import { getDevAccount, sendERC20FromSnAccount, sendStrksFromSnAccount, SERVER } from '../utils'
 import { precalculateStarknetAddress, registerContractIfNotRegistered } from '../registry/rosettanet'
 import { ethers } from 'ethers';
 import { ETH_ADDRESS, SN_ADDRESS_TEST_1, STRK_ADDRESS } from '../constants';
@@ -79,7 +79,45 @@ describe('Using ethers.js with Rosettanet RPC', () => {
     })
 
     test.only('ERC20 transfer transaction. This may deploy account contract initially.', async () => {
-        
+      const provider = new ethers.JsonRpcProvider(SERVER);
+
+      const devAcc = getDevAccount();
+      const privateKey = '0x9979f9c93cbca19e905a21ce4d6ee9233948bcfe67d95c11de664ebe4b78c505'; // 0xAE97807Cf37BeF18e8347aD7B47658d6d96c503D
+      const wallet = new ethers.Wallet(privateKey, provider);
+
+      const precalculatedSnAddress = await precalculateStarknetAddress(wallet.address);
+      await sendERC20FromSnAccount(devAcc, ETH_ADDRESS, precalculatedSnAddress, '100000000000000000000') // sends 100 strk
+      const tokenAddress = await getEthAddress(ETH_ADDRESS);
+      
+      const toAddress = '0x8b4ee3F7a16ed6b793BD7907f87778AC11624c27';
+      const ERC20_ABI = [
+        'function balanceOf(address owner) view returns (uint256)',
+        'function decimals() view returns (uint8)',
+        'function transfer(address to, uint256 amount) public returns (bool)'
+      ];
+      const erc20Contract = new ethers.Contract(tokenAddress.ethereum, ERC20_ABI, wallet);
+
+      const iface = new ethers.Interface(ERC20_ABI);
+
+      const data = iface.encodeFunctionData('transfer', [
+        toAddress,
+        ethers.parseUnits('1', 18)
+      ]);
+      
+      const txRequest = {
+        to: tokenAddress.ethereum, // Token kontrat adresi
+        data: data,
+      };
+
+      const tx = await wallet.populateTransaction(txRequest);
+      
+      const signedTx = await wallet.signTransaction(tx);
+      const sentTx = await provider.send('eth_sendRawTransaction', [signedTx]);
+      //const receipt = await provider.waitForTransaction(sentTx); // TODO: fix bug on getTransactionreceipt
+      // console.log('Tx confirmed', receipt)
+      const balance = await erc20Contract.balanceOf(toAddress);
+
+      expect(balance).toBe(ethers.parseEther('1.0'))
     })
 
     test.only('ERC20 transfer transaction. From already deployed account contract.', async () => {

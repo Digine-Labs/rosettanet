@@ -100,7 +100,7 @@ export async function ethCallHandler(
     }
   }
 
-  if (parameters.from && validateEthAddress(parameters.from)) {
+  if (parameters.from && !validateEthAddress(parameters.from)) {
     return {
       jsonrpc: request.jsonrpc,
       id: request.id,
