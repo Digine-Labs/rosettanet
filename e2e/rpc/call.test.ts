@@ -32,7 +32,7 @@ describe('eth_call RPC method', () => {
         
         expect(response.status).toBe(200)
         expect(response.data.result).toBeDefined()
-        expect(response.data.result).toBe('0x00000000000000000000000000000000000000000000000000053184796409f4')
+        expect(response.data.result).toBe('0x00000000000000000000000000000000000000000000003635cedf4a580409f4')
         expect(response.data.jsonrpc).toBe('2.0')
         expect(response.data.id).toBe(1)
     }, 30000)
@@ -51,7 +51,7 @@ describe('eth_call RPC method', () => {
         
         expect(response.status).toBe(200)
         expect(response.data.result).toBeDefined()
-        expect(response.data.result).toBe('0x00000000000000000000000000000000000000000000000000053184796409f4')
+        expect(response.data.result).toBe('0x00000000000000000000000000000000000000000000003635cedf4a580409f4')
         expect(response.data.jsonrpc).toBe('2.0')
         expect(response.data.id).toBe(1)
     }, 30000)

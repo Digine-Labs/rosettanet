@@ -28,7 +28,6 @@ import {
 } from '../../utils/transaction'
 import { getAccountNonce } from '../../utils/starknet'
 import { writeLog } from '../../logger'
-import { write } from 'fs'
 
 export async function sendRawTransactionHandler(
   request: RPCRequest,

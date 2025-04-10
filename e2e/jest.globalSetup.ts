@@ -17,15 +17,14 @@ export default async function globalSetup() {
       account.address,
       STRK_ADDRESS,
     ])
-
-    await updateRegistry(account, rosettanetAddress);
-
-    await fundAccountsForBalanceTests();
-
     const nodeConfig = testConfig
     nodeConfig.accountClass = accountClass
     nodeConfig.rosettanet = rosettanetAddress
     await updateNodeConfig(JSON.stringify(nodeConfig))
+
+    await fundAccountsForBalanceTests();
+    await updateRegistry(account, rosettanetAddress);
+
     await startNode()
   } catch (ex) {
     console.error(ex)

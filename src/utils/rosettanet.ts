@@ -116,7 +116,8 @@ export async function deployRosettanetAccount(
   const accountClass = getConfigurationProperty('accountClass')
   const gasPrice = txn.maxFeePerGas == null ? txn.gasPrice : txn.maxFeePerGas
   const actualGasPrice = gasPrice == null ? '0x0' : gasPrice
-
+  console.log('MAX FEE: ' + txn.gasLimit.toString(16))
+  console.log('MAX price per unit: ' + actualGasPrice.toString(16))
   const deployRequest = {
     // todo handle error if string
     jsonrpc: '2.0',
