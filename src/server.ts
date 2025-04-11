@@ -11,6 +11,9 @@ export function StartListening() {
   const host = getConfigurationProperty('host')
   const port = Number(getConfigurationProperty('port')) || 3000
 
+  app.use(cors())
+  app.options('*', cors())
+  
   app.use((req, res, next) => {
     if (req.method !== 'POST') {
       return res.status(405).json({
@@ -78,8 +81,6 @@ export function StartListening() {
     }
   })
 
-  app.use(cors())
-  app.options('*', cors())
 
   // Express error handler for JSON parsing errors
   app.use(
