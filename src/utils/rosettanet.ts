@@ -220,7 +220,7 @@ export async function getRosettanetAccountNonce(
       return '0x0'
     }
   } catch (ex) {
-    writeLog(1, 'Error at getRosettanetAccountNonce' + (ex as Error).message)
+    writeLog(1, 'Error at getRosettanetAccountNonce ' + (ex as Error).message)
     return '0x0'
   }
 }

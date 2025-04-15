@@ -9,17 +9,25 @@ import { getRosettanetAccountNonce } from '../../utils/rosettanet'
 import { validateEthAddress } from '../../utils/validations'
 import { getSnAddressWithFallback } from '../../utils/wrapper'
 
+/*
+Params:
+Eth address
+block specifier, 
+string => hex string or latest pending etc
+number => decimal block number
+*/
+
 export async function getTransactionCountHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  if (request.params.length == 0) {
+  if (request.params.length == 0 || request.params.length > 2) {
     return {
       jsonrpc: request.jsonrpc,
       id: request.id,
       error: {
         code: -32602,
         message:
-          'Invalid argument, Parameter should be valid Ethereum Address.',
+          'Invalid argument, Parameter should be valid Ethereum Address and block identifier.',
       },
     }
   }
@@ -36,6 +44,8 @@ export async function getTransactionCountHandler(
       },
     }
   }
+
+
 
   const snAddress: string | StarknetRPCError =
     await getSnAddressWithFallback(ethAddress)
