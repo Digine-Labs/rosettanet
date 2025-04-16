@@ -1,111 +1,111 @@
 import { CairoCustomEnum } from "starknet";
 
-const EVMTypesEnum = new CairoCustomEnum({
-    Tuple: undefined,
-    Array: undefined,
-    FunctionSignature: undefined, // RM bytes4 can be used
-    Address: undefined, // TODO
-    Bool: undefined,
-    Uint8: undefined,
-    Uint16: undefined,
-    Uint24: undefined,
-    Uint32: undefined,
-    Uint40: undefined,
-    Uint48: undefined,
-    Uint56: undefined,
-    Uint64: undefined,
-    Uint72: undefined,
-    Uint80: undefined,
-    Uint88: undefined,
-    Uint96: undefined,
-    Uint104: undefined,
-    Uint112: undefined,
-    Uint120: undefined,
-    Uint128: undefined,
-    Uint136: undefined,
-    Uint144: undefined,
-    Uint152: undefined,
-    Uint160: undefined,
-    Uint168: undefined,
-    Uint176: undefined,
-    Uint184: undefined,
-    Uint192: undefined,
-    Uint200: undefined,
-    Uint208: undefined,
-    Uint216: undefined,
-    Uint224: undefined,
-    Uint232: undefined,
-    Uint240: undefined,
-    Uint248: undefined,
-    Uint256: undefined,
-    Int8: undefined,
-    Int16: undefined,
-    Int24: undefined,
-    Int32: undefined,
-    Int40: undefined,
-    Int48: undefined,
-    Int56: undefined,
-    Int64: undefined,
-    Int72: undefined,
-    Int80: undefined,
-    Int88: undefined,
-    Int96: undefined,
-    Int104: undefined,
-    Int112: undefined,
-    Int120: undefined,
-    Int128: undefined,
-    Int136: undefined,
-    Int144: undefined,
-    Int152: undefined,
-    Int160: undefined,
-    Int168: undefined,
-    Int176: undefined,
-    Int184: undefined,
-    Int192: undefined,
-    Int200: undefined,
-    Int208: undefined,
-    Int216: undefined,
-    Int224: undefined,
-    Int232: undefined,
-    Int240: undefined,
-    Int248: undefined,
-    Int256: undefined, // Decoded as i257 Because there is no i256 type in cairo. Closest is i257
-    Bytes1: undefined,
-    Bytes2: undefined,
-    Bytes3: undefined,
-    Bytes4: undefined,
-    Bytes5: undefined,
-    Bytes6: undefined,
-    Bytes7: undefined,
-    Bytes8: undefined,
-    Bytes9: undefined,
-    Bytes10: undefined,
-    Bytes11: undefined,
-    Bytes12: undefined,
-    Bytes13: undefined,
-    Bytes14: undefined,
-    Bytes15: undefined,
-    Bytes16: undefined,
-    Bytes17: undefined,
-    Bytes18: undefined,
-    Bytes19: undefined,
-    Bytes20: undefined,
-    Bytes21: undefined,
-    Bytes22: undefined,
-    Bytes23: undefined,
-    Bytes24: undefined,
-    Bytes25: undefined,
-    Bytes26: undefined,
-    Bytes27: undefined,
-    Bytes28: undefined,
-    Bytes29: undefined,
-    Bytes30: undefined,
-    Bytes31: undefined,
-    Bytes32: undefined, // Decoded as serialized ByteArray
-    Bytes: undefined,
-    String: undefined, // Same as bytes
-    Felt252: undefined // It has to be encoded as uint256 on EVM
-}) 
+export const EVMTypesEnum = {
+    Tuple: 0,
+    Array: 1,
+    FunctionSignature: 2, // RM bytes4 can be used
+    Address: 3, // TODO
+    Bool: 4,
+    Uint8: 5,
+    Uint16: 6,
+    Uint24: 7,
+    Uint32: 8,
+    Uint40: 9,
+    Uint48: 10,
+    Uint56: 11,
+    Uint64: 12,
+    Uint72: 13,
+    Uint80: 14,
+    Uint88: 15,
+    Uint96: 16,
+    Uint104: 17,
+    Uint112: 18,
+    Uint120: 19,
+    Uint128: 20,
+    Uint136: 21,
+    Uint144: 22,
+    Uint152: 23,
+    Uint160: 24,
+    Uint168: 25,
+    Uint176: 26,
+    Uint184: 27,
+    Uint192: 28,
+    Uint200: 29,
+    Uint208: 30,
+    Uint216: 31,
+    Uint224: 32,
+    Uint232: 33,
+    Uint240: 34,
+    Uint248: 35,
+    Uint256: 36,
+    Int8: 37,
+    Int16: 38,
+    Int24: 39,
+    Int32: 40,
+    Int40: 41,
+    Int48: 42,
+    Int56: 43,
+    Int64: 44,
+    Int72: 45,
+    Int80: 46,
+    Int88: 47,
+    Int96: 48,
+    Int104: 49,
+    Int112: 50,
+    Int120: 51,
+    Int128: 52,
+    Int136: 53,
+    Int144: 54,
+    Int152: 55,
+    Int160: 56,
+    Int168: 57,
+    Int176: 58,
+    Int184: 59,
+    Int192: 60,
+    Int200: 61,
+    Int208: 62,
+    Int216: 63,
+    Int224: 64,
+    Int232: 65,
+    Int240: 66,
+    Int248: 67,
+    Int256: 68, // Decoded as i257 Because there is no i256 type in cairo. Closest is i257
+    Bytes1: 69,
+    Bytes2: 70,
+    Bytes3: 71,
+    Bytes4: 72,
+    Bytes5: 73,
+    Bytes6: 74,
+    Bytes7: 75,
+    Bytes8: 76,
+    Bytes9: 77,
+    Bytes10: 78,
+    Bytes11: 79,
+    Bytes12: 80,
+    Bytes13: 81,
+    Bytes14: 82,
+    Bytes15: 83,
+    Bytes16: 84,
+    Bytes17: 85,
+    Bytes18: 86,
+    Bytes19: 87,
+    Bytes20: 88,
+    Bytes21: 89,
+    Bytes22: 90,
+    Bytes23: 91,
+    Bytes24: 92,
+    Bytes25: 93,
+    Bytes26: 94,
+    Bytes27: 95,
+    Bytes28: 96,
+    Bytes29: 97,
+    Bytes30: 98,
+    Bytes31: 99,
+    Bytes32: 100, // Decoded as serialized ByteArray
+    Bytes: 101,
+    String: 102, // Same as bytes
+    Felt252: 103 // It has to be encoded as uint256 on EVM
+} as const;
 
 /**
  * Creates calldata for Cairo enums to be used with Starknet
@@ -114,21 +114,11 @@ const EVMTypesEnum = new CairoCustomEnum({
  * @returns An array representing the calldata for the enum
  */
 export function createCairoEnumCalldata(enumType: string, value?: any): any[] {
-    const enumVariants: Record<string, any> = {};
-    enumVariants[enumType] = value;
-    
-    const enumInstance = new CairoCustomEnum(enumVariants);
-    
-    const activeVariant = enumInstance.activeVariant();
-    
-    const variantNames = Object.keys(EVMTypesEnum)
-        .filter(key => typeof EVMTypesEnum[key as keyof typeof EVMTypesEnum] !== 'function');
-    
-    const variantIndex = variantNames.indexOf(activeVariant);
-    
-    if (variantIndex === -1) {
-        throw new Error(`Invalid enum variant: ${activeVariant}`);
+    if (!(enumType in EVMTypesEnum)) {
+        throw new Error(`Invalid enum type: ${enumType}`);
     }
+    
+    const variantIndex = EVMTypesEnum[enumType as keyof typeof EVMTypesEnum];
     
     if (value === undefined) {
         return [variantIndex];
