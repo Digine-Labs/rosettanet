@@ -1,5 +1,3 @@
-import { CairoCustomEnum } from "starknet";
-
 export const EVMTypesEnum = {
     Tuple: 0,
     Array: 1,
@@ -113,7 +111,7 @@ export const EVMTypesEnum = {
  * @param value The value to be passed with the enum (if applicable)
  * @returns An array representing the calldata for the enum
  */
-export function createCairoEnumCalldata(enumType: string, value?: any): any[] {
+export function createCairoEnumCalldata(enumType: string, value?: unknown): (number | string | boolean)[] {
     if (!(enumType in EVMTypesEnum)) {
         throw new Error(`Invalid enum type: ${enumType}`);
     }
@@ -124,14 +122,14 @@ export function createCairoEnumCalldata(enumType: string, value?: any): any[] {
         return [variantIndex];
     }
     
-    return [variantIndex, value];
+    return [variantIndex, value as string | number | boolean];
 }
 
 /**
  * Test function for createCairoEnumCalldata
  * @returns Test results
  */
-export function testCreateCairoEnumCalldata(): { type: string, value: any, calldata: any[] }[] {
+export function testCreateCairoEnumCalldata(): { type: string, value: string | boolean, calldata: (number | string | boolean)[] }[] {
     const testCases = [
         { type: 'Uint256', value: '0x123' },
         { type: 'Address', value: '0x1234567890123456789012345678901234567890' },
