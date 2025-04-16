@@ -37,6 +37,20 @@ export function safeU256ToUint256(value: Array<string>): string {
   return result
 }
 
+export function U256ToUint256HexString(value: Array<string>): string {
+  if(value.length == 0) {
+    return '0x0000000000000000000000000000000000000000000000000000000000000000'
+  }
+  if(value.length == 1) {
+    return addHexPadding(value[0], 64, true)
+  }
+
+  const low = addHexPadding(value[0], 32, false)
+  const high = addHexPadding(value[1], 32, true)
+
+  return `${high}${low}`
+}
+
 export function U256toUint256(value: Array<string>): string {
   const low = BigInt(value[0])
   const high = BigInt(value[1])

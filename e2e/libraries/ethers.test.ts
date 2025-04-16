@@ -3,7 +3,7 @@ import { precalculateStarknetAddress, registerContractIfNotRegistered } from '..
 import { ethers } from 'ethers';
 import { ETH_ADDRESS, SN_ADDRESS_TEST_1, STRK_ADDRESS } from '../constants';
 import { getEthAddress } from '../registers';
-
+import { writeLog } from '../../src/logger';
 
 describe('Using ethers.js with Rosettanet RPC', () => {
     test.only('Retrive balance of the account', async () => {
@@ -109,12 +109,16 @@ describe('Using ethers.js with Rosettanet RPC', () => {
         data: data,
       };
 
+      const senderBalance = await erc20Contract.balanceOf(wallet.address);
+      console.log(senderBalance)
+
       const tx = await wallet.populateTransaction(txRequest);
       
       const signedTx = await wallet.signTransaction(tx);
       const sentTx = await provider.send('eth_sendRawTransaction', [signedTx]);
-      //const receipt = await provider.waitForTransaction(sentTx); // TODO: fix bug on getTransactionreceipt
-      // console.log('Tx confirmed', receipt)
+      console.log(sentTx)
+      const receipt = await provider.waitForTransaction(sentTx); // TODO: fix bug on getTransactionreceipt
+      console.log('Tx confirmed', receipt)
       const balance = await erc20Contract.balanceOf(toAddress);
 
       expect(balance).toBe(ethers.parseEther('1.0'))

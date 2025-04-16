@@ -1,267 +1,202 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import BigNumber from 'bignumber.js'
-import { isRPCResponse, isStarknetRPCError } from '../../types/typeGuards'
-import {
-  RPCError,
-  RPCRequest,
-  RPCResponse,
-  StarknetRPCError,
-} from '../../types/types'
-import { callStarknet } from '../../utils/callHelper'
-import { getEthAddressFromSnAddress } from '../../utils/wrapper'
-import { calculateSpentGas } from '../../utils/gas'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Transaction } from "ethers";
+import { writeLog } from "../../logger";
+import { isStarknetRPCError } from "../../types/typeGuards";
+import { RosettanetRawCalldata, RPCError, RPCRequest, RPCResponse, StarknetRPCError } from "../../types/types";
+import { callStarknet } from "../../utils/callHelper";
+import { sumHexStrings } from "../../utils/converters/integer";
+import { padHashTo64, padTo256Byte } from "../../utils/padding";
+import { parseRosettanetRawCalldata } from "../../utils/rosettanet";
+import { getEthersTransactionFromRosettanetCall } from "../../utils/signature";
 
-interface TransactionByHashResponse {
-  transaction_hash: string
-  sender_address: string
-  type: string
-  version: string
-  resource_bounds: {
-    l1_gas: {
-      max_amount: string
-      max_price_per_unit: string
+export async function getTransactionReceiptHandler(request: RPCRequest): Promise<RPCResponse | RPCError> {
+    if(!Array.isArray(request.params)) {
+        return {
+            jsonrpc: request.jsonrpc,
+            id: request.id,
+            error: {
+              code: -32602,
+              message: 'Invalid argument, Parameter must be array',
+            },
+        }
     }
-    l2_gas: {
-      max_amount: string
-      max_price_per_unit: string
+    if(request.params.length != 1) {
+        return {
+            jsonrpc: request.jsonrpc,
+            id: request.id,
+            error: {
+              code: -32602,
+              message: 'Arguments must be length of 1',
+            },
+        }
     }
-  }
-  calldata: string[]
-  constructor_calldata: string[]
-}
 
-interface TransactionReceiptResponse {
-  block_hash: string
-  block_number: number | string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  events: any
-  execution_status: string
-  finality_status: string
-  actual_fee: {
-    amount: string
-    unit: string
-  }
-}
+    const txHash = request.params[0] as string
 
-function isTransactionByHashResponse(
-  value: unknown,
-): value is TransactionByHashResponse {
-  if (typeof value === 'object' && value !== null) {
-    const obj = value as TransactionByHashResponse
-    if (typeof obj.type === 'string' && obj.type === 'INVOKE') {
-      return (
-        typeof obj.transaction_hash === 'string' &&
-        typeof obj.sender_address === 'string' &&
-        typeof obj.version === 'string' &&
-        typeof obj.resource_bounds === 'object' &&
-        typeof obj.resource_bounds.l1_gas === 'object' &&
-        typeof obj.resource_bounds.l2_gas === 'object' &&
-        typeof obj.resource_bounds.l1_gas.max_amount === 'string' &&
-        typeof obj.resource_bounds.l1_gas.max_price_per_unit === 'string' &&
-        typeof obj.resource_bounds.l2_gas.max_amount === 'string' &&
-        typeof obj.resource_bounds.l2_gas.max_price_per_unit === 'string' &&
-        Array.isArray(obj.calldata) &&
-        obj.calldata.length > 0
-      )
-    } else {
-      return (
-        typeof obj.transaction_hash === 'string' &&
-        Array.isArray(obj.constructor_calldata) &&
-        obj.constructor_calldata.length > 0
-      )
-    }
-  }
-  return false
-}
-
-function isTransactionReceiptResponse(
-  value: unknown,
-): value is TransactionReceiptResponse {
-  if (typeof value === 'object' && value !== null) {
-    const obj = value as TransactionReceiptResponse
-    return (
-      typeof obj.block_hash === 'string' &&
-      typeof obj.execution_status === 'string' &&
-      typeof obj.finality_status === 'string' &&
-      typeof obj.events !== 'undefined' &&
-      typeof obj.actual_fee === 'object' &&
-      (typeof obj.block_number === 'number' ||
-        typeof obj.block_number === 'string') &&
-      typeof obj.actual_fee.amount === 'string' &&
-      typeof obj.actual_fee.unit === 'string'
-    )
-  }
-  return false
-}
-
-type TransactionHashObject = {
-  transaction_hash: string
-}
-
-interface TransactionReceiptRequest extends RPCRequest {
-  params: string[] | TransactionHashObject[]
-}
-
-export async function getTransactionReceiptHandler(
-  request: TransactionReceiptRequest,
-): Promise<RPCResponse | RPCError> {
-  if (request.params.length == 0) {
-    return {
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      error: {
-        code: -32602,
-        message:
-          'Invalid argument, Parameter should be valid transaction hash.',
-      },
-    }
-  }
-
-  const txHash =
-    typeof request.params[0] === 'string'
-      ? request.params[0]
-      : request.params[0].transaction_hash
-
-  const starknetTransactionDetails: RPCResponse | StarknetRPCError =
-    await callStarknet({
-      jsonrpc: request.jsonrpc,
-      method: 'starknet_getTransactionByHash',
-      params: {
-        transaction_hash: txHash,
-      },
-      id: request.id,
+    const starknetTxReceipt: RPCResponse | StarknetRPCError = await callStarknet({
+        jsonrpc: request.jsonrpc,
+        method: 'starknet_getTransactionReceipt',
+        params: {
+          transaction_hash: txHash,
+        },
+        id: request.id,
     })
 
-  // TODO: deploy tx returns failin because there is no sender_address on deploy account tx
-
-  // TODO: Improve safety for if deploy account tx
-
-  if (!isRPCResponse(starknetTransactionDetails)) {
-    return <RPCResponse>{
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      result: null,
+    if(isStarknetRPCError(starknetTxReceipt)) {
+      return <RPCError>{
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: starknetTxReceipt,
+      }
     }
-  }
 
-  if (!isTransactionByHashResponse(starknetTransactionDetails.result)) {
-    return <RPCResponse>{
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      result: null,
-    }
-  }
-
-  const starknetTransactionReceipt: RPCResponse | StarknetRPCError =
-    await callStarknet({
-      jsonrpc: request.jsonrpc,
-      method: 'starknet_getTransactionReceipt',
-      params: {
-        transaction_hash: txHash,
-      },
-      id: request.id,
+    const starknetTxDetails: RPCResponse | StarknetRPCError = await callStarknet({
+        jsonrpc: request.jsonrpc,
+        method: 'starknet_getTransactionByHash',
+        params: {
+          transaction_hash: txHash,
+        },
+        id: request.id,
     })
 
-  if (!isRPCResponse(starknetTransactionReceipt)) {
-    return <RPCResponse>{
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      result: null,
-    }
-  }
+    
 
-  if (!isTransactionReceiptResponse(starknetTransactionReceipt.result)) {
-    return <RPCResponse>{
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      result: null,
+    if(isStarknetRPCError(starknetTxDetails)) {
+      return <RPCError>{
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: starknetTxDetails,
+      }
     }
-  }
 
-  const {
-    transaction_hash,
-    sender_address,
-    type,
-    version,
-    resource_bounds,
-    calldata,
-    constructor_calldata,
-  } = starknetTransactionDetails.result
-  const {
-    block_hash,
-    block_number,
-    events,
-    execution_status,
-    finality_status,
-    actual_fee,
-  } = starknetTransactionReceipt.result
-  if (type === 'DEPLOY_ACCOUNT') {
-    const gasUsed = calculateSpentGas(
-      resource_bounds.l1_gas.max_price_per_unit,
-      actual_fee,
-    )
-    const receiptObject = {
-      blockHash: block_hash,
-      blockNumber: new BigNumber(block_number).toString(16), // Hex string eg 0x123
-      contractAddress: null,
-      cumulativeGasUsed: '0x500FF', // Random value
-      effectiveGasPrice: resource_bounds.l1_gas.max_price_per_unit,
-      from: constructor_calldata[0], // Sender address but receive it from rosettanet
-      gasUsed: gasUsed,
-      logs: [], // These will be added after
-      logsBloom: '', // These will be added after
-      status: execution_status === 'SUCCEEDED' ? '0x1' : '0x0',
-      to: constructor_calldata[0],
-      transactionHash: transaction_hash,
-      transactionIndex: '0x1', // We may need extra request to receive this. Is it really important?
-      type: '0x2',
+    writeLog(0, JSON.stringify(starknetTxReceipt.result))
+    writeLog(0, JSON.stringify(starknetTxDetails.result))
+
+    const { blockHash, blockNumber, status, transactionHash } = parseTxReceipt(starknetTxReceipt.result);
+    const { from, to, gasUsed, cumulativeGasUsed, effectiveGasPrice } = parseTxDetails(starknetTxDetails.result);
+
+    const txType = getTransactionType(starknetTxDetails.result)
+
+    
+
+    // Notice: In latest version we do not return deploy account tx hash to wallets. So we dont need to check for tx type
+    // Todo: assert starknet response
+    const receiptResponse = {
+        blockHash,
+        blockNumber,
+        transactionHash,
+        status,
+        type: txType,
+        contractAddress: null,
+        logs : [],
+        logsBloom: padTo256Byte('0x0'), // Belki bu 256 bytelik 0 olmasi gerekiyordur ?
+        from, to, gasUsed, cumulativeGasUsed, effectiveGasPrice, transactionIndex: '0x1'
     }
 
     return {
-      jsonrpc: request.jsonrpc,
+      jsonrpc: '2.0',
       id: request.id,
-      result: receiptObject,
+      result: receiptResponse
     }
+}   
+
+/*
+    + "blockHash": "0x0a79eca9f5ca58a1d5d5030a0fabfdd8e815b8b77a9f223f74d59aa39596e1c7", 
+    + "blockNumber": "0x11e5883",
+    + "contractAddress": null,
+    + "cumulativeGasUsed": "0xc5f3e7",
+    + "effectiveGasPrice": "0xa45b9a444",
+    + "from": "0x690b9a9e9aa1c9db991c7721a92d351db4fac990",
+    + "gasUsed": "0x565f",
+    + "logs": [],
+    + "logsBloom": "0x00000000000000000000000000000000000100004000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000",
+    + "status": "0x1",
+    + "to": "0x388c818ca8b9251b393131c08a736a67ccb19297",
+    + "transactionHash": "0x7114b4da1a6ed391d5d781447ed443733dcf2b508c515b81c17379dea8a3c9af",
+    "transactionIndex": "0x76",
+    + "type": "0x2"
+*/
+// Inputs starknet_getTransactionByHash result
+function parseTxDetails(result:any): {from:string; to:string; gasUsed:string; cumulativeGasUsed: string; type:string; effectiveGasPrice:string} {
+  // from address await ile eth adres cekilmeli ama??
+
+  const ethersTx: Transaction = getEthersTransactionFromRosettanetCall(result.signature, result.calldata)
+  const parsedCalldata: RosettanetRawCalldata | undefined = parseRosettanetRawCalldata(result.calldata)
+
+  if(typeof parsedCalldata === 'undefined') {
+    writeLog(2, 'Error at parsing RawCalldata')
+    writeLog(2, result.calldata)
+    return {
+      gasUsed: '0x0', from: '0x0', to: '0x0', cumulativeGasUsed: '0x0', type: '0x0', effectiveGasPrice: '0x0'
+    };
   }
 
-  const to = calldata[0]
-
-  const from: string | StarknetRPCError =
-    await getEthAddressFromSnAddress(sender_address)
-
-  if (isStarknetRPCError(from)) {
-    return <RPCResponse>{
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      result: null,
-    }
-  }
-
-  const gasUsed = calculateSpentGas(
-    resource_bounds.l1_gas.max_price_per_unit,
-    actual_fee,
-  )
-
-  const receiptObject = {
-    blockHash: block_hash,
-    blockNumber: new BigNumber(block_number).toString(16), // Hex string eg 0x123
-    contractAddress: null,
-    cumulativeGasUsed: '0x500FF', // Random value
-    effectiveGasPrice: resource_bounds.l1_gas.max_price_per_unit,
-    from: from, // Sender address but receive it from rosettanet
-    gasUsed: gasUsed,
-    logs: [], // These will be added after
-    logsBloom: '', // These will be added after
-    status: execution_status === 'SUCCEEDED' ? '0x1' : '0x0',
-    to: to,
-    transactionHash: transaction_hash,
-    transactionIndex: '0x1', // We may need extra request to receive this. Is it really important?
-    type: '0x2',
-  }
-
+  const type = parsedCalldata.txType;
+  const to = parsedCalldata.to;
+  const gasUsed = parsedCalldata.gasLimit;
+  const cumulativeGasUsed = sumHexStrings(gasUsed, gasUsed);
+  const from = ethersTx.from ? ethersTx.from : '0x0';
+  // Calculate gas price from calldata
   return {
-    jsonrpc: request.jsonrpc,
-    id: request.id,
-    result: receiptObject,
+    gasUsed, cumulativeGasUsed, from, to, type, effectiveGasPrice: getEffectiveGasPrice(ethersTx)
+  }
+}
+
+function getEffectiveGasPrice(tx: Transaction): string {
+  if(tx.type == 2) {
+    // EIP-1559
+    const price = tx.maxFeePerGas;
+    if(price) {
+      return '0x' + price.toString(16)
+    } else {
+      return '0x0'
+    }
+  } else {
+    // Legacy
+    const price = tx.gasPrice;
+    if(price) {
+      return '0x' + price.toString(16)
+    } else {
+      return '0x0'
+    }
+  }
+}
+
+// Inputs starknet_getTransactionReceipt result
+function parseTxReceipt(result: any): {blockHash:string; blockNumber:string; transactionHash: string; status:string; events:any;} {
+  const blockHash = typeof result.block_hash === 'string' ? padHashTo64(result.block_hash) : padHashTo64('0x0');
+  const blockNumber = typeof result.block_number === 'number' ? '0x' + result.block_number.toString(16) : '0x0';
+  const transactionHash = typeof result.transaction_hash === 'string' ? padHashTo64(result.transaction_hash) : padHashTo64('0x0');
+  const status = typeof result.execution_status === 'string' ? getTransactionStatus(result.execution_status) : '0x0';
+  const events = result.events;
+  writeLog(2, 'tx status')
+  writeLog(2, result.execution_status)
+  return {
+    blockHash, blockNumber, transactionHash, status, events
+  }
+}
+
+function getTransactionStatus(exec_status: string): string {
+  if(exec_status === 'REVERTED') {
+    return '0x0'
+  }
+
+  return '0x1'
+}
+
+// Inputs starknet_getTransactionByHash result
+function getTransactionType(txDetailsResult: any): string {
+  const calldata = txDetailsResult?.calldata;
+  if(!Array.isArray(calldata)) {
+    return '0x0'
+  }
+  if(calldata.length == 0) {
+    return '0x0'
+  }
+
+  if(calldata[0] === '0x0') {
+    return '0x0'
+  } else {
+    return '0x2'
   }
 }

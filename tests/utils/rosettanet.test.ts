@@ -53,6 +53,68 @@ describe('Test calldata backs to evm format', () => {
     expect(result.selector).toBe('0x')
   })
 
+  it('Returns only function selector', () => {
+    const calldata = [
+      "0x0",
+      "0x1e495b498736bba9d2cbe8daba652058d46b2d5a",
+      "0x2",
+      "0x0",
+      "0x0",
+      "0x14c3449932c8e",
+      "0x7b0c",
+      "0xde0b6b3a7640000",
+      "0x0",
+      "0x1",
+      "0x76971d7f"
+  ]
+
+    const result = decodeCalldataInput(calldata)
+    expect(result.rawInput).toBe('0x76971d7f')
+    expect(result.selector).toBe('0x76971d7f')
+  })
+
+  it('Returns only function selector with first zero', () => {
+    const calldata = [
+      "0x0",
+      "0x1e495b498736bba9d2cbe8daba652058d46b2d5a",
+      "0x2",
+      "0x0",
+      "0x0",
+      "0x14c3449932c8e",
+      "0x7b0c",
+      "0xde0b6b3a7640000",
+      "0x0",
+      "0x1",
+      "0x971d7f"
+  ]
+
+    const result = decodeCalldataInput(calldata)
+    expect(result.rawInput).toBe('0x00971d7f')
+    expect(result.selector).toBe('0x00971d7f')
+  })
+
+  it('Returns function with calldata one slot zero', () => {
+    const calldata = [
+      "0x0",
+      "0x1e495b498736bba9d2cbe8daba652058d46b2d5a",
+      "0x2",
+      "0x0",
+      "0x0",
+      "0x14c3449932c8e",
+      "0x7b0c",
+      "0xde0b6b3a7640000",
+      "0x0",
+      "0x3",
+      "0x971d7f",
+      "0x0",
+      "0x0"
+  ]
+
+    const result = decodeCalldataInput(calldata)
+    expect(result.rawInput).toBe('0x00971d7f0000000000000000000000000000000000000000000000000000000000000000')
+    expect(result.selector).toBe('0x00971d7f')
+  })
+
   it('Multicall calldata', () => {
     const data = [
       "0x0",
@@ -97,6 +159,6 @@ describe('Test calldata backs to evm format', () => {
     const result = decodeCalldataInput(data)
 
     expect(result.selector).toBe('0x76971d7f')
-    console.log(result.rawInput)
+    expect(result.rawInput).toBe('0x76971d7f00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000002000494a72a742b7880725a965ee487d937fa6d08a94ba4eb9e29dd0663bc653a2014b9c006653b96dd1312a62b5921c465d08352de1546550f0ed804fcc0ef9e900000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000006046f10efce1ca3a4ef01e342e7c707b3e7dd274285a2a5aa1163909a7b40563300000000000000000000000000000000000000000000000000000000006173640000000000000000000000000000000000000000000000000000000064736164000000000000000000000000000000000000000000000000000000000000012300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000353534343333')
   })
 })

@@ -1,7 +1,9 @@
-import { Signature } from 'ethers'
+import { Signature, Transaction } from 'ethers'
 import { RosettanetSignature } from '../types/types'
 import { BnToU256, safeU256ToUint256, Uint256ToU256 } from './converters/integer'
-import { addHexPrefix } from './padding'
+import { addHexPadding, addHexPrefix } from './padding'
+import { parseRosettanetRawCalldata } from './rosettanet'
+import { getConfigurationProperty } from './configReader'
 
 export function createRosettanetSignature(
   evmSignature: Signature,
@@ -26,40 +28,48 @@ export function createRosettanetSignature(
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getSignerFromRosettanetCall(signature: string[], calldata: string[]): any {
-  const r = safeU256ToUint256([signature[0], signature[1]]);
-  const s = safeU256ToUint256([signature[2], signature[3]]);
+export function getEthersTransactionFromRosettanetCall(signature: string[], calldata: string[]): Transaction {
+  const r = addHexPrefix(safeU256ToUint256([signature[0], signature[1]]));
+  const s = addHexPrefix(safeU256ToUint256([signature[2], signature[3]]));
   const v =  Number(BigInt(signature[4]));
 
   const nonce = Number(BigInt(calldata[2]))
   const gasLimit = BigInt(calldata[6])
-  const to = calldata[1];
+  const to = addHexPadding(calldata[1], 40, true);
 
-  const value = safeU256ToUint256([calldata[7], calldata[8]])
-
+  const value = addHexPrefix(safeU256ToUint256([calldata[7], calldata[8]]))
+  const input = parseRosettanetRawCalldata(calldata);
+  const data = typeof input === 'undefined' ? '0x' : input.rawInput
   const txType = calldata[0] as string
-  // Signer icin rosettanet.ts de parseRosettanetRawCalldata ile etherste signed tx i bir daha olusturulacak
-  // ordan from adresini cekiceksin onu return edeceksin.
-  // TODO: rosettanet.ts icinde decodeCalldataInput test yaz. calldata low high sirasi farklimi kontrol et.
+  const chainId = Number(BigInt(getConfigurationProperty('chainId')));
   if(txType === '0x0') {
     const gasPrice = BigInt(calldata[5])
     const signedTx = {
+      chainId,
       signature : {
         v,r,s
       },
       nonce, gasPrice, gasLimit, value, to,
-      type: 0
+      type: 0,
+      data
     }
+
+    const txObject = Transaction.from(signedTx)
+    return txObject;
   } else {
     const maxPriorityFeePerGas = BigInt(calldata[3])
     const maxFeePerGas = BigInt(calldata[4])
     const signedTx = {
+      chainId,
       signature : {
         v,r,s
       },
-      nonce,
-      type: 2
+      nonce, to, gasLimit, value,
+      type: 2,
+      data,
+      maxFeePerGas, maxPriorityFeePerGas
     }
+    const txObject = Transaction.from(signedTx)
+    return txObject;
   }
 }

@@ -8,9 +8,9 @@ import {
 } from '../types/types'
 import { getConfigurationProperty } from './configReader'
 import { isRPCResponse, isStarknetRPCError } from '../types/typeGuards'
-import { addHexPrefix } from './padding'
+import { addHexPrefix, hexPadding } from './padding'
 import { writeLog } from '../logger'
-import { safeU256ToUint256 } from './converters/integer'
+import { safeU256ToUint256, U256ToUint256HexString } from './converters/integer'
 
 // Calls starknet factory contract to precalculate starknet account address
 // TODO: add custom types like in deploy function
@@ -234,21 +234,21 @@ export function decodeCalldataInput(rawCalldata: string[]): { selector: string, 
       selector: '0x', rawInput: '0x'
     }
   }
-
+  const selector = hexPadding(rawCalldata[10], 8)
   if(calldataLength == 1) {
     return {
-      selector: rawCalldata[10], rawInput: rawCalldata[10]
+      selector: selector, rawInput:selector
     }
   }
-  let rawInput = `${rawCalldata[10]}`
+  let rawInput = `${selector}`
   for (let i = 1; i < calldataLength; i++) {
-    const data = safeU256ToUint256([rawCalldata[i + 10], rawCalldata[i + 11]]);
-    rawInput = rawInput + data.replace('0x', '')
+    const data = U256ToUint256HexString([rawCalldata[i + 11].replace('0x',''), rawCalldata[i + 10].replace('0x','')]).replace('0x','');
+    rawInput = rawInput + data
     i +=1;
   }
 
   return {
-    selector: rawCalldata[10],
+    selector,
     rawInput
   }
 }
@@ -265,7 +265,6 @@ export function parseRosettanetRawCalldata(rawCalldata: string[]): RosettanetRaw
         gasPrice: rawCalldata[5],
         gasLimit: rawCalldata[6],
         value: safeU256ToUint256([rawCalldata[7], rawCalldata[8]]),
-        //selector: rawCalldata[9] 
         selector: decodedCalldata.selector,
         rawInput: decodedCalldata.rawInput
       }

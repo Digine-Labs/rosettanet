@@ -29,7 +29,7 @@ export function addHexPadding(
   if (value.length === 0) {
     return prefix ? '0x' + '0'.repeat(targetLength) : '0'.repeat(targetLength)
   }
-  if (value.length >= targetLength) {
+  if ((value.startsWith('0x') ? value.length - 2 : value.length) >= targetLength) {
     return value
   }
   if (value.startsWith('0x')) {
@@ -87,6 +87,26 @@ export function padHashTo64(data: string): string {
 
   // Eğer kısa ise, başa sıfır ekle
   hex = hex.padStart(64, '0');
+
+  return '0x' + hex;
+}
+
+export function padTo256Byte(data: string): string {
+  // Eğer '0x' ile başlıyorsa çıkar
+  let hex = data.startsWith('0x') ? data.slice(2) : data;
+
+  // Sadece hex karakterlerden oluşuyor mu diye kontrol (opsiyonel ama iyi olur)
+  if (!/^[0-9a-fA-F]*$/.test(hex)) {
+    throw new Error('Invalid characters in hash');
+  }
+
+  // Eğer çok uzun olursa hata verelim
+  if (hex.length > 512) {
+    throw new Error(`Hash too long: ${hex.length} characters`);
+  }
+
+  // Eğer kısa ise, başa sıfır ekle
+  hex = hex.padStart(512, '0');
 
   return '0x' + hex;
 }
