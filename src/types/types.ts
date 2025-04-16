@@ -178,3 +178,16 @@ export interface StarknetRPCError {
   code: number
   message: string
 }
+
+export interface RosettanetRawCalldata {
+  txType: string
+  to: string
+  nonce: string
+  maxPriorityFeePerGas: string
+  maxFeePerGas: string
+  gasPrice: string
+  gasLimit: string
+  value: string
+  selector: string
+  rawInput: string
+}

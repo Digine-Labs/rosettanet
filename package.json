@@ -13,6 +13,7 @@
     "contracts": "./scripts/contracts.sh",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
     "test:utils": "jest --watch tests/utils",
+    "test:utils:rosettanet": "jest --watch tests/utils/rosettanet.test.ts",
     "test:converters": "jest --watch tests/utils/converters",
     "test": "jest",
     "test:e2e": "rm -rf ./e2e/logs.log && ./scripts/e2e_tests.sh",

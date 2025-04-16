@@ -5,6 +5,7 @@ import {
   EVMEncodeResult,
   PrepareCalldataError,
   RawTransaction,
+  RosettanetRawCalldata,
   RosettanetSignature,
   RPCError,
   RPCResponse,
@@ -204,4 +205,30 @@ export function isSimulateTransaction(
     )
   }
   return false
+}
+
+/**
+ * Type guard function to check if the provided value is a valid RosettanetRawCalldata object.
+ * @param value - The value to check
+ * @returns A type predicate indicating if the value is RosettanetRawCalldata
+ */
+export function isRosettanetRawCalldata(value: unknown): value is RosettanetRawCalldata {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const obj = value as Record<string, unknown>;
+  
+  // Check that all required properties exist and are strings
+  return (
+    typeof obj.txType === 'string' &&
+    typeof obj.to === 'string' &&
+    typeof obj.nonce === 'string' &&
+    typeof obj.maxPriorityFeePerGas === 'string' &&
+    typeof obj.maxFeePerGas === 'string' &&
+    typeof obj.gasPrice === 'string' &&
+    typeof obj.gasLimit === 'string' &&
+    typeof obj.value === 'string' &&
+    typeof obj.selector === 'string'
+  );
 }
