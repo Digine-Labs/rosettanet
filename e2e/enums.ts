@@ -107,4 +107,53 @@ const EVMTypesEnum = new CairoCustomEnum({
     Felt252: undefined // It has to be encoded as uint256 on EVM
 }) 
 
+/**
+ * Creates calldata for Cairo enums to be used with Starknet
+ * @param enumType The type of enum (e.g., 'Uint256', 'Address', etc.)
+ * @param value The value to be passed with the enum (if applicable)
+ * @returns An array representing the calldata for the enum
+ */
+export function createCairoEnumCalldata(enumType: string, value?: any): any[] {
+    const enumVariants: Record<string, any> = {};
+    enumVariants[enumType] = value;
+    
+    const enumInstance = new CairoCustomEnum(enumVariants);
+    
+    const activeVariant = enumInstance.activeVariant();
+    
+    const variantNames = Object.keys(EVMTypesEnum)
+        .filter(key => typeof EVMTypesEnum[key as keyof typeof EVMTypesEnum] !== 'function');
+    
+    const variantIndex = variantNames.indexOf(activeVariant);
+    
+    if (variantIndex === -1) {
+        throw new Error(`Invalid enum variant: ${activeVariant}`);
+    }
+    
+    if (value === undefined) {
+        return [variantIndex];
+    }
+    
+    return [variantIndex, value];
+}
+
+/**
+ * Test function for createCairoEnumCalldata
+ * @returns Test results
+ */
+export function testCreateCairoEnumCalldata(): { type: string, value: any, calldata: any[] }[] {
+    const testCases = [
+        { type: 'Uint256', value: '0x123' },
+        { type: 'Address', value: '0x1234567890123456789012345678901234567890' },
+        { type: 'Bool', value: true },
+        { type: 'String', value: 'test string' }
+    ];
+    
+    return testCases.map(test => ({
+        type: test.type,
+        value: test.value,
+        calldata: createCairoEnumCalldata(test.type, test.value)
+    }));
+}
+
 export default EVMTypesEnum;
