@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
-import { Abi, Account, CairoCustomEnum, Contract } from "starknet";
+import { Abi, Account,  Contract } from "starknet";
 import { ETH_ADDRESS, SN_ADDRESS_TEST_1, STRK_ADDRESS } from "./constants";
 import { getContractAbi, getProvider } from "./utils";
 import { addHexPrefix } from "../src/utils/padding";
 import { getEthAddressFromRegistry } from "./registry/rosettanet";
-import EVMTypesEnum from "./enums";
+
 
 interface RosettanetCompatibleAddress {
     starknet: string;
@@ -51,7 +51,7 @@ export async function getEthAddress(snAddress: string): Promise<RosettanetCompat
 export async function registerFunction(account: Account, rosettanetAddress: string, fn_name: string) {
     const abi: Abi = await getContractAbi('Rosettanet')
 
-    const EvmTypes = EVMTypesEnum;
+    //const EvmTypes = EVMTypesEnum;
   
     const contract = new Contract(abi, rosettanetAddress, getProvider())
     contract.connect(account)

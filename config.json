@@ -8,6 +8,7 @@
   "ethAddress": "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
   "strkAddress": "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
   "rosettanet": "0x033d9ff643e9e964545dac77bb66d1f1828e11845fe7cac1960cb96e6b566833",
+  "featureTarget": "0x0000000000000000000000004645415455524553",
   "logging": {
     "active": true,
     "sniffer": true,

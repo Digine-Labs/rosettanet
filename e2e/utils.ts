@@ -20,6 +20,7 @@ export const testConfig = {
     '0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d',
   rosettanet:
     '0x007288a71619eca9397bf0d3066d236b41de33fd6af3a420d16b2f55c93f8af7',
+  featureTarget: "0x0000000000000000000000004645415455524553",
   logging: {
     active: true,
     sniffer: true,
