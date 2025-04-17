@@ -48,6 +48,7 @@ export async function getEthAddress(snAddress: string): Promise<RosettanetCompat
     }
 }
 
+
 export async function registerFunction(account: Account, rosettanetAddress: string, fn_name: string) {
     const abi: Abi = await getContractAbi('Rosettanet')
 
@@ -56,5 +57,19 @@ export async function registerFunction(account: Account, rosettanetAddress: stri
     const contract = new Contract(abi, rosettanetAddress, getProvider())
     contract.connect(account)
 
-    await contract.register_function(fn_name, [0, 36]);
+    const params = getParameters(fn_name);
+
+    await contract.invoke('register_function',params, { parseRequest: false});
+
+    console.log(`Function ${fn_name} registered to registry.`)
+}
+
+function getParameters(fn_name:string):  string[] {
+    switch (fn_name) {
+        case 'transfer':
+            return ['0x0', '0x7472616E7366657228616464726573732C75696E7432353629', '0x19', 
+                '0x2', '0x3', '0x24']
+        default:
+            throw 'fn_name not found'
+    }
 }

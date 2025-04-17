@@ -2,7 +2,7 @@ import { getDevAccount, sendERC20FromSnAccount, sendStrksFromSnAccount, SERVER }
 import { precalculateStarknetAddress, registerContractIfNotRegistered } from '../registry/rosettanet'
 import { ethers } from 'ethers';
 import { ETH_ADDRESS, SN_ADDRESS_TEST_1, STRK_ADDRESS } from '../constants';
-import { getEthAddress } from '../registers';
+import { getEthAddress, registerFunction } from '../registers';
 import { writeLog } from '../../src/logger';
 
 describe('Using ethers.js with Rosettanet RPC', () => {
@@ -60,10 +60,7 @@ describe('Using ethers.js with Rosettanet RPC', () => {
         
         const tx = await provider.send('eth_sendRawTransaction', [signedTx])
         
-        // console.log('Transaction sent! Hash:', tx);
-        
-          // Wait for the transaction to be mined
-          //await tx.wait();
+        console.log('Transaction sent! Hash:', tx);
 
           const ERC20_ABI = [
             'function balanceOf(address owner) view returns (uint256)',
