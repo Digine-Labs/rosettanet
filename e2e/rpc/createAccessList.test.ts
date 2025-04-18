@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { SERVER } from '../utils'
-describe('eth_accounts RPC method', () => {
+describe('eth_createAccessList RPC method', () => {
     test.only('Should return empty array since access list is not supported with Rosettanet', async () => {
         const response = await axios.post(SERVER, {
             jsonrpc: '2.0',

@@ -237,6 +237,61 @@ describe('Using ethers.js with Rosettanet RPC', () => {
     })
 
     test.only('Multicall tx with legacy transaction type', async () => {
+      const provider = new ethers.JsonRpcProvider(SERVER);
+
+      const devAcc = getDevAccount();
+      const privateKey = '0x9979f9c93cbca19e905a21ce4d6ee9233948bcfe67d95c11de664ebe4b78c505'; // 0xAE97807Cf37BeF18e8347aD7B47658d6d96c503D
+      const wallet = new ethers.Wallet(privateKey, provider);
+
+      const precalculatedSnAddress = await precalculateStarknetAddress(wallet.address);
+      await sendERC20FromSnAccount(devAcc, ETH_ADDRESS, precalculatedSnAddress, '100000000000000000000') // sends 100 strk
+
+      const MULTICALL_ABI = [
+        'function multicall((uint256,uint256,uint256[])[])'
+      ];
+
+      const iface = new ethers.Interface(MULTICALL_ABI);
+
+      const receiver1SnAddress = await precalculateStarknetAddress('0x00014');
+      const receiver2SnAddress = await precalculateStarknetAddress('0x00015');
+
+      const data = iface.encodeFunctionData('multicall', [[ 
+        [
+          ETH_ADDRESS,
+          '0x0083afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e',
+          [receiver1SnAddress, '1000', '0']
+        ],
+        [
+          ETH_ADDRESS,
+          '0x0083afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e',
+          [receiver2SnAddress, '2000', '0']
+        ]
+      ]]);
       
+      const txRequest = {
+        to: '0x0000000000000000000000004645415455524553', // Token kontrat adresi
+        data: data,
+        type: 0
+      };
+
+      //const senderBalance = await erc20Contract.balanceOf(wallet.address);
+      //console.log(senderBalance)
+
+      const tx = await wallet.populateTransaction(txRequest);
+      
+      const signedTx = await wallet.signTransaction(tx);
+      await provider.send('eth_sendRawTransaction', [signedTx]);
+
+      const tokenAddress = await getEthAddress(ETH_ADDRESS);
+      const ERC20_ABI = [
+        'function balanceOf(address owner) view returns (uint256)',
+        'function decimals() view returns (uint8)',
+        'function transfer(address to, uint256 amount) public returns (bool)'
+      ];
+      const erc20Contract = new ethers.Contract(tokenAddress.ethereum, ERC20_ABI, wallet);
+      const balance1 = await erc20Contract.balanceOf('0x0000000000000000000000000000000000000014');
+      const balance2 = await erc20Contract.balanceOf('0x0000000000000000000000000000000000000015');
+      expect(balance1).toBe(BigInt(1000))
+      expect(balance2).toBe(BigInt(2000))
     })
 })
