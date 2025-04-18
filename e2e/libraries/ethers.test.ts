@@ -120,7 +120,62 @@ describe('Using ethers.js with Rosettanet RPC', () => {
     })
 
     test.only('ERC20 transfer transaction. From already deployed account contract.', async () => {
-        
+      const provider = new ethers.JsonRpcProvider(SERVER);
+
+      const devAcc = getDevAccount();
+      const privateKey = '0x9979f9c93cbca19e905a21ce4d6ee9233948bcfe67d95c11de664ebe4b78c505'; // 0xAE97807Cf37BeF18e8347aD7B47658d6d96c503D
+      const wallet = new ethers.Wallet(privateKey, provider);
+
+      const precalculatedSnAddress = await precalculateStarknetAddress(wallet.address);
+      await sendERC20FromSnAccount(devAcc, ETH_ADDRESS, precalculatedSnAddress, '100000000000000000000') // sends 100 eth
+      const tokenAddress = await getEthAddress(ETH_ADDRESS);
+      
+      const toAddress = '0x8B4ee3F7a16eD6B793bD7907F87778AC11624C28';
+      const ERC20_ABI = [
+        'function balanceOf(address owner) view returns (uint256)',
+        'function decimals() view returns (uint8)',
+        'function transfer(address to, uint256 amount) public returns (bool)'
+      ];
+      const erc20Contract = new ethers.Contract(tokenAddress.ethereum, ERC20_ABI, wallet);
+
+      const iface = new ethers.Interface(ERC20_ABI);
+
+      const data = iface.encodeFunctionData('transfer', [
+        toAddress,
+        ethers.parseUnits('1', 18)
+      ]);
+      
+      const txRequest = {
+        to: tokenAddress.ethereum, // Token kontrat adresi
+        data: data,
+      };
+
+      await erc20Contract.balanceOf(wallet.address);
+
+      const tx = await wallet.populateTransaction(txRequest);
+      
+      const signedTx = await wallet.signTransaction(tx);
+      const sentTx = await provider.send('eth_sendRawTransaction', [signedTx]);
+
+
+      await provider.waitForTransaction(sentTx, 0); // 0 confirmations needed since its devnet
+
+      // Now its deployed. Lets send again with legacy tx
+
+      const txRequestLegacy = {
+        to: tokenAddress.ethereum, // Token kontrat adresi
+        data: data,
+        type: 0
+      };
+
+      const legacyTx = await wallet.populateTransaction(txRequestLegacy);
+      const signedLegacyTx = await wallet.signTransaction(legacyTx);
+      const sentLegacyTx = await provider.send('eth_sendRawTransaction', [signedLegacyTx]);
+      await provider.waitForTransaction(sentLegacyTx, 0);
+
+      const balance = await erc20Contract.balanceOf(toAddress);
+
+      expect(balance).toBe(ethers.parseEther('2.0'))
     })
 
     test.only('Multicall transaction that transfers erc20 to two different accounts', async () => {
