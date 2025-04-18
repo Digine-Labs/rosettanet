@@ -1,9 +1,8 @@
 import { getDevAccount, sendERC20FromSnAccount, sendStrksFromSnAccount, SERVER } from '../utils'
-import { precalculateStarknetAddress, registerContractIfNotRegistered } from '../registry/rosettanet'
+import { precalculateStarknetAddress } from '../registry/rosettanet'
 import { ethers } from 'ethers';
 import { ETH_ADDRESS, SN_ADDRESS_TEST_1, STRK_ADDRESS } from '../constants';
-import { getEthAddress, registerFunction } from '../registers';
-import { writeLog } from '../../src/logger';
+import { getEthAddress } from '../registers';
 
 describe('Using ethers.js with Rosettanet RPC', () => {
     test.only('Retrive balance of the account', async () => {
@@ -58,9 +57,7 @@ describe('Using ethers.js with Rosettanet RPC', () => {
 
         const signedTx = await wallet.signTransaction(txRequest);
         
-        const tx = await provider.send('eth_sendRawTransaction', [signedTx])
-        
-
+        await provider.send('eth_sendRawTransaction', [signedTx])
 
           const ERC20_ABI = [
             'function balanceOf(address owner) view returns (uint256)',
