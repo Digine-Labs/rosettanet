@@ -235,4 +235,8 @@ describe('Using ethers.js with Rosettanet RPC', () => {
       expect(balance1).toBe(BigInt(1000))
       expect(balance2).toBe(BigInt(2000))
     })
+
+    test.only('Multicall tx with legacy transaction type', async () => {
+      
+    })
 })
