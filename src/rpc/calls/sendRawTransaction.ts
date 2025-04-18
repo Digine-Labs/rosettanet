@@ -28,6 +28,7 @@ import {
 } from '../../utils/transaction'
 import { getAccountNonce } from '../../utils/starknet'
 import { writeLog } from '../../logger'
+import { padHashTo64 } from '../../utils/padding'
 
 export async function sendRawTransactionHandler(
   request: RPCRequest,
@@ -152,7 +153,7 @@ async function broadcastTransaction(
     return <RPCResponse>{
       jsonrpc: request.jsonrpc,
       id: request.id,
-      result: transactionHash,
+      result: padHashTo64(transactionHash),
     }
   }
   return response

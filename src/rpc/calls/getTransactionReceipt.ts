@@ -72,7 +72,7 @@ export async function getTransactionReceiptHandler(request: RPCRequest): Promise
     writeLog(0, JSON.stringify(starknetTxReceipt.result))
     writeLog(0, JSON.stringify(starknetTxDetails.result))
 
-    const { blockHash, blockNumber, status, transactionHash } = parseTxReceipt(starknetTxReceipt.result);
+    const { blockHash, blockNumber, status } = parseTxReceipt(starknetTxReceipt.result);
     const { from, to, gasUsed, cumulativeGasUsed, effectiveGasPrice } = parseTxDetails(starknetTxDetails.result);
 
     const txType = getTransactionType(starknetTxDetails.result)
@@ -84,7 +84,7 @@ export async function getTransactionReceiptHandler(request: RPCRequest): Promise
     const receiptResponse = {
         blockHash,
         blockNumber,
-        transactionHash,
+        transactionHash: padHashTo64(txHash),
         status,
         type: txType,
         contractAddress: null,

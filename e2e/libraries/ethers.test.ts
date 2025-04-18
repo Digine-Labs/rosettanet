@@ -60,13 +60,14 @@ describe('Using ethers.js with Rosettanet RPC', () => {
         
         const tx = await provider.send('eth_sendRawTransaction', [signedTx])
         
-        console.log('Transaction sent! Hash:', tx);
+
 
           const ERC20_ABI = [
             'function balanceOf(address owner) view returns (uint256)',
             'function decimals() view returns (uint8)'
           ];
         const strkTokenAddress = await getEthAddress(STRK_ADDRESS);
+
         const strkContract = new ethers.Contract(strkTokenAddress.ethereum, ERC20_ABI, provider);
 
         const balance = await strkContract.balanceOf(toAddress);
@@ -106,16 +107,16 @@ describe('Using ethers.js with Rosettanet RPC', () => {
         data: data,
       };
 
-      const senderBalance = await erc20Contract.balanceOf(wallet.address);
-      console.log(senderBalance)
+      await erc20Contract.balanceOf(wallet.address);
 
       const tx = await wallet.populateTransaction(txRequest);
       
       const signedTx = await wallet.signTransaction(tx);
       const sentTx = await provider.send('eth_sendRawTransaction', [signedTx]);
-      console.log(sentTx)
-      const receipt = await provider.waitForTransaction(sentTx); // TODO: fix bug on getTransactionreceipt
-      console.log('Tx confirmed', receipt)
+
+
+      await provider.waitForTransaction(sentTx, 0); // 0 confirmations needed since its devnet
+
       const balance = await erc20Contract.balanceOf(toAddress);
 
       expect(balance).toBe(ethers.parseEther('1.0'))
