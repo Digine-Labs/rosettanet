@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { writeLog } from '../../logger'
 import {
   isEVMDecodeError,
   isEVMEncodeResult,
@@ -195,8 +196,10 @@ export async function ethCallHandler(
     }
   }
 
-  EVMCalldataDecode.calldata.shift() // Remove first item, it is function selector
 
+  EVMCalldataDecode.calldata.shift() // Remove first item, it is function selector
+  writeLog(1, 'evm calldata decode result')
+  writeLog(1, JSON.stringify(EVMCalldataDecode.calldata))
   const starknetSelector = snKeccak(starknetFunction.name.split('(')[0])
   const starknetCallParams = [
     {
@@ -206,7 +209,8 @@ export async function ethCallHandler(
     },
     'pending', // update to latest
   ]
-
+  writeLog(1, 'starknet call params')
+  writeLog(1, JSON.stringify(starknetCallParams))
   const snResponse: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_call',
@@ -221,7 +225,7 @@ export async function ethCallHandler(
       error: snResponse,
     }
   }
-
+  
   const starknetFunctionEthereumOutputTypes: Array<CairoNamedConvertableType> =
     getEthereumOutputsCairoNamed(
       starknetFunction.snFunction,
@@ -230,6 +234,8 @@ export async function ethCallHandler(
 
   const formattedStarknetOutput: EVMEncodeResult | EVMEncodeError =
     encodeStarknetData(starknetFunctionEthereumOutputTypes, snResponse.result)
+    writeLog(1,JSON.stringify(snResponse))
+    writeLog(2,JSON.stringify(formattedStarknetOutput))
 
   if (!isEVMEncodeResult(formattedStarknetOutput)) {
     return <RPCError>{

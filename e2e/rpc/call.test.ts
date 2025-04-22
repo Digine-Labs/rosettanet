@@ -71,5 +71,20 @@ describe('eth_call RPC method', () => {
         expect(response.data.jsonrpc).toBe('2.0')
         expect(response.data.id).toBe(1)
     }, 30000)
+
+    test.only('returns felt value', async () => {
+        const ethToken = await getEthAddress(ETH_ADDRESS);
+            // TODO: There is a bug on calling felt values
+            // We need to rewrite eth_call function.
+        const calldata = encodeCalldata('name()', [])
+        const response = await axios.post(SERVER, {
+            jsonrpc: '2.0',
+            method: 'eth_call',
+            params: [{to: ethToken.ethereum, data: calldata}, 'latest'],
+            id: 1,
+        })
+        
+        console.log(response.data)
+    })
     // TODO: add test cases with using some params optional and some not
 })
