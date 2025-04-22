@@ -130,6 +130,12 @@ export function mergeSlots(
   for (let i = 0; i < data.length; i++) {
     const currentType = types[typeIndex]
 
+    if(currentType.solidityType === 'uint256' && currentType.cairoType === 'core::felt252') {
+      encodedValues.push(data[i])
+      typeIndex++
+      continue
+    }
+
     if (currentType.solidityType === 'uint256') {
       const mergedUint256 = safeU256ToUint256([data[i], data[i + 1]])
       encodedValues.push(addHexPrefix(mergedUint256))
@@ -181,12 +187,9 @@ export function encodeStarknetData(
         data: '0x', // 0x or empty??
       }
     }
-
     const encoder = new AbiCoder()
     const solidityTypes = types.map(x => x.solidityType)
-
     const mergedCalldata = mergeSlots(types, data)
-
     const encodedResult = encoder.encode(solidityTypes, mergedCalldata)
 
     return <EVMEncodeResult>{

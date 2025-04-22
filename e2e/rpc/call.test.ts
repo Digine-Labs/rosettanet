@@ -1,6 +1,5 @@
 import axios from 'axios'
-import { getDevAccount, getEthStrkHolderAccount, sendERC20FromSnAccount, SERVER } from '../utils'
-import { registerContractIfNotRegistered } from '../registry/rosettanet'
+import { SERVER } from '../utils'
 import { ETH_ADDRESS, SN_ADDRESS_TEST_1 } from '../constants'
 import { encodeCalldata } from '../calldata'
 import { getEthAddress } from '../registers'
@@ -83,8 +82,9 @@ describe('eth_call RPC method', () => {
             params: [{to: ethToken.ethereum, data: calldata}, 'latest'],
             id: 1,
         })
-        
-        console.log(response.data)
+        expect(response.data.result).toBe('0x0000000000000000000000000000000000000000000000000000004574686572')
+
+       // Felts sometimes need to return as string but its actually bytes in solidity. However we cant decide which one to use? so we returned felts as like uint256
     })
     // TODO: add test cases with using some params optional and some not
 })

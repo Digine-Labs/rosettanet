@@ -209,8 +209,7 @@ export async function ethCallHandler(
     },
     'pending', // update to latest
   ]
-  writeLog(1, 'starknet call params')
-  writeLog(1, JSON.stringify(starknetCallParams))
+
   const snResponse: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
     method: 'starknet_call',
@@ -234,8 +233,7 @@ export async function ethCallHandler(
 
   const formattedStarknetOutput: EVMEncodeResult | EVMEncodeError =
     encodeStarknetData(starknetFunctionEthereumOutputTypes, snResponse.result)
-    writeLog(1,JSON.stringify(snResponse))
-    writeLog(2,JSON.stringify(formattedStarknetOutput))
+
 
   if (!isEVMEncodeResult(formattedStarknetOutput)) {
     return <RPCError>{
