@@ -1,6 +1,5 @@
 import axios from 'axios'
-import { getDevAccount, SERVER } from '../utils'
-import { registerContractIfNotRegistered } from '../registry/rosettanet'
+import { SERVER } from '../utils'
 import { getEthAddress } from '../registers'
 import { SN_ADDRESS_TEST_1 } from '../constants'
 

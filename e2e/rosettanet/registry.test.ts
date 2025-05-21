@@ -1,9 +1,3 @@
-import { getDevAccount } from '../utils'
-import {
-  getEthAddressFromRegistry,
-  registerContractIfNotRegistered,
-} from '../registry/rosettanet'
-
 // TODO:
 // All functions
 // Try edge cases
