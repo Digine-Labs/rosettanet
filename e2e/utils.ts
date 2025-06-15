@@ -148,7 +148,7 @@ export async function sendERC20FromSnAccount(account: Account, erc20Contract: st
 export function getProvider(): RpcProvider {
   return new RpcProvider({
     nodeUrl: 'http://127.0.0.1:6050',
-    specVersion: '0.7.0',
+    specVersion: '0.8.1',
   })
 }
 

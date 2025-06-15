@@ -10,7 +10,6 @@ start_devnet() {
     echo "Starting Starknet Devnet..."
     starknet-devnet \
         --seed "$SEED" \
-        --request-body-size-limit "$REQUEST_BODY_SIZE_LIMIT" \
         --port "$PORT" &
     
     # Store the PID of the devnet process
@@ -23,7 +22,7 @@ start_devnet() {
 # Function to run E2E tests
 run_e2e_tests() {
     echo "Running E2E tests..."
-    jest --config ./e2e/jest.config.ts --runInBand
+    npx jest --config ./e2e/jest.config.ts --runInBand
 }
 
 # Function to cleanup devnet process
