@@ -11,6 +11,7 @@ import { isRPCResponse, isStarknetRPCError } from '../types/typeGuards'
 import { addHexPrefix, hexPadding } from './padding'
 import { writeLog } from '../logger'
 import { safeU256ToUint256, U256ToUint256HexString } from './converters/integer'
+import { getGasObject } from './transaction'
 
 // Calls starknet factory contract to precalculate starknet account address
 // TODO: add custom types like in deploy function
@@ -120,6 +121,7 @@ export async function deployRosettanetAccount(
   const actualGasPrice = gasPrice == null ? '0x0' : gasPrice
   console.log('MAX FEE: ' + txn.gasLimit.toString(16))
   console.log('MAX price per unit: ' + actualGasPrice.toString(16))
+  const gasObject = getGasObject(txn)
   const deployRequest = {
     // todo handle error if string
     jsonrpc: '2.0',
@@ -133,16 +135,7 @@ export async function deployRosettanetAccount(
         contract_address_salt: txn.from,
         class_hash: accountClass,
         constructor_calldata: [txn.from, rosettanet],
-        resource_bounds: {
-          l1_gas: {
-            max_amount: addHexPrefix(txn.gasLimit.toString(16)),
-            max_price_per_unit: addHexPrefix(actualGasPrice.toString(16)),
-          },
-          l2_gas: {
-            max_amount: '0x0',
-            max_price_per_unit: '0x0',
-          },
-        },
+        resource_bounds: gasObject,
         tip: '0x0',
         paymaster_data: [],
         nonce_data_availability_mode: 'L1',
