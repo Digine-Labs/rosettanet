@@ -14,7 +14,9 @@ interface ResourceBounds {
         max_price_per_unit: string
     }
 }
-
+// TODO: l1_gas and l1_data_gas fields will be set by rosettanet
+// l1_gas ve l1_data_gasi estimate tx veya cacheden cekerek dolduralim.
+// kontratlarda sadece l2_gas kismi verif edilmeli
 export function resourceBoundsFromSignedTxn(txn: SignedRawTransaction): ResourceBounds {
     // Gas calculation burada olmali. Sonrasinda bu fonksiyon tum broadcast txlerde kullanilacak
     // Deploy tx dahil
