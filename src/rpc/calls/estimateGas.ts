@@ -4,8 +4,6 @@ import {
   RPCRequest,
   RPCResponse,
   StarknetRPCError,
-  EVMDecodeResult,
-  EVMDecodeError,
 } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { getFunctionSelectorFromCalldata } from '../../utils/calldata'
@@ -149,22 +147,90 @@ export async function estimateGasHandler(
       jsonrpc: request.jsonrpc,
       id: request.id,
       error: {
-        code: -32602, //! error code değişmeli
+        code: -32602, //! check error code
         message: 'Cannot convert from Ethereum address to Starknet address.',
       },
     }
   }
 
-  const decodedMulticallCalldata: EVMDecodeResult | EVMDecodeError =
-    decodeMulticallFeatureCalldata(
-      '0x' + parameters.data.slice(10),
-      '0x76971d7f',
-    )
+  //! couldnt make it work
+  // const decodedMulticallCalldata: EVMDecodeResult | EVMDecodeError =
+  //   decodeMulticallFeatureCalldata(
+  //     '0x' + parameters.data.slice(10),
+  //     '0x76971d7f',
+  //   )
 
-  console.log('decodedMulticallCalldata', decodedMulticallCalldata)
+  const response: RPCResponse | StarknetRPCError = await callStarknet({
+    jsonrpc: request.jsonrpc,
+    method: 'starknet_estimateFee',
+    params: {
+      request: [
+        {
+          type: 'INVOKE',
+          version: '0x3',
+          sender_address: senderAddress,
+          calldata: ['not-done-yet'],
+          signature: [],
+          nonce: 'get-account-nonce',
+          tip: '0x0',
+          paymaster_data: [],
+          account_deployment_data: [],
+          nonce_data_availability_mode: 'L2',
+          fee_data_availability_mode: 'L2',
+          resource_bounds: {
+            l1_gas: {
+              max_amount: '0x0',
+              max_price_per_unit: '0x0',
+            },
+            l2_gas: {
+              max_amount: '0x0',
+              max_price_per_unit: '0x0',
+            },
+            l1_data_gas: {
+              max_amount: '0x0',
+              max_price_per_unit: '0x0',
+            },
+          },
+        },
+      ],
+      simulation_flags: ['SKIP_VALIDATE'],
+      block_id: 'latest',
+    },
+    id: request.id,
+  })
+
+  if (isStarknetRPCError(response)) {
+    return <RPCError>{
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32603, //! check error code
+        message: 'Failed to estimate fee on Starknet',
+      },
+    }
+  }
+
+  //   result type
+  //   {
+  //     "id": 1,
+  //     "jsonrpc": "2.0",
+  //     "result": [
+  //         {
+  //             "l1_data_gas_consumed": "0x400",
+  //             "l1_data_gas_price": "0x5877",
+  //             "l1_gas_consumed": "0x0",
+  //             "l1_gas_price": "0x14d5f9fd2c5c",
+  //             "l2_gas_consumed": "0x45a650",
+  //             "l2_gas_price": "0xb2d05e00",
+  //             "overall_fee": "0x30a65455733c00",
+  //             "unit": "FRI"
+  //         }
+  //     ]
+  // }
+
   return {
     jsonrpc: request.jsonrpc,
     id: request.id,
-    result: '0x5208',
+    result: response.result[0].overall_fee,
   }
 }
