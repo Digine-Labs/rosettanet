@@ -14,6 +14,35 @@ import {
   decodeMulticallFeatureCalldata,
 } from '../../utils/calldata'
 
+function decodeMulticallCalldataToStarknet(ethereumCalldata: string): string[] {
+  // Remove '0x' prefix if present
+  const cleanHex = ethereumCalldata.startsWith('0x')
+    ? ethereumCalldata.slice(2)
+    : ethereumCalldata
+
+  // Extract function selector (first 8 characters = 4 bytes)
+  const functionSelector = '0x' + cleanHex.slice(0, 8)
+
+  // Get remaining calldata (skip first 8 characters)
+  const remainingHex = cleanHex.slice(8)
+
+  const chunks: string[] = [functionSelector] // Start with function selector
+
+  // Split remaining data into 16-byte (32 character) chunks
+  for (let i = 0; i < remainingHex.length; i += 32) {
+    let chunk = remainingHex.slice(i, i + 32)
+
+    // Left-pad chunk to 32 characters if it's shorter
+    if (chunk.length < 32) {
+      chunk = chunk.padStart(32, '0')
+    }
+
+    chunks.push('0x' + chunk)
+  }
+
+  return chunks
+}
+
 interface EthCallParameters {
   from?: string
   to: string
@@ -153,62 +182,64 @@ export async function estimateGasHandler(
     }
   }
 
+  console.log(senderAddress)
+
   //! couldnt make it work
-  // const decodedMulticallCalldata: EVMDecodeResult | EVMDecodeError =
-  //   decodeMulticallFeatureCalldata(
-  //     '0x' + parameters.data.slice(10),
-  //     '0x76971d7f',
-  //   )
+  const decodedMulticallCalldata = decodeMulticallCalldataToStarknet(
+    parameters.data,
+  )
 
-  const response: RPCResponse | StarknetRPCError = await callStarknet({
-    jsonrpc: request.jsonrpc,
-    method: 'starknet_estimateFee',
-    params: {
-      request: [
-        {
-          type: 'INVOKE',
-          version: '0x3',
-          sender_address: senderAddress,
-          calldata: ['not-done-yet'],
-          signature: [],
-          nonce: 'get-account-nonce',
-          tip: '0x0',
-          paymaster_data: [],
-          account_deployment_data: [],
-          nonce_data_availability_mode: 'L2',
-          fee_data_availability_mode: 'L2',
-          resource_bounds: {
-            l1_gas: {
-              max_amount: '0x0',
-              max_price_per_unit: '0x0',
-            },
-            l2_gas: {
-              max_amount: '0x0',
-              max_price_per_unit: '0x0',
-            },
-            l1_data_gas: {
-              max_amount: '0x0',
-              max_price_per_unit: '0x0',
-            },
-          },
-        },
-      ],
-      simulation_flags: ['SKIP_VALIDATE'],
-      block_id: 'latest',
-    },
-    id: request.id,
-  })
+  console.log(decodedMulticallCalldata)
 
-  if (isStarknetRPCError(response)) {
-    return <RPCError>{
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      error: {
-        code: -32603, //! check error code
-        message: 'Failed to estimate fee on Starknet',
-      },
-    }
-  }
+  // const response: RPCResponse | StarknetRPCError = await callStarknet({
+  //   jsonrpc: request.jsonrpc,
+  //   method: 'starknet_estimateFee',
+  //   params: {
+  //     request: [
+  //       {
+  //         type: 'INVOKE',
+  //         version: '0x3',
+  //         sender_address: senderAddress,
+  //         calldata: ['not-done-yet'],
+  //         signature: [],
+  //         nonce: 'get-account-nonce',
+  //         tip: '0x0',
+  //         paymaster_data: [],
+  //         account_deployment_data: [],
+  //         nonce_data_availability_mode: 'L2',
+  //         fee_data_availability_mode: 'L2',
+  //         resource_bounds: {
+  //           l1_gas: {
+  //             max_amount: '0x0',
+  //             max_price_per_unit: '0x0',
+  //           },
+  //           l2_gas: {
+  //             max_amount: '0x0',
+  //             max_price_per_unit: '0x0',
+  //           },
+  //           l1_data_gas: {
+  //             max_amount: '0x0',
+  //             max_price_per_unit: '0x0',
+  //           },
+  //         },
+  //       },
+  //     ],
+  //     simulation_flags: ['SKIP_VALIDATE'],
+  //     block_id: 'latest',
+  //   },
+  //   id: request.id,
+  // })
+
+  // if (isStarknetRPCError(response)) {
+  //   return <RPCError>{
+  //     jsonrpc: request.jsonrpc,
+  //     id: request.id,
+  //     error: {
+  //       code: -32603, //! check error code
+  //       message: 'Failed to estimate fee on Starknet',
+  //     },
+  //   }
+  // }
 
   //   result type
   //   {
@@ -231,6 +262,7 @@ export async function estimateGasHandler(
   return {
     jsonrpc: request.jsonrpc,
     id: request.id,
-    result: response.result[0].overall_fee,
+    // result: response.result[0].overall_fee,
+    result: '0x5208',
   }
 }
