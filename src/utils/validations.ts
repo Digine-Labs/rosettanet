@@ -1,6 +1,10 @@
 import { isHexString, Transaction } from 'ethers'
 import { addHexPrefix, removeHexPrefix } from './padding'
-import { SignedRawTransaction, ValidationError } from '../types/types'
+import {
+  SignedRawTransaction,
+  ValidationError,
+  SimulateTransaction,
+} from '../types/types'
 import { createRosettanetSignature } from './signature'
 
 export function validateEthAddress(ethAddress: string): boolean {
@@ -126,4 +130,62 @@ export function validateRawTransaction(
     gasPrice,
     type,
   }
+}
+
+export function validateValue(value: unknown): boolean {
+  if (value === undefined || value === null) return false
+  try {
+    const big = BigInt(value as string | number | bigint)
+    return (
+      big >
+      BigInt(
+        '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+      )
+    )
+  } catch {
+    // If value is not a valid number, treat as not too big (let other validation handle it)
+    return false
+  }
+}
+
+export function validateEthCallParameters(
+  value: unknown,
+): value is SimulateTransaction {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+
+  const obj = value as Record<string, unknown>
+
+  // Check required 'to' field
+  if (typeof obj.to !== 'string') {
+    return false
+  }
+
+  // Check optional 'from' field
+  if (obj.from !== undefined && typeof obj.from !== 'string') {
+    return false
+  }
+
+  // Check optional 'data' field
+  if (obj.data !== undefined && typeof obj.data !== 'string') {
+    return false
+  }
+
+  // Check optional 'value' field
+  if (
+    obj.value !== undefined &&
+    typeof obj.value !== 'string' &&
+    typeof obj.value !== 'number' &&
+    typeof obj.value !== 'bigint'
+  ) {
+    return false
+  }
+
+  // Check optional 'type' field
+  if (obj.type !== undefined && typeof obj.type !== 'string') {
+    return false
+  }
+
+  return true
 }

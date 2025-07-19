@@ -7,69 +7,57 @@ import {
 } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import { getFunctionSelectorFromCalldata } from '../../utils/calldata'
-import { validateEthAddress } from '../../utils/validations'
+import {
+  validateEthAddress,
+  validateValue,
+  validateEthCallParameters,
+} from '../../utils/validations'
 import { getSnAddressWithFallback } from '../../utils/wrapper'
 import { decodeMulticallCalldataForEstimateFee } from '../../utils/calldata'
 import { getAccountNonce } from '../../utils/starknet'
 
-interface EthCallParameters {
-  from?: string
-  to: string
-  gas?: string | number | bigint
-  gasPrice?: string | number | bigint
-  maxFeePerGas?: string | number | bigint
-  maxPriorityFeePerGas?: string | number | bigint
-  value?: string | number | bigint
-  data?: string
-  blockNumber?: string | number | bigint
-  type?: string
-}
-
-function isEthCallParameters(value: unknown): value is EthCallParameters {
-  if (typeof value !== 'object' || value === null) {
-    return false
-  }
-
-  const obj = value as Record<string, unknown>
-
-  // Check required 'to' field
-  if (typeof obj.to !== 'string') {
-    return false
-  }
-
-  // Check optional 'from' field
-  if (obj.from !== undefined && typeof obj.from !== 'string') {
-    return false
-  }
-
-  // Check optional 'data' field
-  if (obj.data !== undefined && typeof obj.data !== 'string') {
-    return false
-  }
-
-  // Check optional 'value' field
-  if (
-    obj.value !== undefined &&
-    typeof obj.value !== 'string' &&
-    typeof obj.value !== 'number' &&
-    typeof obj.value !== 'bigint'
-  ) {
-    return false
-  }
-
-  // Check optional 'type' field
-  if (obj.type !== undefined && typeof obj.type !== 'string') {
-    return false
-  }
-
-  return true
-}
+const allowedKeys = [
+  'from',
+  'to',
+  'gas',
+  'gasPrice',
+  'maxFeePerGas',
+  'maxPriorityFeePerGas',
+  'value',
+  'data',
+  'blockNumber',
+  'type',
+]
 
 export async function estimateGasHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
+  if (!Array.isArray(request.params) || request.params.length !== 1) {
+    return <RPCError>{
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'Invalid argument, expected a single parameter object.',
+      },
+    }
+  }
+
   const parameters = request.params[0]
-  if (Array.isArray(request.params) && !isEthCallParameters(parameters)) {
+  const paramKeys = Object.keys(parameters)
+  const unknownKeys = paramKeys.filter(key => !allowedKeys.includes(key))
+
+  if (unknownKeys.length > 0) {
+    return <RPCError>{
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: `Invalid argument, unknown field(s): ${unknownKeys.join(', ')}`,
+      },
+    }
+  }
+  if (Array.isArray(request.params) && !validateEthCallParameters(parameters)) {
     return <RPCError>{
       jsonrpc: request.jsonrpc,
       id: request.id,
@@ -107,11 +95,29 @@ export async function estimateGasHandler(
   const targetFunctionSelector: string | null =
     getFunctionSelectorFromCalldata(calldata)
 
-  //! return 0x5208 if no calldata or target function selector is provided
   if (
-    targetFunctionSelector == null ||
-    typeof calldata === 'undefined' ||
-    calldata == null
+    parameters.value !== undefined &&
+    parameters.value !== null &&
+    validateValue(parameters.value)
+  ) {
+    return <RPCError>{
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message:
+          '"value" field is too big, it should be less than or equal to 2^256 - 1',
+      },
+    }
+  }
+
+  //! return 0x5208 if no calldata provided
+  if (
+    targetFunctionSelector == null &&
+    typeof calldata === 'undefined' &&
+    calldata == null &&
+    parameters.from !== undefined &&
+    parameters.from !== null
   ) {
     return {
       jsonrpc: request.jsonrpc,
@@ -138,24 +144,24 @@ export async function estimateGasHandler(
     parameters.data,
   )
 
+  const accountNonce = await getAccountNonce(senderAddress)
+
   const parametersForRosettanet: string[] = [
-    '0x2', //tx type
+    '0x2', // tx type
     '0x0000000000000000000000004645415455524553', // To field
-    '0xb', // nonce
+    accountNonce, // nonce
     '0x0', // maxPriorityFeePerGas
     '0x0', // maxFeePerGas
     '0x0', // gasPrice
     '0x0', // gasLimit
     '0x0', // value low
     '0x0', // value high
-    decodedMulticallCalldata.length.toString(16), // calldata length
+    '0x' + decodedMulticallCalldata.length.toString(16), // calldata length
   ]
 
   const starknetCalldata: string[] = parametersForRosettanet.concat(
     decodedMulticallCalldata,
   )
-
-  const accountNonce = await getAccountNonce(senderAddress)
 
   const response: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
@@ -195,6 +201,17 @@ export async function estimateGasHandler(
     },
     id: request.id,
   })
+
+  if (isStarknetRPCError(response) && response.code === 41) {
+    return <RPCError>{
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32603,
+        message: response.message,
+      },
+    }
+  }
 
   if (isStarknetRPCError(response)) {
     return <RPCError>{
