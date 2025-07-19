@@ -6,15 +6,18 @@ import {
   StarknetRPCError,
 } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
-import { getFunctionSelectorFromCalldata } from '../../utils/calldata'
 import {
   validateEthAddress,
   validateValue,
   validateEthCallParameters,
 } from '../../utils/validations'
 import { getSnAddressWithFallback } from '../../utils/wrapper'
-import { decodeMulticallCalldataForEstimateFee } from '../../utils/calldata'
+import {
+  decodeMulticallCalldataForEstimateFee,
+  getFunctionSelectorFromCalldata,
+} from '../../utils/calldata'
 import { getAccountNonce } from '../../utils/starknet'
+import { addHexPrefix } from '../../utils/padding'
 
 const allowedKeys = [
   'from',
@@ -28,6 +31,8 @@ const allowedKeys = [
   'blockNumber',
   'type',
 ]
+
+//! check errors from ethers e2e tests, most of them are missing revert data it means that estimateGas fails and it does not return a revert reason fix why it fails
 
 export async function estimateGasHandler(
   request: RPCRequest,
@@ -111,13 +116,14 @@ export async function estimateGasHandler(
     }
   }
 
-  //! return 0x5208 if no calldata provided
+  //! return 0x5208 if no calldata or no "from" parameter
   if (
-    targetFunctionSelector == null &&
-    typeof calldata === 'undefined' &&
-    calldata == null &&
-    parameters.from !== undefined &&
-    parameters.from !== null
+    targetFunctionSelector == null ||
+    typeof calldata === 'undefined' ||
+    calldata == null ||
+    calldata === '0x' ||
+    parameters.from === undefined ||
+    parameters.from === null
   ) {
     return {
       jsonrpc: request.jsonrpc,
@@ -146,8 +152,22 @@ export async function estimateGasHandler(
 
   const accountNonce = await getAccountNonce(senderAddress)
 
+  const txType = addHexPrefix(parameters.type ?? '0x2')
+
+  if (txType !== '0x0' && txType !== '0x2') {
+    return <RPCError>{
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message:
+          'Invalid transaction type, only legacy and EIP-1559 are supported.',
+      },
+    }
+  }
+
   const parametersForRosettanet: string[] = [
-    '0x2', // tx type
+    txType, // tx type
     '0x0000000000000000000000004645415455524553', // To field
     accountNonce, // nonce
     '0x0', // maxPriorityFeePerGas
@@ -156,7 +176,7 @@ export async function estimateGasHandler(
     '0x0', // gasLimit
     '0x0', // value low
     '0x0', // value high
-    '0x' + decodedMulticallCalldata.length.toString(16), // calldata length
+    addHexPrefix(decodedMulticallCalldata.length.toString(16)), // calldata length
   ]
 
   const starknetCalldata: string[] = parametersForRosettanet.concat(

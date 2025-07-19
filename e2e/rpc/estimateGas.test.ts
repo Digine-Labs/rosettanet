@@ -13,7 +13,7 @@ import { deployRosettanetAccount } from '../registers'
 async function setupTestAccount() {
   const provider = new ethers.JsonRpcProvider(SERVER)
   const wallet = new ethers.Wallet(
-    '0x9979f9c93cbca19e905a21ce4d6ee9233948bcfe67d95c11de664ebe4b78c506',
+    '0x3333f9c93cbca19e905a21ce4d6ee9233948bcfe67d95c11de664ebe4b783333',
     provider,
   )
   const devAcc = getDevAccount()
@@ -161,7 +161,7 @@ describe('eth_estimateGas RPC method', () => {
     expect(response.data.error).toBeDefined()
   })
 
-  test('Should give error, no "from" parameter', async () => {
+  test('Should work, no "from" parameter', async () => {
     const response = await axios.post(SERVER, {
       id: 1,
       jsonrpc: '2.0',
@@ -175,10 +175,12 @@ describe('eth_estimateGas RPC method', () => {
     })
 
     expect(response.status).toBe(200)
-    expect(response.data.result).toBeUndefined()
+    expect(response.data.result).toBeDefined()
     expect(response.data.jsonrpc).toBe('2.0')
     expect(response.data.id).toBe(1)
-    expect(response.data.error).toBeDefined()
+    expect(response.data.error).toBeUndefined()
+    expect(response.data.result).toBe('0x5208')
+    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0))
   })
 
   test('Should give error, malformed "to" field', async () => {

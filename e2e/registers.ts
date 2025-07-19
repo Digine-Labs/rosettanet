@@ -104,10 +104,8 @@ export async function deployRosettanetAccount(
     contract.connect(account)
 
     await contract.deploy_account(contractAddress)
-    console.log('Rosettanet account deployed')
     return true
   } catch (error) {
-    console.error('Error deploying Rosettanet account:', error)
     return false
   }
 }

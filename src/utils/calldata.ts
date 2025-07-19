@@ -398,7 +398,10 @@ export function decodeMulticallCalldataForEstimateFee(
   encodedData: string,
 ): string[] {
   // Remove 0x prefix if present
-  const data = encodedData.startsWith('0x') ? encodedData : '0x' + encodedData
+  if (encodedData.length === 0) {
+    return []
+  }
+  const data = addHexPrefix(encodedData)
 
   const chunks: string[] = []
 
