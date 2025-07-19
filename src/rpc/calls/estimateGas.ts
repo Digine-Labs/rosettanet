@@ -107,7 +107,7 @@ export async function estimateGasHandler(
   const targetFunctionSelector: string | null =
     getFunctionSelectorFromCalldata(calldata)
 
-  //! calldata olmadan sadece value gönderilirse 0x5208 döndür fakat değişmesi lazım TODO
+  //! return 0x5208 if no calldata or target function selector is provided
   if (
     targetFunctionSelector == null ||
     typeof calldata === 'undefined' ||
@@ -141,14 +141,14 @@ export async function estimateGasHandler(
   const parametersForRosettanet: string[] = [
     '0x2', //tx type
     '0x0000000000000000000000004645415455524553', // To field
-    '0xb',
-    '0x0', // maxFeePerGas
+    '0xb', // nonce
     '0x0', // maxPriorityFeePerGas
-    '0x0',
+    '0x0', // maxFeePerGas
+    '0x0', // gasPrice
     '0x0', // gasLimit
-    '0x0',
-    '0x0',
-    '0x1b',
+    '0x0', // value low
+    '0x0', // value high
+    decodedMulticallCalldata.length.toString(16), // calldata length
   ]
 
   const starknetCalldata: string[] = parametersForRosettanet.concat(
