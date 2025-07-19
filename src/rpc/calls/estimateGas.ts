@@ -9,39 +9,8 @@ import { callStarknet } from '../../utils/callHelper'
 import { getFunctionSelectorFromCalldata } from '../../utils/calldata'
 import { validateEthAddress } from '../../utils/validations'
 import { getSnAddressWithFallback } from '../../utils/wrapper'
-import {
-  decodeMulticallCalldata,
-  decodeMulticallFeatureCalldata,
-} from '../../utils/calldata'
-
-function decodeMulticallCalldataToStarknet(ethereumCalldata: string): string[] {
-  // Remove '0x' prefix if present
-  const cleanHex = ethereumCalldata.startsWith('0x')
-    ? ethereumCalldata.slice(2)
-    : ethereumCalldata
-
-  // Extract function selector (first 8 characters = 4 bytes)
-  const functionSelector = '0x' + cleanHex.slice(0, 8)
-
-  // Get remaining calldata (skip first 8 characters)
-  const remainingHex = cleanHex.slice(8)
-
-  const chunks: string[] = [functionSelector] // Start with function selector
-
-  // Split remaining data into 16-byte (32 character) chunks
-  for (let i = 0; i < remainingHex.length; i += 32) {
-    let chunk = remainingHex.slice(i, i + 32)
-
-    // Left-pad chunk to 32 characters if it's shorter
-    if (chunk.length < 32) {
-      chunk = chunk.padStart(32, '0')
-    }
-
-    chunks.push('0x' + chunk)
-  }
-
-  return chunks
-}
+import { decodeMulticallCalldataForEstimateFee } from '../../utils/calldata'
+import { getAccountNonce } from '../../utils/starknet'
 
 interface EthCallParameters {
   from?: string
@@ -94,24 +63,6 @@ function isEthCallParameters(value: unknown): value is EthCallParameters {
   }
 
   return true
-}
-
-export async function estimateGasHandlerOld(
-  request: RPCRequest,
-): Promise<RPCResponse | RPCError> {
-  try {
-    return <RPCResponse>{
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      result: '0x5208',
-    }
-  } catch (ex) {
-    return <RPCResponse>{
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      result: '0x5208',
-    }
-  }
 }
 
 export async function estimateGasHandler(
@@ -176,93 +127,89 @@ export async function estimateGasHandler(
       jsonrpc: request.jsonrpc,
       id: request.id,
       error: {
-        code: -32602, //! check error code
-        message: 'Cannot convert from Ethereum address to Starknet address.',
+        code: -32602,
+        message:
+          'Cannot convert from Ethereum address to Starknet address please check from parameter.',
       },
     }
   }
 
-  console.log(senderAddress)
-
-  //! couldnt make it work
-  const decodedMulticallCalldata = decodeMulticallCalldataToStarknet(
+  const decodedMulticallCalldata = decodeMulticallCalldataForEstimateFee(
     parameters.data,
   )
 
-  console.log(decodedMulticallCalldata)
+  const parametersForRosettanet: string[] = [
+    '0x2', //tx type
+    '0x0000000000000000000000004645415455524553', // To field
+    '0xb',
+    '0x0', // maxFeePerGas
+    '0x0', // maxPriorityFeePerGas
+    '0x0',
+    '0x0', // gasLimit
+    '0x0',
+    '0x0',
+    '0x1b',
+  ]
 
-  // const response: RPCResponse | StarknetRPCError = await callStarknet({
-  //   jsonrpc: request.jsonrpc,
-  //   method: 'starknet_estimateFee',
-  //   params: {
-  //     request: [
-  //       {
-  //         type: 'INVOKE',
-  //         version: '0x3',
-  //         sender_address: senderAddress,
-  //         calldata: ['not-done-yet'],
-  //         signature: [],
-  //         nonce: 'get-account-nonce',
-  //         tip: '0x0',
-  //         paymaster_data: [],
-  //         account_deployment_data: [],
-  //         nonce_data_availability_mode: 'L2',
-  //         fee_data_availability_mode: 'L2',
-  //         resource_bounds: {
-  //           l1_gas: {
-  //             max_amount: '0x0',
-  //             max_price_per_unit: '0x0',
-  //           },
-  //           l2_gas: {
-  //             max_amount: '0x0',
-  //             max_price_per_unit: '0x0',
-  //           },
-  //           l1_data_gas: {
-  //             max_amount: '0x0',
-  //             max_price_per_unit: '0x0',
-  //           },
-  //         },
-  //       },
-  //     ],
-  //     simulation_flags: ['SKIP_VALIDATE'],
-  //     block_id: 'latest',
-  //   },
-  //   id: request.id,
-  // })
+  const starknetCalldata: string[] = parametersForRosettanet.concat(
+    decodedMulticallCalldata,
+  )
 
-  // if (isStarknetRPCError(response)) {
-  //   return <RPCError>{
-  //     jsonrpc: request.jsonrpc,
-  //     id: request.id,
-  //     error: {
-  //       code: -32603, //! check error code
-  //       message: 'Failed to estimate fee on Starknet',
-  //     },
-  //   }
-  // }
+  const accountNonce = await getAccountNonce(senderAddress)
 
-  //   result type
-  //   {
-  //     "id": 1,
-  //     "jsonrpc": "2.0",
-  //     "result": [
-  //         {
-  //             "l1_data_gas_consumed": "0x400",
-  //             "l1_data_gas_price": "0x5877",
-  //             "l1_gas_consumed": "0x0",
-  //             "l1_gas_price": "0x14d5f9fd2c5c",
-  //             "l2_gas_consumed": "0x45a650",
-  //             "l2_gas_price": "0xb2d05e00",
-  //             "overall_fee": "0x30a65455733c00",
-  //             "unit": "FRI"
-  //         }
-  //     ]
-  // }
+  const response: RPCResponse | StarknetRPCError = await callStarknet({
+    jsonrpc: request.jsonrpc,
+    method: 'starknet_estimateFee',
+    params: {
+      request: [
+        {
+          type: 'INVOKE',
+          version: '0x3',
+          sender_address: senderAddress,
+          calldata: starknetCalldata,
+          signature: [],
+          nonce: accountNonce,
+          tip: '0x0',
+          paymaster_data: [],
+          account_deployment_data: [],
+          nonce_data_availability_mode: 'L2',
+          fee_data_availability_mode: 'L2',
+          resource_bounds: {
+            l1_gas: {
+              max_amount: '0x0',
+              max_price_per_unit: '0x0',
+            },
+            l2_gas: {
+              max_amount: '0x0',
+              max_price_per_unit: '0x0',
+            },
+            l1_data_gas: {
+              max_amount: '0x0',
+              max_price_per_unit: '0x0',
+            },
+          },
+        },
+      ],
+      simulation_flags: ['SKIP_VALIDATE'],
+      block_id: 'latest',
+    },
+    id: request.id,
+  })
+
+  if (isStarknetRPCError(response)) {
+    return <RPCError>{
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32603,
+        message: 'Failed to estimate fee on Starknet',
+      },
+    }
+  }
 
   return {
     jsonrpc: request.jsonrpc,
     id: request.id,
-    // result: response.result[0].overall_fee,
-    result: '0x5208',
+    result: response.result[0].overall_fee,
   }
 }
