@@ -224,32 +224,13 @@ export async function estimateGasHandler(
     id: request.id,
   })
 
-  if (isStarknetRPCError(response) && response.code === 41) {
-    return <RPCError>{
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      error: {
-        code: -32603,
-        message: response.message,
-        data: {
-          reason: response.message,
-          data: response.message,
-          message: response.message,
-        },
-      },
-    }
-  }
-
   if (isStarknetRPCError(response)) {
     return <RPCError>{
       jsonrpc: request.jsonrpc,
       id: request.id,
       error: {
         code: -32603,
-        message: 'Failed to estimate fee on Starknet',
-        data: {
-          reason: 'Failed to estimate fee on Starknet',
-        },
+        message: `Failed to estimate fee on Starknet. ${response.message}`,
       },
     }
   }
