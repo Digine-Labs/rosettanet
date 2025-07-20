@@ -126,6 +126,7 @@ export interface SimulateTransaction {
   value: string | null
   data: string | null
   gasLimit: string | null
+  nonce: string | null
 }
 
 export interface EstimateFeeTransaction {

@@ -30,6 +30,7 @@ const allowedKeys = [
   'data',
   'blockNumber',
   'type',
+  'nonce',
 ]
 
 //! check errors from ethers e2e tests, most of them are missing revert data it means that estimateGas fails and it does not return a revert reason fix why it fails
@@ -117,14 +118,15 @@ export async function estimateGasHandler(
   }
 
   //! return 0x5208 if no calldata or no "from" parameter
-  if (
+  const shouldReturn5208 =
     targetFunctionSelector == null ||
     typeof calldata === 'undefined' ||
     calldata == null ||
     calldata === '0x' ||
     parameters.from === undefined ||
     parameters.from === null
-  ) {
+
+  if (shouldReturn5208) {
     return {
       jsonrpc: request.jsonrpc,
       id: request.id,
@@ -168,7 +170,7 @@ export async function estimateGasHandler(
 
   const parametersForRosettanet: string[] = [
     txType, // tx type
-    '0x0000000000000000000000004645415455524553', // To field
+    parameters.to, // To field
     accountNonce, // nonce
     '0x0', // maxPriorityFeePerGas
     '0x0', // maxFeePerGas
@@ -229,6 +231,11 @@ export async function estimateGasHandler(
       error: {
         code: -32603,
         message: response.message,
+        data: {
+          reason: response.message,
+          data: response.message,
+          message: response.message,
+        },
       },
     }
   }
@@ -240,13 +247,30 @@ export async function estimateGasHandler(
       error: {
         code: -32603,
         message: 'Failed to estimate fee on Starknet',
+        data: {
+          reason: 'Failed to estimate fee on Starknet',
+        },
       },
     }
   }
 
-  return {
-    jsonrpc: request.jsonrpc,
-    id: request.id,
-    result: response.result[0].overall_fee,
+  try {
+    const weiValue = BigInt(response.result[0].overall_fee)
+
+    const gasEstimate = weiValue / BigInt(1e9) // Simple approximation
+
+    const hexGas = '0x' + gasEstimate.toString(16)
+
+    return {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      result: hexGas,
+    }
+  } catch (error) {
+    return {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      result: '0x5208',
+    }
   }
 }
