@@ -18,6 +18,7 @@ import {
 } from '../../utils/calldata'
 import { getAccountNonce } from '../../utils/starknet'
 import { addHexPrefix } from '../../utils/padding'
+import { sumTotalGasConsumption } from '../../utils/gas'
 
 const allowedKeys = [
   'from',
@@ -32,8 +33,6 @@ const allowedKeys = [
   'type',
   'nonce',
 ]
-
-//! check errors from ethers e2e tests, most of them are missing revert data it means that estimateGas fails and it does not return a revert reason fix why it fails
 
 export async function estimateGasHandler(
   request: RPCRequest,
@@ -236,16 +235,16 @@ export async function estimateGasHandler(
   }
 
   try {
-    const weiValue = BigInt(response.result[0].overall_fee)
-
-    const gasEstimate = weiValue / BigInt(1e9) // Simple approximation
-
-    const hexGas = '0x' + gasEstimate.toString(16)
+    const consumedGas = sumTotalGasConsumption(
+      response.result[0].l1_gas_consumed,
+      response.result[0].l1_data_gas_consumed,
+      response.result[0].l2_gas_consumed,
+    )
 
     return {
       jsonrpc: request.jsonrpc,
       id: request.id,
-      result: hexGas,
+      result: consumedGas,
     }
   } catch (error) {
     return {
