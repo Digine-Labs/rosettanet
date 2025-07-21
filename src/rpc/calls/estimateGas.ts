@@ -7,9 +7,8 @@ import {
 } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import {
-  validateEthAddress,
   validateValue,
-  validateEthCallParameters,
+  validateEthEstimateGasParameters,
 } from '../../utils/validations'
 import { getSnAddressWithFallback } from '../../utils/wrapper'
 import {
@@ -19,79 +18,54 @@ import {
 import { getAccountNonce } from '../../utils/starknet'
 import { addHexPrefix } from '../../utils/padding'
 import { sumTotalGasConsumption } from '../../utils/gas'
-
-const allowedKeys = [
-  'from',
-  'to',
-  'gas',
-  'gasPrice',
-  'maxFeePerGas',
-  'maxPriorityFeePerGas',
-  'value',
-  'data',
-  'blockNumber',
-  'type',
-  'nonce',
-]
+import { FALLBACK_GAS_LIMIT } from '../../utils/constants'
 
 export async function estimateGasHandler(
   request: RPCRequest,
 ): Promise<RPCResponse | RPCError> {
-  if (!Array.isArray(request.params) || request.params.length !== 1) {
+  if (!Array.isArray(request.params)) {
+    return <RPCError>{
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32700,
+        message: 'parse error',
+      },
+    }
+  }
+
+  if (request.params.length === 0) {
     return <RPCError>{
       jsonrpc: request.jsonrpc,
       id: request.id,
       error: {
         code: -32602,
-        message: 'Invalid argument, expected a single parameter object.',
+        message: 'missing value for required argument 0',
+      },
+    }
+  }
+
+  if (request.params.length !== 1) {
+    return <RPCError>{
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      error: {
+        code: -32602,
+        message: 'invalid argument, Expected parameter length is 1.',
       },
     }
   }
 
   const parameters = request.params[0]
-  const paramKeys = Object.keys(parameters)
-  const unknownKeys = paramKeys.filter(key => !allowedKeys.includes(key))
 
-  if (unknownKeys.length > 0) {
-    return <RPCError>{
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      error: {
-        code: -32602,
-        message: `Invalid argument, unknown field(s): ${unknownKeys.join(', ')}`,
-      },
-    }
-  }
-  if (Array.isArray(request.params) && !validateEthCallParameters(parameters)) {
+  if (!validateEthEstimateGasParameters(parameters)) {
     return <RPCError>{
       jsonrpc: request.jsonrpc,
       id: request.id,
       error: {
         code: -32602,
         message:
-          'Invalid argument, Parameter should be Ethereum Call Parameters.',
-      },
-    }
-  }
-
-  if (!validateEthAddress(parameters.to)) {
-    return {
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      error: {
-        code: -32602,
-        message: 'Invalid argument, "to" field is not valid Ethereum address',
-      },
-    }
-  }
-
-  if (parameters.from && !validateEthAddress(parameters.from)) {
-    return {
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      error: {
-        code: -32602,
-        message: 'Invalid argument, "from" field is not valid Ethereum address',
+          'Invalid argument, Parameter should be Ethereum Estimate Gas Parameters.',
       },
     }
   }
@@ -116,8 +90,8 @@ export async function estimateGasHandler(
     }
   }
 
-  //! return 0x5208 if no calldata or no "from" parameter
-  const shouldReturn5208 =
+  //! return fallback value if no calldata or no "from" parameter
+  const shouldReturnFallbackValue =
     targetFunctionSelector == null ||
     typeof calldata === 'undefined' ||
     calldata == null ||
@@ -125,31 +99,30 @@ export async function estimateGasHandler(
     parameters.from === undefined ||
     parameters.from === null
 
-  if (shouldReturn5208) {
+  if (shouldReturnFallbackValue) {
     return {
       jsonrpc: request.jsonrpc,
       id: request.id,
-      result: '0x5208',
+      result: FALLBACK_GAS_LIMIT,
     }
   }
 
   const senderAddress: string | StarknetRPCError =
-    await getSnAddressWithFallback(parameters.from)
+    await getSnAddressWithFallback(parameters.from as string)
   if (isStarknetRPCError(senderAddress)) {
     return <RPCError>{
       jsonrpc: request.jsonrpc,
       id: request.id,
       error: {
-        code: -32602,
+        code: -32603,
         message:
-          'Cannot convert from Ethereum address to Starknet address please check from parameter.',
+          'Starknet RPC error: Cannot convert Ethereum address to Starknet address.',
       },
     }
   }
 
-  const decodedMulticallCalldata = decodeMulticallCalldataForEstimateFee(
-    parameters.data,
-  )
+  const decodedMulticallCalldata =
+    decodeMulticallCalldataForEstimateFee(calldata)
 
   const accountNonce = await getAccountNonce(senderAddress)
 
@@ -234,23 +207,15 @@ export async function estimateGasHandler(
     }
   }
 
-  try {
-    const consumedGas = sumTotalGasConsumption(
-      response.result[0].l1_gas_consumed,
-      response.result[0].l1_data_gas_consumed,
-      response.result[0].l2_gas_consumed,
-    )
+  const consumedGas = sumTotalGasConsumption(
+    response.result[0].l1_gas_consumed,
+    response.result[0].l1_data_gas_consumed,
+    response.result[0].l2_gas_consumed,
+  )
 
-    return {
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      result: consumedGas,
-    }
-  } catch (error) {
-    return {
-      jsonrpc: request.jsonrpc,
-      id: request.id,
-      result: '0x5208',
-    }
+  return {
+    jsonrpc: request.jsonrpc,
+    id: request.id,
+    result: consumedGas,
   }
 }

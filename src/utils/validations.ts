@@ -148,42 +148,89 @@ export function validateValue(value: unknown): boolean {
   }
 }
 
-export function validateEthCallParameters(
+export function validateEthEstimateGasParameters(
   value: unknown,
 ): value is SimulateTransaction {
-  if (typeof value !== 'object' || value === null) {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     return false
   }
 
   const obj = value as Record<string, unknown>
 
-  // Check required 'to' field
-  if (typeof obj.to !== 'string') {
-    return false
-  }
-
-  // Check optional 'from' field
-  if (obj.from !== undefined && typeof obj.from !== 'string') {
-    return false
-  }
-
-  // Check optional 'data' field
-  if (obj.data !== undefined && typeof obj.data !== 'string') {
-    return false
-  }
-
-  // Check optional 'value' field
   if (
-    obj.value !== undefined &&
-    typeof obj.value !== 'string' &&
-    typeof obj.value !== 'number' &&
-    typeof obj.value !== 'bigint'
+    obj.type !== undefined &&
+    obj.type !== null &&
+    (typeof obj.type !== 'string' || !obj.type.match(/^0x([0-9a-fA-F]?){1,2}$/))
   ) {
     return false
   }
 
-  // Check optional 'type' field
-  if (obj.type !== undefined && typeof obj.type !== 'string') {
+  if (
+    obj.nonce !== undefined &&
+    obj.nonce !== null &&
+    (typeof obj.nonce !== 'string' ||
+      !obj.nonce.match(/^0x([1-9a-f]+[0-9a-f]*|0)$/))
+  ) {
+    return false
+  }
+
+  if (
+    obj.to !== undefined &&
+    obj.to !== null &&
+    (typeof obj.to !== 'string' || !obj.to.match(/^0x[0-9a-fA-F]{40}$/))
+  ) {
+    return false
+  }
+
+  if (
+    obj.from !== undefined &&
+    obj.from !== null &&
+    (typeof obj.from !== 'string' || !obj.from.match(/^0x[0-9a-fA-F]{40}$/))
+  ) {
+    return false
+  }
+
+  if (
+    obj.value !== undefined &&
+    obj.value !== null &&
+    (typeof obj.value !== 'string' ||
+      !obj.value.match(/^0x([1-9a-f]+[0-9a-f]*|0)$/))
+  ) {
+    return false
+  }
+
+  if (
+    obj.data !== undefined &&
+    obj.data !== null &&
+    (typeof obj.data !== 'string' || !obj.data.match(/^0x[0-9a-f]*$/))
+  ) {
+    return false
+  }
+
+  if (
+    obj.gasPrice !== undefined &&
+    obj.gasPrice !== null &&
+    (typeof obj.gasPrice !== 'string' ||
+      !obj.gasPrice.match(/^0x([1-9a-f]+[0-9a-f]*|0)$/))
+  ) {
+    return false
+  }
+
+  if (
+    obj.maxFeePerGas !== undefined &&
+    obj.maxFeePerGas !== null &&
+    (typeof obj.maxFeePerGas !== 'string' ||
+      !obj.maxFeePerGas.match(/^0x([1-9a-f]+[0-9a-f]*|0)$/))
+  ) {
+    return false
+  }
+
+  if (
+    obj.maxPriorityFeePerGas !== undefined &&
+    obj.maxPriorityFeePerGas !== null &&
+    (typeof obj.maxPriorityFeePerGas !== 'string' ||
+      !obj.maxPriorityFeePerGas.match(/^0x([1-9a-f]+[0-9a-f]*|0)$/))
+  ) {
     return false
   }
 

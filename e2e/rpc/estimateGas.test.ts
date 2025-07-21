@@ -9,6 +9,7 @@ import {
 } from '../utils'
 import { precalculateStarknetAddress } from '../registry/rosettanet'
 import { deployRosettanetAccount } from '../registers'
+import { FALLBACK_GAS_LIMIT } from '../../src/utils/constants'
 
 async function setupTestAccount() {
   const provider = new ethers.JsonRpcProvider(SERVER)
@@ -96,7 +97,7 @@ describe('eth_estimateGas RPC method', () => {
     expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0))
   })
 
-  test('Should return 0x5208, estimate fee for sending STRK from wallet, no data field', async () => {
+  test('Should return FALLBACK_GAS_LIMIT, estimate fee for sending STRK from wallet, no data field', async () => {
     const response = await axios.post(SERVER, {
       id: 1,
       jsonrpc: '2.0',
@@ -114,7 +115,7 @@ describe('eth_estimateGas RPC method', () => {
     expect(response.data.result).not.toBeUndefined()
     expect(response.data.jsonrpc).toBe('2.0')
     expect(response.data.id).toBe(1)
-    expect(response.data.result).toBe('0x5208')
+    expect(response.data.result).toBe(FALLBACK_GAS_LIMIT)
     expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0))
   })
 
@@ -179,7 +180,7 @@ describe('eth_estimateGas RPC method', () => {
     expect(response.data.jsonrpc).toBe('2.0')
     expect(response.data.id).toBe(1)
     expect(response.data.error).toBeUndefined()
-    expect(response.data.result).toBe('0x5208')
+    expect(response.data.result).toBe(FALLBACK_GAS_LIMIT)
     expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0))
   })
 
@@ -320,7 +321,7 @@ describe('eth_estimateGas RPC method', () => {
     expect(response.data.error).toBeDefined()
   })
 
-  test('Should give error, null fields', async () => {
+  test('Should return fallback gas limit, null fields', async () => {
     const response = await axios.post(SERVER, {
       id: 1,
       jsonrpc: '2.0',
@@ -329,11 +330,15 @@ describe('eth_estimateGas RPC method', () => {
     })
 
     expect(response.status).toBe(200)
-    expect(response.data.result).toBeUndefined()
-    expect(response.data.error).toBeDefined()
+    expect(response.data.result).toBeDefined()
+    expect(response.data.jsonrpc).toBe('2.0')
+    expect(response.data.id).toBe(1)
+    expect(response.data.error).toBeUndefined()
+    expect(response.data.result).toBe(FALLBACK_GAS_LIMIT)
+    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0))
   })
 
-  test('Should give error, undefined fields', async () => {
+  test('Should return fallback gas limit, undefined fields', async () => {
     const response = await axios.post(SERVER, {
       id: 1,
       jsonrpc: '2.0',
@@ -344,8 +349,12 @@ describe('eth_estimateGas RPC method', () => {
     })
 
     expect(response.status).toBe(200)
-    expect(response.data.result).toBeUndefined()
-    expect(response.data.error).toBeDefined()
+    expect(response.data.result).toBeDefined()
+    expect(response.data.jsonrpc).toBe('2.0')
+    expect(response.data.id).toBe(1)
+    expect(response.data.error).toBeUndefined()
+    expect(response.data.result).toBe(FALLBACK_GAS_LIMIT)
+    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0))
   })
 
   test('Should give error, extra unknown fields', async () => {
@@ -364,8 +373,12 @@ describe('eth_estimateGas RPC method', () => {
     })
 
     expect(response.status).toBe(200)
-    expect(response.data.result).toBeUndefined()
-    expect(response.data.error).toBeDefined()
+    expect(response.data.result).toBeDefined()
+    expect(response.data.jsonrpc).toBe('2.0')
+    expect(response.data.id).toBe(1)
+    expect(response.data.error).toBeUndefined()
+    expect(response.data.result).toBe(FALLBACK_GAS_LIMIT)
+    expect(BigInt(response.data.result)).toBeGreaterThan(BigInt(0))
   })
 
   test('Should give error, wrong data types', async () => {

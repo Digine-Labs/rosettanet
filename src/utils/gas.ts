@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js'
 import { addHexPrefix } from './padding'
+import { FALLBACK_GAS_LIMIT } from './constants'
 
 interface ActualFeeObject {
   amount: string
@@ -46,6 +47,6 @@ export function sumTotalGasConsumption(
     // Convert the sum back to hex with '0x' prefix
     return addHexPrefix(gasWBuffer.toString(16))
   } catch (error) {
-    return '0x5208' // Default 21000 gas
+    return FALLBACK_GAS_LIMIT
   }
 }
