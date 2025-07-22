@@ -12,8 +12,8 @@ import {
 } from '../../utils/validations'
 import { getSnAddressWithFallback } from '../../utils/wrapper'
 import {
-  decodeMulticallCalldataForEstimateFee,
   getFunctionSelectorFromCalldata,
+  to128Bits,
 } from '../../utils/calldata'
 import { getAccountNonce } from '../../utils/starknet'
 import { addHexPrefix } from '../../utils/padding'
@@ -121,8 +121,7 @@ export async function estimateGasHandler(
     }
   }
 
-  const decodedMulticallCalldata =
-    decodeMulticallCalldataForEstimateFee(calldata)
+  const decodedMulticallCalldata = to128Bits(calldata)
 
   const accountNonce = await getAccountNonce(senderAddress)
 

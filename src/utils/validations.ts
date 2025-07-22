@@ -132,10 +132,13 @@ export function validateRawTransaction(
   }
 }
 
-export function validateValue(value: unknown): boolean {
+export function validateValue(value: string): boolean {
   if (value === undefined || value === null) return false
+  if (!validateHexString(value)) {
+    throw new Error('Invalid hex string input')
+  }
   try {
-    const big = BigInt(value as string | number | bigint)
+    const big = BigInt(value)
     return (
       big >
       BigInt(
@@ -160,7 +163,7 @@ export function validateEthEstimateGasParameters(
   if (
     obj.type !== undefined &&
     obj.type !== null &&
-    (typeof obj.type !== 'string' || !obj.type.match(/^0x([0-9a-fA-F]?){1,2}$/))
+    (typeof obj.type !== 'string' || !obj.type.match(/^0x[0-9a-fA-F]{1,2}$/))
   ) {
     return false
   }
@@ -168,8 +171,7 @@ export function validateEthEstimateGasParameters(
   if (
     obj.nonce !== undefined &&
     obj.nonce !== null &&
-    (typeof obj.nonce !== 'string' ||
-      !obj.nonce.match(/^0x([1-9a-f]+[0-9a-f]*|0)$/))
+    (typeof obj.nonce !== 'string' || !obj.nonce.match(/^0x[0-9a-fA-F]+|0$/))
   ) {
     return false
   }
@@ -202,7 +204,7 @@ export function validateEthEstimateGasParameters(
   if (
     obj.data !== undefined &&
     obj.data !== null &&
-    (typeof obj.data !== 'string' || !obj.data.match(/^0x[0-9a-f]*$/))
+    (typeof obj.data !== 'string' || !obj.data.match(/^(0x[0-9a-fA-F]*|0)$/))
   ) {
     return false
   }
@@ -235,4 +237,16 @@ export function validateEthEstimateGasParameters(
   }
 
   return true
+}
+
+/**
+ * Checks if a value is a valid hex string (with '0x' prefix)
+ *
+ * @param value The value to check
+ * @returns True if the value is a valid hex string
+ */
+export function validateHexString(value: unknown): boolean {
+  if (typeof value !== 'string') return false
+  // Match strings with '0x' prefix followed by one or more hex chars
+  return /^(0x)[0-9a-fA-F]+$/.test(value)
 }

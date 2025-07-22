@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js'
 import { addHexPrefix } from './padding'
 import { FALLBACK_GAS_LIMIT } from './constants'
+import { validateHexString, validateValue } from './validations'
 
 interface ActualFeeObject {
   amount: string
@@ -34,6 +35,22 @@ export function sumTotalGasConsumption(
   l1DataGas: string,
   l2Gas: string,
 ): string {
+  if (
+    !validateHexString(l1Gas) ||
+    !validateHexString(l1DataGas) ||
+    !validateHexString(l2Gas)
+  ) {
+    throw new Error('Invalid hex string input')
+  }
+
+  if (
+    validateValue(l1Gas) ||
+    validateValue(l1DataGas) ||
+    validateValue(l2Gas)
+  ) {
+    throw new Error('Invalid value input')
+  }
+
   try {
     // Convert each hex value to BigInt (handles values with or without '0x' prefix)
     const l1GasValue = BigInt(l1Gas)
@@ -42,7 +59,8 @@ export function sumTotalGasConsumption(
 
     // Sum all three values
     const totalGas = l1GasValue + l1DataGasValue + l2GasValue
-    const gasWBuffer = totalGas * BigInt(1.1)
+    const buffer = totalGas / BigInt(10)
+    const gasWBuffer = totalGas + buffer
 
     // Convert the sum back to hex with '0x' prefix
     return addHexPrefix(gasWBuffer.toString(16))

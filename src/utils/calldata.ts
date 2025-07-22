@@ -389,46 +389,6 @@ export function decodeMulticallFeatureCalldata(
   }
 }
 
-/**
- * Breaks down the encoded multicall data into its component parts
- * @param encodedData - The encoded multicall data as a hex string
- * @returns A formatted string breakdown of the data structure
- */
-export function decodeMulticallCalldataForEstimateFee(
-  encodedData: string,
-): string[] {
-  // Remove 0x prefix if present
-  if (encodedData.length === 0) {
-    return []
-  }
-  const data = addHexPrefix(encodedData)
-
-  const chunks: string[] = []
-
-  // First get the function selector (4 bytes)
-  const selector = data.substring(0, 10)
-  chunks.push(selector)
-
-  // Process the rest of the data in 32-character chunks (16 bytes)
-  let pos = 10
-  while (pos < data.length) {
-    // Get first half of the 64-character chunk
-    if (pos + 32 <= data.length) {
-      chunks.push('0x' + data.substring(pos, pos + 32))
-    }
-    pos += 32
-
-    // Get second half of the 64-character chunk
-    if (pos < data.length) {
-      const end = Math.min(pos + 32, data.length)
-      chunks.push('0x' + data.substring(pos, end))
-    }
-    pos += 32
-  }
-
-  return chunks
-}
-
 export function decodeEVMCalldata(
   types: Array<CairoNamedConvertableType>,
   data: string,
