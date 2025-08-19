@@ -1,6 +1,10 @@
 import { isHexString, Transaction } from 'ethers'
 import { addHexPrefix, removeHexPrefix } from './padding'
-import { SignedRawTransaction, ValidationError } from '../types/types'
+import {
+  SignedRawTransaction,
+  ValidationError,
+  SimulateTransaction,
+} from '../types/types'
 import { createRosettanetSignature } from './signature'
 
 export function validateEthAddress(ethAddress: string): boolean {
@@ -126,4 +130,123 @@ export function validateRawTransaction(
     gasPrice,
     type,
   }
+}
+
+export function validateValue(value: string): boolean {
+  if (value === undefined || value === null) return false
+  if (!validateHexString(value)) {
+    throw new Error('Invalid hex string input')
+  }
+  try {
+    const big = BigInt(value)
+    return (
+      big >
+      BigInt(
+        '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+      )
+    )
+  } catch {
+    // If value is not a valid number, treat as not too big (let other validation handle it)
+    return false
+  }
+}
+
+export function validateEthEstimateGasParameters(
+  value: unknown,
+): value is SimulateTransaction {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false
+  }
+
+  const obj = value as Record<string, unknown>
+
+  if (
+    obj.type !== undefined &&
+    obj.type !== null &&
+    (typeof obj.type !== 'string' || !obj.type.match(/^0x[0-9a-fA-F]{1,2}$/))
+  ) {
+    return false
+  }
+
+  if (
+    obj.nonce !== undefined &&
+    obj.nonce !== null &&
+    (typeof obj.nonce !== 'string' || !obj.nonce.match(/^0x[0-9a-fA-F]+|0$/))
+  ) {
+    return false
+  }
+
+  if (
+    obj.to !== undefined &&
+    obj.to !== null &&
+    (typeof obj.to !== 'string' || !obj.to.match(/^0x[0-9a-fA-F]{40}$/))
+  ) {
+    return false
+  }
+
+  if (
+    obj.from !== undefined &&
+    obj.from !== null &&
+    (typeof obj.from !== 'string' || !obj.from.match(/^0x[0-9a-fA-F]{40}$/))
+  ) {
+    return false
+  }
+
+  if (
+    obj.value !== undefined &&
+    obj.value !== null &&
+    (typeof obj.value !== 'string' ||
+      !obj.value.match(/^0x([1-9a-fA-F]+[0-9a-fA-F]*|0)$/))
+  ) {
+    return false
+  }
+
+  if (
+    obj.data !== undefined &&
+    obj.data !== null &&
+    (typeof obj.data !== 'string' || !obj.data.match(/^(0x[0-9a-fA-F]*|0)$/))
+  ) {
+    return false
+  }
+
+  if (
+    obj.gasPrice !== undefined &&
+    obj.gasPrice !== null &&
+    (typeof obj.gasPrice !== 'string' ||
+      !obj.gasPrice.match(/^0x([1-9a-f]+[0-9a-f]*|0)$/))
+  ) {
+    return false
+  }
+
+  if (
+    obj.maxFeePerGas !== undefined &&
+    obj.maxFeePerGas !== null &&
+    (typeof obj.maxFeePerGas !== 'string' ||
+      !obj.maxFeePerGas.match(/^0x([1-9a-f]+[0-9a-f]*|0)$/))
+  ) {
+    return false
+  }
+
+  if (
+    obj.maxPriorityFeePerGas !== undefined &&
+    obj.maxPriorityFeePerGas !== null &&
+    (typeof obj.maxPriorityFeePerGas !== 'string' ||
+      !obj.maxPriorityFeePerGas.match(/^0x([1-9a-f]+[0-9a-f]*|0)$/))
+  ) {
+    return false
+  }
+
+  return true
+}
+
+/**
+ * Checks if a value is a valid hex string (with '0x' prefix)
+ *
+ * @param value The value to check
+ * @returns True if the value is a valid hex string
+ */
+export function validateHexString(value: unknown): boolean {
+  if (typeof value !== 'string') return false
+  // Match strings with '0x' prefix followed by one or more hex chars
+  return /^(0x)[0-9a-fA-F]+$/.test(value)
 }

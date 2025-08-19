@@ -10,7 +10,6 @@ start_devnet() {
     echo "Starting Starknet Devnet..."
     starknet-devnet \
         --seed "$SEED" \
-        --request-body-size-limit "$REQUEST_BODY_SIZE_LIMIT" \
         --port "$PORT" &
     
     # Store the PID of the devnet process

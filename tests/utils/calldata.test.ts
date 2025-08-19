@@ -19,7 +19,6 @@ import {
   isEVMEncodeResult,
 } from '../../src/types/typeGuards'
 
-
 describe('Test calldata u128 conversion', () => {
   it('Decodes calldata', () => {
     const data =
@@ -575,6 +574,7 @@ describe('Test calldata decoding', () => {
     expect(decodedData).toStrictEqual([expectedValues])
   })
 })
+
 /*
 describe('Test calldata decoding with cairo type names', () => {
   it('Decodes uint256 array', () => {
