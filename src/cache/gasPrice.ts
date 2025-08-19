@@ -11,6 +11,10 @@ export interface SyncedL1Gas {
     wei: string
     fri: string
   }
+  l1?: {
+    wei: string
+    fri: string
+  }
 }
 
 let syncedGasPrice: SyncedL1Gas
@@ -21,6 +25,10 @@ export function getCachedGasPrice(): SyncedL1Gas {
       wei: '0x0',
       fri: '0x0',
       data: {
+        wei: '0x0',
+        fri: '0x0',
+      },
+      l1: {
         wei: '0x0',
         fri: '0x0',
       },
@@ -45,22 +53,32 @@ async function updateGasPrice() {
 
     const l1Gas = blockResponse.result.l1_gas_price
     const l1DataGas = blockResponse.result.l1_data_gas_price
+    const l2Gas = blockResponse.result.l2_gas_price
 
     if (typeof l1Gas !== 'object') {
       writeLog(2, 'L1_gas_price is not object')
       return
     }
     syncedGasPrice = {
-      wei: l1Gas.price_in_wei,
+      wei: l2Gas.price_in_wei,
       fri: addHexPrefix(
         (
-          BigInt(l1Gas.price_in_fri) +
-          BigInt(l1Gas.price_in_fri) / BigInt(10)
+          BigInt(l2Gas.price_in_fri) +
+          BigInt(l2Gas.price_in_fri) / BigInt(10)
         ).toString(16),
       ),
       data: {
         wei: l1DataGas?.price_in_wei,
         fri: l1DataGas?.price_in_fri,
+      },
+      l1: {
+        wei: l1Gas.price_in_wei,
+        fri: addHexPrefix(
+          (
+            BigInt(l1Gas.price_in_fri) +
+            BigInt(l1Gas.price_in_fri) / BigInt(10)
+          ).toString(16),
+        ),
       },
     }
     writeLog(0, 'Gas Synced: ' + syncedGasPrice.fri)

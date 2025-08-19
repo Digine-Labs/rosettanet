@@ -171,8 +171,8 @@ export async function estimateGasHandler(
           tip: '0x0',
           paymaster_data: [],
           account_deployment_data: [],
-          nonce_data_availability_mode: 'L2',
-          fee_data_availability_mode: 'L2',
+          nonce_data_availability_mode: 'L1',
+          fee_data_availability_mode: 'L1',
           resource_bounds: {
             l1_gas: {
               max_amount: '0x0',

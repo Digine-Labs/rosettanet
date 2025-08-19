@@ -59,7 +59,7 @@ export function sumTotalGasConsumption(
 
     // Sum all three values
     const totalGas = l1GasValue + l1DataGasValue + l2GasValue
-    const buffer = totalGas / BigInt(10)
+    const buffer = totalGas
     const gasWBuffer = totalGas + buffer
 
     // Convert the sum back to hex with '0x' prefix

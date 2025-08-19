@@ -29,7 +29,9 @@ export function addHexPadding(
   if (value.length === 0) {
     return prefix ? '0x' + '0'.repeat(targetLength) : '0'.repeat(targetLength)
   }
-  if ((value.startsWith('0x') ? value.length - 2 : value.length) >= targetLength) {
+  if (
+    (value.startsWith('0x') ? value.length - 2 : value.length) >= targetLength
+  ) {
     return value
   }
   if (value.startsWith('0x')) {
@@ -55,58 +57,58 @@ export function addHexPrefix(hex: string): string {
 // data must be 256 bits
 export function getLast160Bits(data: string): string {
   if (data.startsWith('0x')) {
-    data = data.slice(2);
+    data = data.slice(2)
   }
 
   // Eğer 64 karakterden kısaysa başa sıfır ekleyerek tamamla
   if (data.length < 64) {
-    data = data.padStart(64, '0');
+    data = data.padStart(64, '0')
   } else if (data.length > 64) {
     // İstersen fazla gelen datayı da kesebiliriz (bu isteğe bağlı)
-    data = data.slice(-64);
+    data = data.slice(-64)
   }
 
-  const last160Bits = data.slice(-40);
+  const last160Bits = data.slice(-40)
 
-  return '0x' + last160Bits;
+  return '0x' + last160Bits
 }
 
 export function padHashTo64(data: string): string {
   // Eğer '0x' ile başlıyorsa çıkar
-  let hex = data.startsWith('0x') ? data.slice(2) : data;
+  let hex = data.startsWith('0x') ? data.slice(2) : data
 
   // Sadece hex karakterlerden oluşuyor mu diye kontrol (opsiyonel ama iyi olur)
   if (!/^[0-9a-fA-F]*$/.test(hex)) {
-    throw new Error('Invalid characters in hash');
+    throw new Error('Invalid characters in hash')
   }
 
   // Eğer çok uzun olursa hata verelim
   if (hex.length > 64) {
-    throw new Error(`Hash too long: ${hex.length} characters`);
+    throw new Error(`Hash too long: ${hex.length} characters`)
   }
 
   // Eğer kısa ise, başa sıfır ekle
-  hex = hex.padStart(64, '0');
+  hex = hex.padStart(64, '0')
 
-  return '0x' + hex;
+  return '0x' + hex
 }
 
 export function padTo256Byte(data: string): string {
   // Eğer '0x' ile başlıyorsa çıkar
-  let hex = data.startsWith('0x') ? data.slice(2) : data;
+  let hex = data.startsWith('0x') ? data.slice(2) : data
 
   // Sadece hex karakterlerden oluşuyor mu diye kontrol (opsiyonel ama iyi olur)
   if (!/^[0-9a-fA-F]*$/.test(hex)) {
-    throw new Error('Invalid characters in hash');
+    throw new Error('Invalid characters in hash')
   }
 
   // Eğer çok uzun olursa hata verelim
   if (hex.length > 512) {
-    throw new Error(`Hash too long: ${hex.length} characters`);
+    throw new Error(`Hash too long: ${hex.length} characters`)
   }
 
   // Eğer kısa ise, başa sıfır ekle
-  hex = hex.padStart(512, '0');
+  hex = hex.padStart(512, '0')
 
-  return '0x' + hex;
+  return '0x' + hex
 }

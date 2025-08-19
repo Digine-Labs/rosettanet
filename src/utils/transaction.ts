@@ -1,3 +1,4 @@
+import { getCachedGasPrice } from '../cache/gasPrice'
 import { StarknetInvokeTransaction } from '../types/transactions.types'
 import {
   EstimateFeeTransaction,
@@ -44,21 +45,23 @@ export function prepareStarknetInvokeTransaction(
 export function getGasObject(txn: SignedRawTransaction) {
   //console.log(txn.gasPrice)
   //console.log(txn.maxFeePerGas)
+  const cachedGas = getCachedGasPrice()
   const gasPrice = txn.maxFeePerGas == null ? txn.gasPrice : txn.maxFeePerGas
   const actualGasPrice = gasPrice == null ? '0x0' : gasPrice
+  const gasWBuffer = BigInt(txn.gasLimit) * BigInt(50)
 
   const gasObject = {
     l2_gas: {
-      max_amount: '0x0',
-      max_price_per_unit: '0x0',
-    },
-    l1_gas: {
-      max_amount: addHexPrefix(txn.gasLimit.toString(16)),
+      max_amount: addHexPrefix(gasWBuffer.toString(16)),
       max_price_per_unit: addHexPrefix(actualGasPrice.toString(16)),
     },
-    l1_data_gas: {
+    l1_gas: {
       max_amount: '0x0',
-      max_price_per_unit: '0x0',
+      max_price_per_unit: cachedGas.l1?.fri,
+    },
+    l1_data_gas: {
+      max_amount: '0x186A0',
+      max_price_per_unit: cachedGas.data?.fri,
     },
   }
 

@@ -196,7 +196,7 @@ export function validateEthEstimateGasParameters(
     obj.value !== undefined &&
     obj.value !== null &&
     (typeof obj.value !== 'string' ||
-      !obj.value.match(/^0x([1-9a-f]+[0-9a-f]*|0)$/))
+      !obj.value.match(/^0x([1-9a-fA-F]+[0-9a-fA-F]*|0)$/))
   ) {
     return false
   }
