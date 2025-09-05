@@ -2,28 +2,45 @@ import { writeLog } from '../logger'
 import { isStarknetRPCError } from '../types/typeGuards'
 import { RPCResponse, StarknetRPCError } from '../types/types'
 import { callStarknet } from '../utils/callHelper'
-import { addHexPrefix } from '../utils/padding'
 
-export interface SyncedL1Gas {
-  wei: string
-  fri: string
-  data?: {
-    wei: string
+export interface SyncedGas {
+  l1: {
     fri: string
+    wei: string
+  },
+  l1_data: {
+    fri: string
+    wei: string
+  },
+  l2: {
+    fri: string
+    wei: string
   }
 }
 
-let syncedGasPrice: SyncedL1Gas
+interface GasData {
+  price_in_fri: string
+  price_in_wei: string
+}
 
-export function getCachedGasPrice(): SyncedL1Gas {
+
+let syncedGasPrice: SyncedGas
+
+export function getCachedGasPrice(): SyncedGas {
   if (typeof syncedGasPrice === 'undefined') {
     return {
-      wei: '0x0',
-      fri: '0x0',
-      data: {
-        wei: '0x0',
+      l1: {
         fri: '0x0',
+        wei: '0x0'
       },
+      l1_data: {
+        fri: '0x0',
+        wei: '0x0'
+      },
+      l2: {
+        fri: '0x0',
+        wei: '0x0'
+      }
     }
   }
   return syncedGasPrice
@@ -43,27 +60,28 @@ async function updateGasPrice() {
       return
     }
 
-    const l1Gas = blockResponse.result.l1_gas_price
-    const l1DataGas = blockResponse.result.l1_data_gas_price
+    const l1Gas = blockResponse.result.l1_gas_price as GasData
+    const l1DataGas = blockResponse.result.l1_data_gas_price as GasData
+    const l2Gas = blockResponse.result.l2_gas_price as GasData
+    // Assumes correctly received valued. If not error
 
-    if (typeof l1Gas !== 'object') {
-      writeLog(2, 'L1_gas_price is not object')
-      return
-    }
-    syncedGasPrice = {
-      wei: l1Gas.price_in_wei,
-      fri: addHexPrefix(
-        (
-          BigInt(l1Gas.price_in_fri) +
-          BigInt(l1Gas.price_in_fri) / BigInt(10)
-        ).toString(16),
-      ),
-      data: {
-        wei: l1DataGas?.price_in_wei,
-        fri: l1DataGas?.price_in_fri,
+    const gas = {
+      l1: {
+        fri: '0x' + (BigInt(l1Gas.price_in_fri) * BigInt(110) / BigInt(100)).toString(16),
+        wei: '0x' + (BigInt(l1Gas.price_in_wei) * BigInt(110) / BigInt(100)).toString(16)
       },
+      l1_data: {
+        fri: '0x' + (BigInt(l1DataGas.price_in_fri) * BigInt(110) / BigInt(100)).toString(16),
+        wei: '0x' + (BigInt(l1DataGas.price_in_wei) * BigInt(110) / BigInt(100)).toString(16)
+      },
+      l2: {
+        fri: '0x' + (BigInt(l2Gas.price_in_fri) * BigInt(110) / BigInt(100)).toString(16),
+        wei: '0x' + (BigInt(l2Gas.price_in_wei) * BigInt(110) / BigInt(100)).toString(16)
+      }
     }
-    writeLog(0, 'Gas Synced: ' + syncedGasPrice.fri)
+
+    syncedGasPrice = gas;
+    writeLog(0, `Gas sync, l1: ${gas.l1.wei} (wei) ${gas.l1.fri} (fri), l1_data: ${gas.l1_data.wei} (wei) ${gas.l1_data.fri} (fri), l2: ${gas.l2.wei} (wei) ${gas.l2.fri} (fri)`)
     return
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {

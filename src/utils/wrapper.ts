@@ -2,6 +2,7 @@ import { callStarknet } from './callHelper'
 import { RPCRequest, RPCResponse, StarknetRPCError } from '../types/types'
 import { getConfigurationProperty } from './configReader'
 import { isStarknetRPCError } from '../types/typeGuards'
+import { writeLog } from '../logger'
 
 const SELECTORS = {
   get_sn_address_from_eth_address:
@@ -171,3 +172,152 @@ export async function getSnAddressFromEthAddress(
     }
   }
 }
+
+export interface ValidationFeeResult {
+  l1_data_gas_consumed: string;
+  l1_gas_consumed: string;
+  l2_gas_consumed: string;
+}
+
+export async function mockValidateCost(caller: string, calldata: string[]): Promise<ValidationFeeResult> {
+  const feeEstimator = getConfigurationProperty('validateFeeEstimator');
+  const DEFAULT_VALIDATION_FEE: ValidationFeeResult = {
+    l1_data_gas_consumed: "0x100",
+    l1_gas_consumed: "0x0",
+    l2_gas_consumed: "0xd106e2"
+  };
+  const estimateFeeCall = {
+      jsonrpc: '2.0',
+      method: 'starknet_estimateFee',
+      params: {
+        request: [{
+          type:'INVOKE',
+          version: '0x3',
+          sender_address: feeEstimator,
+          calldata: [caller, ...calldata],
+          signature: ["0x0","0x0","0x0","0x0","0x1c","0x1","0x0"],
+          nonce: '0x1',
+          tip: '0x0',
+          paymaster_data: [],
+          account_deployment_data: [],
+          nonce_data_availability_mode: 'L1',
+          fee_data_availability_mode: 'L1',
+          resource_bounds: {
+            l1_gas: {
+              max_amount: '0x0',
+              max_price_per_unit: '0x0',
+            },
+            l2_gas: {
+              max_amount: '0x0',
+              max_price_per_unit: '0x0',
+            },
+            l1_data_gas: {
+              max_amount: '0x0',
+              max_price_per_unit: '0x0',
+            },
+          },
+        }],
+        simulation_flags: ['SKIP_VALIDATE'],
+        block_id: 'latest'
+      },
+      id: 123
+    };
+
+    const validationFeeResult: RPCResponse | StarknetRPCError = await callStarknet(estimateFeeCall);
+
+    if(isStarknetRPCError(validationFeeResult)) {
+      writeLog(2, 'Error at starknet call on mockValidateCost. Returning default.');
+      return DEFAULT_VALIDATION_FEE;
+    }
+
+    const fees = validationFeeResult.result[0];
+
+    if(!fees || typeof fees.l1_data_gas_consumed !== 'string' || typeof fees.l1_gas_consumed !== 'string' || typeof fees.l2_gas_consumed !== 'string') {
+      writeLog(2, 'Error at starknet result validation on mockValidateCost. Returning default.');
+      return DEFAULT_VALIDATION_FEE;
+    }
+
+    return <ValidationFeeResult> {
+      l1_data_gas_consumed: fees.l1_data_gas_consumed,
+      l1_gas_consumed: fees.l1_gas_consumed,
+      l2_gas_consumed: fees.l2_gas_consumed,
+    }
+}
+
+/*
+{
+    "jsonrpc": "2.0",
+    "method": "starknet_estimateFee",
+    "params": {
+      "request": [{
+        "type":"INVOKE",
+        "version": "0x3",
+        "sender_address": "0x03eaf353b4e78e3c4daaf0bbf81a58171be1bbe13924a4ac07522ae60bdcd85e",
+        "calldata": [
+            "0x6db5b367ec2cf3ede5a493706bb84a2a6f138429b84ba20ec5d0ebbceb7d7a",
+            "0x2",
+            "0x0000000000000000000000004645415455524553",
+            "0xb",
+            "0x16f3de10bb60",
+            "0x16f3de10bb60",
+            "0x0",
+            "0x5208",
+            "0x0",
+            "0x0",
+            "0x1b",
+            "0x76971d7f",
+            "0x00000000000000000000000000000000",
+            "0x00000000000000000000000000000020",
+            "0x00000000000000000000000000000000",
+            "0x00000000000000000000000000000001",
+            "0x00000000000000000000000000000000",
+            "0x00000000000000000000000000000020",
+            "0x00494a72a742b7880725a965ee487d93",
+            "0x7fa6d08a94ba4eb9e29dd0663bc653a2",
+            "0x014b9c006653b96dd1312a62b5921c46",
+            "0x5d08352de1546550f0ed804fcc0ef9e9",
+            "0x00000000000000000000000000000000",
+            "0x00000000000000000000000000000060",
+            "0x00000000000000000000000000000000",
+            "0x00000000000000000000000000000006",
+            "0x00f962408dec6bd3020593ec425c97bc",
+            "0x1fb345834a8388356ef51c653a1e7073",
+            "0x00000000000000000000000000000000",
+            "0x00000000000000000000000064656465",
+            "0x00000000000000000000000000000000",
+            "0x00000000000000000000000065646564",
+            "0x00000000000000000000000000000000",
+            "0x00000000000000000000000000023323",
+            "0x00000000000000000000000000000000",
+            "0x00000000000000000000000000000000",
+            "0x00000000000000000000000000000000",
+            "0x00000000000000000000000000313131"
+        ],
+        "signature": ["0x0","0x0","0x0","0x0","0x1c","0x1","0x0"],
+        "nonce": "0x123",
+        "tip": "0x0",
+        "paymaster_data": [],
+        "account_deployment_data": [],
+        "nonce_data_availability_mode": "L1",
+        "fee_data_availability_mode": "L1",
+        "resource_bounds": {
+          "l1_gas": {
+            "max_amount": "0x0",
+            "max_price_per_unit": "0x0"
+          },
+          "l2_gas": {
+            "max_amount": "0x0",
+            "max_price_per_unit": "0x0"
+          },
+          "l1_data_gas": {
+            "max_amount": "0x0",
+            "max_price_per_unit": "0x0"
+          }
+        }
+      }],
+      "simulation_flags": ["SKIP_VALIDATE"],
+      "block_id": "latest"
+    },
+    "id": 123
+  }
+*/

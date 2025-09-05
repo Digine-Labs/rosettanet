@@ -1,4 +1,4 @@
-import { getCachedGasPrice, SyncedL1Gas } from '../../cache/gasPrice'
+import { getCachedGasPrice, SyncedGas } from '../../cache/gasPrice'
 import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
 
 export async function gasPriceHandler(
@@ -25,12 +25,12 @@ export async function gasPriceHandler(
       },
     }
   }
-  const gasPrices: SyncedL1Gas = getCachedGasPrice()
+  const gasPrices: SyncedGas = getCachedGasPrice()
 
-  // TODO: fri cok yuksek gidiyor. wei cok dusuk
+  // TODO: Bence burada en yuksek gas price dondurebiliriz?
   return {
     jsonrpc: '2.0',
     id: request.id,
-    result: gasPrices.fri,
+    result: gasPrices.l2.fri, // Temporary
   }
 }
