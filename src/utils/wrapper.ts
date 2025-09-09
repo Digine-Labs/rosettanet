@@ -3,6 +3,8 @@ import { RPCRequest, RPCResponse, StarknetRPCError } from '../types/types'
 import { getConfigurationProperty } from './configReader'
 import { isStarknetRPCError } from '../types/typeGuards'
 import { writeLog } from '../logger'
+import { GasCost } from '../rpc/calls/estimateGas'
+import { addHexPrefix } from './padding'
 
 const SELECTORS = {
   get_sn_address_from_eth_address:
@@ -173,18 +175,76 @@ export async function getSnAddressFromEthAddress(
   }
 }
 
-export interface ValidationFeeResult {
-  l1_data_gas_consumed: string;
-  l1_gas_consumed: string;
-  l2_gas_consumed: string;
+export async function estimateExecutionFee(sender: string, calldata: string[], nonce: string): Promise<GasCost> {
+  const DEFAULT_EXECUTION_FEE: GasCost = {
+    l1_data: 256,
+    l1: 0,
+    l2: 13698786
+  }; // TODO: @Bora daha duzgun bi execution fee yaz buraya
+  const estimateFeeCall = {
+    jsonrpc: '2.0',
+    method: 'starknet_estimateFee',
+    params: {
+      request: [{
+        type:'INVOKE',
+        version: '0x3',
+        sender_address: sender,
+        calldata: calldata,
+        signature: ["0x0","0x0","0x0","0x0","0x1c","0x1","0x0"],
+        nonce: addHexPrefix(nonce),
+        tip: '0x0',
+        paymaster_data: [],
+        account_deployment_data: [],
+        nonce_data_availability_mode: 'L1',
+        fee_data_availability_mode: 'L1',
+        resource_bounds: {
+          l1_gas: {
+            max_amount: '0x0',
+            max_price_per_unit: '0x0',
+          },
+          l2_gas: {
+            max_amount: '0x0',
+            max_price_per_unit: '0x0',
+          },
+          l1_data_gas: {
+            max_amount: '0x0',
+            max_price_per_unit: '0x0',
+          },
+        },
+      }],
+      simulation_flags: ['SKIP_VALIDATE'],
+      block_id: 'latest'
+    },
+    id: 124
+  };
+
+  const executionFeeResult: RPCResponse | StarknetRPCError = await callStarknet(estimateFeeCall);
+
+  if(isStarknetRPCError(executionFeeResult)) {
+    writeLog(2, 'Error at starknet call on estimateFee @ wrapper.ts. Returning default.');
+    return DEFAULT_EXECUTION_FEE;
+  }
+
+  const fees = executionFeeResult.result[0];
+
+  if(!fees || typeof fees.l1_data_gas_consumed !== 'string' || typeof fees.l1_gas_consumed !== 'string' || typeof fees.l2_gas_consumed !== 'string') {
+    writeLog(2, 'Error at starknet result estimateFee @ wrapper.ts. Returning default.');
+    return DEFAULT_EXECUTION_FEE;
+  }
+
+  return <GasCost> {
+    l1_data: Number(BigInt(fees.l1_data_gas_consumed)),
+    l1: Number(BigInt(fees.l1_gas_consumed)),
+    l2: Number(BigInt(fees.l2_gas_consumed)),
+  }
 }
 
-export async function mockValidateCost(caller: string, calldata: string[]): Promise<ValidationFeeResult> {
+export async function mockValidateCost(caller: string, calldata: string[]): Promise<GasCost> {
   const feeEstimator = getConfigurationProperty('validateFeeEstimator');
-  const DEFAULT_VALIDATION_FEE: ValidationFeeResult = {
-    l1_data_gas_consumed: "0x100",
-    l1_gas_consumed: "0x0",
-    l2_gas_consumed: "0xd106e2"
+  const DEFAULT_VALIDATION_FEE: GasCost = {
+    l1_data: 256,
+    l1: 0,
+    l2: 13698786
   };
   const estimateFeeCall = {
       jsonrpc: '2.0',
@@ -237,10 +297,10 @@ export async function mockValidateCost(caller: string, calldata: string[]): Prom
       return DEFAULT_VALIDATION_FEE;
     }
 
-    return <ValidationFeeResult> {
-      l1_data_gas_consumed: fees.l1_data_gas_consumed,
-      l1_gas_consumed: fees.l1_gas_consumed,
-      l2_gas_consumed: fees.l2_gas_consumed,
+    return <GasCost> {
+      l1_data: Number(BigInt(fees.l1_data_gas_consumed)),
+      l1: Number(BigInt(fees.l1_gas_consumed)),
+      l2: Number(BigInt(fees.l2_gas_consumed)),
     }
 }
 

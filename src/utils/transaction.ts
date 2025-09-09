@@ -65,46 +65,66 @@ export function getGasObject(txn: SignedRawTransaction) {
   return gasObject
 }
 
-export function prepareRosettanetCalldataForEstimatingFee(
-  tx: EstimateFeeTransaction,
-): string[] {
-  const { to, calldata, directives, value, targetFunction } = tx
+export function prepareRosettanetCalldataForEstimateFee(from: string, to: string, gasLimit: bigint, data: string, value: bigint, nonce: number, maxFeePerGas: bigint, maxPriorityFeePerGas: bigint, gasPrice: bigint , type: number): string[] {
+  const targetFunctionSelector: string | null =
+  getFunctionSelectorFromCalldata(data);
+  const calldata = []
+  if(type == 2) {
+    if(targetFunctionSelector == null) {
+      calldata.push(addHexPrefix(type.toString(16)))
+      calldata.push(to)
+      calldata.push(addHexPrefix(nonce.toString(16)))
+      calldata.push(addHexPrefix(maxPriorityFeePerGas.toString(16)))
+      calldata.push(addHexPrefix(maxFeePerGas.toString(16)))
+      calldata.push(addHexPrefix('0')) // Gas price
+      calldata.push(addHexPrefix(gasLimit.toString(16)))
+      calldata.push(...safeUint256ToU256(value).map(v => addHexPrefix(v)))
+      calldata.push(addHexPrefix('0')) // Calldata length
+    } else {
+      calldata.push(addHexPrefix(type.toString(16)))
+      calldata.push(to)
+      calldata.push(addHexPrefix(nonce.toString(16)))
+      calldata.push(addHexPrefix(maxPriorityFeePerGas.toString(16)))
+      calldata.push(addHexPrefix(maxFeePerGas.toString(16)))
+      calldata.push(addHexPrefix('0')) // Gas price
+      calldata.push(addHexPrefix(gasLimit.toString(16)))
+      calldata.push(...safeUint256ToU256(value).map(v => addHexPrefix(v)))
 
-  if (calldata.length == 0 || directives.length == 0) {
-    const finalCalldata: Array<string> = []
+      const evmCalldata = to128Bits(data)
+      calldata.push(addHexPrefix(evmCalldata.length.toString(16)))
+      calldata.push(...evmCalldata)
+    }
+  } else {
+    if (targetFunctionSelector == null) {
+      // Only strk transfer
+      calldata.push(addHexPrefix(type.toString(16)))
+      calldata.push(to)
+      calldata.push(addHexPrefix(nonce.toString(16)))
+      calldata.push(addHexPrefix('0'))
+      calldata.push(addHexPrefix('0'))
+      calldata.push(addHexPrefix(gasPrice.toString(16)))
+      calldata.push(addHexPrefix(gasLimit.toString(16)))
+      calldata.push(...safeUint256ToU256(value).map(v => addHexPrefix(v)))
+      calldata.push(addHexPrefix('0')) // Calldata length
 
-    finalCalldata.push(to)
-    finalCalldata.push('0x0')
-    finalCalldata.push('0x0')
-    finalCalldata.push('0x0')
-    finalCalldata.push('0x0')
+    } else {
+      calldata.push(addHexPrefix(type.toString(16)))
+      calldata.push(to)
+      calldata.push(addHexPrefix(nonce.toString(16)))
+      calldata.push(addHexPrefix('0'))
+      calldata.push(addHexPrefix('0'))
+      calldata.push(addHexPrefix(gasPrice.toString(16)))
+      calldata.push(addHexPrefix(gasLimit.toString(16)))
+      calldata.push(...safeUint256ToU256(value).map(v => addHexPrefix(v)))
 
-    const value_u256 = safeUint256ToU256(value)
-    finalCalldata.push(...value_u256.map(v => addHexPrefix(v)))
+      const evmCalldata = to128Bits(data)
+      calldata.push(addHexPrefix(evmCalldata.length.toString(16)))
+      calldata.push(...evmCalldata)
 
-    finalCalldata.push(addHexPrefix(calldata.length.toString(16))) // len zero
-    return finalCalldata
+    }
   }
 
-  if (typeof targetFunction === 'undefined') {
-    throw 'Target function not empty but calldata and directives are empty'
-  }
-
-  const finalCalldata: Array<string> = []
-
-  finalCalldata.push(to)
-  finalCalldata.push('0x0')
-  finalCalldata.push('0x0')
-  finalCalldata.push('0x0')
-  finalCalldata.push('0x0')
-
-  const value_u256 = safeUint256ToU256(value)
-  finalCalldata.push(...value_u256.map(v => addHexPrefix(v)))
-
-  finalCalldata.push(addHexPrefix(calldata.length.toString(16)))
-  finalCalldata.push(...calldata)
-
-  return finalCalldata
+  return calldata;
 }
 
 // Last version of calldata preparing
