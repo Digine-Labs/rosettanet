@@ -244,7 +244,7 @@ export async function mockValidateCost(caller: string, calldata: string[]): Prom
   const DEFAULT_VALIDATION_FEE: GasCost = {
     l1_data: 256,
     l1: 0,
-    l2: 13698786
+    l2: 20698786
   };
   const estimateFeeCall = {
       jsonrpc: '2.0',
