@@ -298,9 +298,9 @@ export async function mockValidateCost(caller: string, calldata: string[]): Prom
     }
 
     return <GasCost> {
-      l1_data: Number(BigInt(fees.l1_data_gas_consumed)),
-      l1: Number(BigInt(fees.l1_gas_consumed)),
-      l2: Number(BigInt(fees.l2_gas_consumed)),
+      l1_data: Math.ceil(Number(BigInt(fees.l1_data_gas_consumed)) * 1.2),
+      l1: Math.ceil(Number(BigInt(fees.l1_gas_consumed)) * 1.2),
+      l2: Math.ceil(Number(BigInt(fees.l2_gas_consumed)) * 1.2),
     }
 }
 
