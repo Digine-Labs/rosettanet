@@ -65,18 +65,23 @@ async function updateGasPrice() {
     const l2Gas = blockResponse.result.l2_gas_price as GasData
     // Assumes correctly received valued. If not error
 
+    // Helper function for ceiling division with BigInt
+    const ceilDiv = (a: bigint, b: bigint): bigint => {
+      return (a + b - BigInt(1)) / b;
+    };
+
     const gas = {
       l1: {
-        fri: '0x' + (BigInt(l1Gas.price_in_fri) * BigInt(110) / BigInt(100)).toString(16),
-        wei: '0x' + (BigInt(l1Gas.price_in_wei) * BigInt(110) / BigInt(100)).toString(16)
+        fri: '0x' + ceilDiv(BigInt(l1Gas.price_in_fri) * BigInt(110), BigInt(100)).toString(16),
+        wei: '0x' + ceilDiv(BigInt(l1Gas.price_in_wei) * BigInt(110), BigInt(100)).toString(16)
       },
       l1_data: {
-        fri: '0x' + (BigInt(l1DataGas.price_in_fri) * BigInt(110) / BigInt(100)).toString(16),
-        wei: '0x' + (BigInt(l1DataGas.price_in_wei) * BigInt(110) / BigInt(100)).toString(16)
+        fri: '0x' + ceilDiv(BigInt(l1DataGas.price_in_fri) * BigInt(110), BigInt(100)).toString(16),
+        wei: '0x' + ceilDiv(BigInt(l1DataGas.price_in_wei) * BigInt(110), BigInt(100)).toString(16)
       },
       l2: {
-        fri: '0x' + (BigInt(l2Gas.price_in_fri) * BigInt(110) / BigInt(100)).toString(16),
-        wei: '0x' + (BigInt(l2Gas.price_in_wei) * BigInt(110) / BigInt(100)).toString(16)
+        fri: '0x' + ceilDiv(BigInt(l2Gas.price_in_fri) * BigInt(110), BigInt(100)).toString(16),
+        wei: '0x' + ceilDiv(BigInt(l2Gas.price_in_wei) * BigInt(110), BigInt(100)).toString(16)
       }
     }
 

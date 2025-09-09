@@ -54,6 +54,14 @@ function sumGas(lhs: GasCost, rhs: GasCost): GasCost {
   }
 }
 
+function roundUpGasCost(gas: GasCost): GasCost {
+  return {
+    l1: Math.ceil(gas.l1),
+    l1_data: Math.ceil(gas.l1_data),
+    l2: Math.ceil(gas.l2)
+  }
+}
+
 export interface EstimateGasParameters {
   from?: string;
   to?: string;
@@ -159,5 +167,5 @@ export async function estimateGasCost(parameters: EstimateGasParameters): Promis
 
   totalFee = sumGas(totalFee, executionFee);
 
-  return totalFee;
+  return roundUpGasCost(totalFee);
 }
