@@ -3,8 +3,8 @@ import { RPCRequest, RPCResponse, StarknetRPCError } from '../types/types'
 import { getConfigurationProperty } from './configReader'
 import { isStarknetRPCError } from '../types/typeGuards'
 import { writeLog } from '../logger'
-import { GasCost } from '../rpc/calls/estimateGas'
 import { addHexPrefix } from './padding'
+import { GasCost } from './gas'
 
 const SELECTORS = {
   get_sn_address_from_eth_address:

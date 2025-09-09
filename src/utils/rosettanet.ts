@@ -11,7 +11,7 @@ import { isRPCResponse, isStarknetRPCError } from '../types/typeGuards'
 import { addHexPrefix, hexPadding } from './padding'
 import { writeLog } from '../logger'
 import { safeU256ToUint256, U256ToUint256HexString } from './converters/integer'
-import { getGasObject } from './transaction'
+import { getDeploymentResourceBounds } from './resourceBounds'
 
 // Calls starknet factory contract to precalculate starknet account address
 // TODO: add custom types like in deploy function
@@ -112,16 +112,19 @@ export interface AccountDeployError {
   message: string
 }
 
+
+
 export async function deployRosettanetAccount(
   txn: SignedRawTransaction,
 ): Promise<AccountDeployResult | AccountDeployError> {
   const rosettanet = getConfigurationProperty('rosettanet')
   const accountClass = getConfigurationProperty('accountClass')
-  const gasPrice = txn.maxFeePerGas == null ? txn.gasPrice : txn.maxFeePerGas
-  const actualGasPrice = gasPrice == null ? '0x0' : gasPrice
-  console.log('MAX FEE: ' + txn.gasLimit.toString(16))
-  console.log('MAX price per unit: ' + actualGasPrice.toString(16))
-  const gasObject = getGasObject(txn)
+  //const gasPrice = txn.maxFeePerGas == null ? txn.gasPrice : txn.maxFeePerGas
+ // const actualGasPrice = gasPrice == null ? '0x0' : gasPrice
+  //console.log('MAX FEE: ' + txn.gasLimit.toString(16))
+  //console.log('MAX price per unit: ' + actualGasPrice.toString(16))
+  //const gasObject = getGasObject(txn)
+  const resourceBounds = getDeploymentResourceBounds();
   const deployRequest = {
     // todo handle error if string
     jsonrpc: '2.0',
@@ -135,7 +138,7 @@ export async function deployRosettanetAccount(
         contract_address_salt: txn.from,
         class_hash: accountClass,
         constructor_calldata: [txn.from, rosettanet],
-        resource_bounds: gasObject,
+        resource_bounds: resourceBounds,
         tip: '0x0',
         paymaster_data: [],
         nonce_data_availability_mode: 'L1',

@@ -29,6 +29,7 @@ import {
 import { getAccountNonce } from '../../utils/starknet'
 import { writeLog } from '../../logger'
 import { padHashTo64 } from '../../utils/padding'
+import { resourceBoundsFromSignedTxn } from '../../utils/resourceBounds'
 
 export async function sendRawTransactionHandler(
   request: RPCRequest,
@@ -98,14 +99,17 @@ export async function sendRawTransactionHandler(
     }
   }
 
-  const accountNonce = await getAccountNonce(starknetAccountAddress)
+  const accountNonce = await getAccountNonce(starknetAccountAddress);
+
+  const resourceBounds = await resourceBoundsFromSignedTxn(signedValidRawTransaction);
 
   const invokeTx = prepareStarknetInvokeTransaction(
     starknetAccountAddress,
     rosettanetCalldata,
     signedValidRawTransaction.signature.arrayified,
-    signedValidRawTransaction,
+    //signedValidRawTransaction,
     accountNonce,
+    resourceBounds
   )
 
   writeLog(0, JSON.stringify(invokeTx,(k, v) => typeof v === 'bigint' ? v.toString() : v))
@@ -194,12 +198,15 @@ async function deployAndBroadcastTransaction(
     }
   }
 
+  const resourceBounds = await resourceBoundsFromSignedTxn(txn);
+
   const invokeTx = prepareStarknetInvokeTransaction(
     accountDeployResult.contractAddress,
     rosettanetCalldata,
     txn.signature.arrayified,
-    txn,
+    //txn,
     starknetNonce,
+    resourceBounds
   )
   writeLog(0, 'invoke tx')
   writeLog(0,JSON.stringify(invokeTx,(k, v) => typeof v === 'bigint' ? v.toString() : v))
