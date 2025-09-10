@@ -185,6 +185,8 @@ async function deployAndBroadcastTransaction(
     }
   }
 
+  await new Promise((resolve) => setTimeout(resolve, 5000)); // 5 sn bekle
+
   const rosettanetCalldata = prepareRosettanetCalldata(txn)
 
   if (isPrepareCalldataError(rosettanetCalldata)) {
