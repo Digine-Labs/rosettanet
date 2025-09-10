@@ -303,8 +303,8 @@ export async function mockValidateCost(caller: string, calldata: string[]): Prom
     const l2 = Math.ceil(Number(BigInt(fees.l2_gas_consumed)) * 2.4);
     return <GasCost> {
       l1_data: l1_data >= DEFAULT_VALIDATION_FEE.l1_data ? l1_data: DEFAULT_VALIDATION_FEE.l1_data,
-      l1: l1 >= DEFAULT_VALIDATION_FEE.l1 ? l1_data: DEFAULT_VALIDATION_FEE.l1,
-      l2: l2 >= DEFAULT_VALIDATION_FEE.l2 ? l1_data: DEFAULT_VALIDATION_FEE.l2,
+      l1: l1 >= DEFAULT_VALIDATION_FEE.l1 ? l1: DEFAULT_VALIDATION_FEE.l1,
+      l2: l2 >= DEFAULT_VALIDATION_FEE.l2 ? l2: DEFAULT_VALIDATION_FEE.l2,
     }
 }
 
