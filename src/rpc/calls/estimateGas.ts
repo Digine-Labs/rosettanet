@@ -40,7 +40,7 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
     gas: parameters.gas
   });
 
-  const totalFeeFri = Math.ceil((totalFee.l1 + totalFee.l1_data + totalFee.l2) * 1.15); // Add %15 buffer and round up
+  const totalFeeFri = Math.ceil((totalFee.l1 + totalFee.l1_data + totalFee.l2) * 1.5); // Add %130 buffer and round up
   // Check account is deployed
   return <RPCResponse>{
     jsonrpc: request.jsonrpc,
