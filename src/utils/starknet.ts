@@ -231,3 +231,21 @@ export async function getAccountNonce(snAddress: string): Promise<string> {
     return '0x0'
   }
 }
+
+// Same but returns higher nonce if error or zero nonce
+export async function getAccountNonceForEstimateFee(snAddress: string): Promise<string> {
+  const rpcUrl: string = getRpc()
+  const provider = new RpcProvider({ nodeUrl: rpcUrl })
+  const fallbackNonce: string = '0x10240';
+  try {
+    const nonce = await provider.getNonceForAddress(snAddress)
+    if(BigInt(nonce) == BigInt(0)) {
+      writeLog(0,`Returning fallback nonce. nonce received = 0`);
+      return fallbackNonce
+    }
+    return nonce
+  } catch (ex) {
+    writeLog(0, `Error at getAccountNonce: ${ex}. Falling back nonce as zero.`)
+    return fallbackNonce
+  }
+}
