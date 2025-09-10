@@ -4,7 +4,7 @@ import { writeLog } from '../logger'
 import { isRosettaAccountDeployed } from './rosettanet'
 import { getConfigurationProperty } from './configReader'
 import { prepareRosettanetCalldataForEstimateFee } from './transaction'
-import { getAccountNonce } from './starknet'
+import { getAccountNonce, getAccountNonceForEstimateFee } from './starknet'
 
 interface ActualFeeObject {
   amount: string
@@ -161,7 +161,7 @@ export async function estimateGasCost(parameters: EstimateGasParameters): Promis
 
   // Execution fee
 
-  const accountNonce: string = await getAccountNonce(precalculatedStarknetAddress);
+  const accountNonce: string = await getAccountNonceForEstimateFee(precalculatedStarknetAddress);
 
   const executionFee: GasCost = await estimateExecutionFee(precalculatedStarknetAddress, calldata, accountNonce);
 
