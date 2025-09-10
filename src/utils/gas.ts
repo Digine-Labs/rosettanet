@@ -163,7 +163,7 @@ export async function estimateGasCost(parameters: EstimateGasParameters): Promis
 
   const accountNonce: string = await getAccountNonceForEstimateFee(precalculatedStarknetAddress);
 
-  const executionFee: GasCost = await estimateExecutionFee(precalculatedStarknetAddress, calldata, accountNonce);
+  const executionFee: GasCost = await estimateExecutionFee(precalculatedStarknetAddress, calldata, accountNonce, value);
 
   totalFee = sumGas(totalFee, executionFee);
 

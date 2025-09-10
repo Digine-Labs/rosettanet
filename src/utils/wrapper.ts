@@ -5,6 +5,7 @@ import { isStarknetRPCError } from '../types/typeGuards'
 import { writeLog } from '../logger'
 import { addHexPrefix } from './padding'
 import { GasCost } from './gas'
+import { BnToU256 } from './converters/integer'
 
 const SELECTORS = {
   get_sn_address_from_eth_address:
@@ -175,7 +176,7 @@ export async function getSnAddressFromEthAddress(
   }
 }
 
-export async function estimateExecutionFee(sender: string, calldata: string[], nonce: string): Promise<GasCost> {
+export async function estimateExecutionFee(sender: string, calldata: string[], nonce: string, value: bigint): Promise<GasCost> {
   const DEFAULT_EXECUTION_FEE: GasCost = {
     l1_data: 256,
     l1: 0,
@@ -190,7 +191,7 @@ export async function estimateExecutionFee(sender: string, calldata: string[], n
         version: '0x3',
         sender_address: sender,
         calldata: calldata,
-        signature: ["0x0","0x0","0x0","0x0","0x1c","0x1","0x0"],
+        signature: ["0x0","0x0","0x0","0x0","0x1c",...BnToU256(value)],
         nonce: addHexPrefix(nonce),
         tip: '0x0',
         paymaster_data: [],
