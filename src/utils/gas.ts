@@ -108,7 +108,9 @@ export async function estimateGasCost(parameters: EstimateGasParameters): Promis
   const isAccountDeployed = await isRosettaAccountDeployed(precalculatedStarknetAddress, getConfigurationProperty('accountClass'));
 
   if(!isAccountDeployed) {
-    totalFee = sumGas(totalFee, DEPLOYMENT_COST)
+    totalFee = sumGas(totalFee, DEPLOYMENT_COST);
+    totalFee = sumGas(totalFee, <GasCost> {l1: 0, l1_data: 2048, l2: 100000000});
+    return roundUpGasCost(totalFee)
   }
 
   const to: string = parameters.to ? parameters.to : '0x0';
