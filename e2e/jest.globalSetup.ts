@@ -11,15 +11,19 @@ export default async function globalSetup() {
 
     const rosettanetClass = await declareContract(account, 'Rosettanet')
     const accountClass = await declareContract(account, 'RosettaAccount')
+    const validateFeeEstimator = await declareContract(account, 'ValidateFeeEstimator')
 
     const rosettanetAddress = await deployContract(account, rosettanetClass, [
       accountClass,
       account.address,
       STRK_ADDRESS,
     ])
+    const validateFeeEstimatorAddress = await deployContract(account, validateFeeEstimator, [])
+
     const nodeConfig = testConfig
     nodeConfig.accountClass = accountClass
     nodeConfig.rosettanet = rosettanetAddress
+    nodeConfig.validateFeeEstimator = validateFeeEstimatorAddress
     await updateNodeConfig(JSON.stringify(nodeConfig))
 
     await fundAccountsForBalanceTests();

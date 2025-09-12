@@ -22,25 +22,25 @@ describe('Using ethers.js with Rosettanet RPC', () => {
 
         const toAddress = '0x8b4ee3F7a16ed6b793BD7907f87778AC11624c27';
         const ERC20_ABI = [
-          'function balanceOf(address owner) view returns (uint256)',
-          'function decimals() view returns (uint8)',
-          'function transfer(address to, uint256 amount) public returns (bool)'
+            'function balanceOf(address owner) view returns (uint256)',
+            'function decimals() view returns (uint8)',
+            'function transfer(address to, uint256 amount) public returns (bool)'
         ];
         const tokenAddress = await getEthAddress(ETH_ADDRESS);
         const devAcc = getDevAccount()
         const precalculatedSnAddress = await precalculateStarknetAddress(wallet.address);
         await sendStrksFromSnAccount(devAcc, precalculatedSnAddress, '100000000000000000000')
-        
+
         const iface = new ethers.Interface(ERC20_ABI);
-  
+
         const data = iface.encodeFunctionData('transfer', [
-          toAddress,
-          ethers.parseUnits('1', 18)
+            toAddress,
+            ethers.parseUnits('1', 18)
         ]);
-        
+
         const txRequest = {
-          to: tokenAddress.ethereum, // Token kontrat adresi
-          data: data,
+            to: tokenAddress.ethereum, // Token kontrat adresi
+            data: data,
         };
 
         const tx = await wallet.populateTransaction(txRequest);
@@ -116,7 +116,25 @@ describe('Using ethers.js with Rosettanet RPC', () => {
     }, 30000)
 
     test.only('Send already sent tx twice in array', async () => {
-        const txs = ['0x02f8b4845253545380843b9aca00852ecc889a0082520894b5e1278663de249f8580ec51b6b61739bd90621580b844a9059cbb0000000000000000000000008b4ee3f7a16ed6b793bd7907f87778ac11624c270000000000000000000000000000000000000000000000000de0b6b3a7640000c080a07ec65572fb7f245736b47900c99a0818f588c69a09e3dc3132bd752adf5a665ca06bb0ee1ce53ac2b0e88b6aecac60ffba66d90613ad3cc8b1ac13df5bae6221f9', '0x02f8b4845253545380843b9aca00852ecc889a0082520894b5e1278663de249f8580ec51b6b61739bd90621580b844a9059cbb0000000000000000000000008b4ee3f7a16ed6b793bd7907f87778ac11624c270000000000000000000000000000000000000000000000000de0b6b3a7640000c080a07ec65572fb7f245736b47900c99a0818f588c69a09e3dc3132bd752adf5a665ca06bb0ee1ce53ac2b0e88b6aecac60ffba66d90613ad3cc8b1ac13df5bae6221f9']
+        const provider = new ethers.JsonRpcProvider(SERVER);
+        // Fund initial address first
+        const devAcc = getDevAccount();
+        const privateKey = '0x9979f9c93cbca19e905a21ce4d6ee9233948bcfe67d95c11de664ebe4b78c506';
+        const wallet = new ethers.Wallet(privateKey, provider);
+
+        const precalculatedSnAddress = await precalculateStarknetAddress(wallet.address);
+        await sendStrksFromSnAccount(devAcc, precalculatedSnAddress, '100000000000000000000') // sends 100 strk
+
+        const toAddress = '0xDbA5375833DBbA1D58C87864369D4Be5d1a24bCe';
+
+        const txRequest = await wallet.populateTransaction({
+            to: toAddress,
+            value: ethers.parseEther('1.0')  // 1 STRK
+        });
+
+        const signedTx = await wallet.signTransaction(txRequest);
+
+        const txs = [signedTx, signedTx] // Sending same tx twice
 
         const response = await axios.post(SERVER, [{
             jsonrpc: '2.0',
@@ -127,8 +145,10 @@ describe('Using ethers.js with Rosettanet RPC', () => {
             jsonrpc: '2.0',
             method: 'eth_sendRawTransaction',
             params: [txs[1]],
-            id: 2,  
+            id: 2,
         }])
+
+        console.log(response.data)
 
         expect(response.data.length).toBe(2)
         expect(response.data[0].id).toBe(1)

@@ -20,6 +20,7 @@ export const testConfig = {
     '0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d',
   rosettanet:
     '0x007288a71619eca9397bf0d3066d236b41de33fd6af3a420d16b2f55c93f8af7',
+  validateFeeEstimator: "0x0",
   featureTarget: "0x0000000000000000000000004645415455524553",
   logging: {
     active: true,
@@ -80,7 +81,7 @@ export async function updateNodeConfig(config: string) {
     const configFilePath = path.resolve(__dirname, '../config.test.json')
 
     await fs.writeFile(configFilePath, config, 'utf-8')
-    console.log('Configuration updated.')
+    console.log('Contracts deployed & Configuration updated.')
     return
   } catch (ex) {
     console.error('Error at updating node config:', ex)
@@ -130,19 +131,31 @@ export function getEthStrkHolderAccount(): Account {
 }
 
 export async function sendStrksFromSnAccount(account: Account, recipient: string, amount: BigNumberish) {
-  await account.execute({
-    contractAddress: STRK_ADDRESS,
-    entrypoint: 'transfer',
-    calldata: [recipient, uint256.bnToUint256(amount).low, uint256.bnToUint256(amount).high]
-  })
+  try {
+    await account.execute({
+      contractAddress: STRK_ADDRESS,
+      entrypoint: 'transfer',
+      calldata: [recipient, uint256.bnToUint256(amount).low, uint256.bnToUint256(amount).high]
+    })
+    return true
+  } catch (e) {
+    console.log(e);
+    throw new Error("Failed to sendStrksFromSnAccount");
+  }
 }
 
 export async function sendERC20FromSnAccount(account: Account, erc20Contract: string, recipient: string, amount: BigNumberish) {
-  await account.execute({
-    contractAddress: erc20Contract,
-    entrypoint: 'transfer',
-    calldata: [recipient, uint256.bnToUint256(amount).low, uint256.bnToUint256(amount).high]
-  })
+  try {
+    await account.execute({
+      contractAddress: erc20Contract,
+      entrypoint: 'transfer',
+      calldata: [recipient, uint256.bnToUint256(amount).low, uint256.bnToUint256(amount).high]
+    })
+    return true
+  } catch (e) {
+    console.log(e);
+    throw new Error("Failed to sendERC20FromSnAccount");
+  }
 }
 
 export function getProvider(): RpcProvider {

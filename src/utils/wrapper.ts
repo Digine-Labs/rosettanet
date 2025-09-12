@@ -187,11 +187,11 @@ export async function estimateExecutionFee(sender: string, calldata: string[], n
     method: 'starknet_estimateFee',
     params: {
       request: [{
-        type:'INVOKE',
+        type: 'INVOKE',
         version: '0x3',
         sender_address: sender,
         calldata: calldata,
-        signature: ["0x0","0x0","0x0","0x0","0x1c",...BnToU256(value)],
+        signature: ["0x0", "0x0", "0x0", "0x0", "0x1c", ...BnToU256(value)],
         nonce: addHexPrefix(nonce),
         tip: '0x0',
         paymaster_data: [],
@@ -221,19 +221,19 @@ export async function estimateExecutionFee(sender: string, calldata: string[], n
 
   const executionFeeResult: RPCResponse | StarknetRPCError = await callStarknet(estimateFeeCall);
 
-  if(isStarknetRPCError(executionFeeResult)) {
+  if (isStarknetRPCError(executionFeeResult)) {
     writeLog(2, 'Error at starknet call on estimateFee @ wrapper.ts. Returning default.');
     return DEFAULT_EXECUTION_FEE;
   }
 
   const fees = executionFeeResult.result[0];
 
-  if(!fees || typeof fees.l1_data_gas_consumed !== 'string' || typeof fees.l1_gas_consumed !== 'string' || typeof fees.l2_gas_consumed !== 'string') {
+  if (!fees || typeof fees.l1_data_gas_consumed !== 'string' || typeof fees.l1_gas_consumed !== 'string' || typeof fees.l2_gas_consumed !== 'string') {
     writeLog(2, 'Error at starknet result estimateFee @ wrapper.ts. Returning default.');
     return DEFAULT_EXECUTION_FEE;
   }
 
-  return <GasCost> {
+  return <GasCost>{
     l1_data: Number(BigInt(fees.l1_data_gas_consumed)),
     l1: Number(BigInt(fees.l1_gas_consumed)),
     l2: Number(BigInt(fees.l2_gas_consumed)),
@@ -245,68 +245,69 @@ export async function mockValidateCost(caller: string, calldata: string[]): Prom
   const DEFAULT_VALIDATION_FEE: GasCost = {
     l1_data: 256,
     l1: 0,
-    l2: 20698786
+    l2: 30698786
   };
 
   const estimateFeeCall = {
-      jsonrpc: '2.0',
-      method: 'starknet_estimateFee',
-      params: {
-        request: [{
-          type:'INVOKE',
-          version: '0x3',
-          sender_address: feeEstimator,
-          calldata: [caller, ...calldata],
-          signature: ["0x0","0x0","0x0","0x0","0x1c","0x1","0x0"],
-          nonce: '0x1',
-          tip: '0x0',
-          paymaster_data: [],
-          account_deployment_data: [],
-          nonce_data_availability_mode: 'L1',
-          fee_data_availability_mode: 'L1',
-          resource_bounds: {
-            l1_gas: {
-              max_amount: '0x0',
-              max_price_per_unit: '0x0',
-            },
-            l2_gas: {
-              max_amount: '0x0',
-              max_price_per_unit: '0x0',
-            },
-            l1_data_gas: {
-              max_amount: '0x0',
-              max_price_per_unit: '0x0',
-            },
+    jsonrpc: '2.0',
+    method: 'starknet_estimateFee',
+    params: {
+      request: [{
+        type: 'INVOKE',
+        version: '0x3',
+        sender_address: feeEstimator,
+        calldata: [caller, ...calldata],
+        signature: ["0x0", "0x0", "0x0", "0x0", "0x1c", "0x1", "0x0"],
+        nonce: "0x0",
+        tip: '0x0',
+        paymaster_data: [],
+        account_deployment_data: [],
+        nonce_data_availability_mode: 'L1',
+        fee_data_availability_mode: 'L1',
+        resource_bounds: {
+          l1_gas: {
+            max_amount: '0x0',
+            max_price_per_unit: '0x0',
           },
-        }],
-        simulation_flags: ['SKIP_VALIDATE'],
-        block_id: 'latest'
-      },
-      id: 123
-    };
+          l2_gas: {
+            max_amount: '0x0',
+            max_price_per_unit: '0x0',
+          },
+          l1_data_gas: {
+            max_amount: '0x0',
+            max_price_per_unit: '0x0',
+          },
+        },
+      }],
+      simulation_flags: ['SKIP_VALIDATE'],
+      block_id: 'latest'
+    },
+    id: 123
+  };
 
-    const validationFeeResult: RPCResponse | StarknetRPCError = await callStarknet(estimateFeeCall);
+  const validationFeeResult: RPCResponse | StarknetRPCError = await callStarknet(estimateFeeCall);
 
-    if(isStarknetRPCError(validationFeeResult)) {
-      writeLog(2, 'Error at starknet call on mockValidateCost. Returning default.');
-      return DEFAULT_VALIDATION_FEE;
-    }
+  if (isStarknetRPCError(validationFeeResult)) {
+    writeLog(2, 'Error at starknet call on mockValidateCost. Returning default.');
+    return DEFAULT_VALIDATION_FEE;
+  }
 
-    const fees = validationFeeResult.result[0];
+  const fees = validationFeeResult.result[0];
 
-    if(!fees || typeof fees.l1_data_gas_consumed !== 'string' || typeof fees.l1_gas_consumed !== 'string' || typeof fees.l2_gas_consumed !== 'string') {
-      writeLog(2, 'Error at starknet result validation on mockValidateCost. Returning default.');
-      return DEFAULT_VALIDATION_FEE;
-    }
+  if (!fees || typeof fees.l1_data_gas_consumed !== 'string' || typeof fees.l1_gas_consumed !== 'string' || typeof fees.l2_gas_consumed !== 'string') {
+    writeLog(2, 'Error at starknet result validation on mockValidateCost. Returning default.');
+    return DEFAULT_VALIDATION_FEE;
+  }
 
-    const l1_data =  Math.ceil(Number(BigInt(fees.l1_data_gas_consumed)) * 2.4);
-    const l1 = Math.ceil(Number(BigInt(fees.l1_gas_consumed)) * 2.0);
-    const l2 = Math.ceil(Number(BigInt(fees.l2_gas_consumed)) * 2.4);
-    return <GasCost> {
-      l1_data: l1_data >= DEFAULT_VALIDATION_FEE.l1_data ? l1_data: DEFAULT_VALIDATION_FEE.l1_data,
-      l1: l1 >= DEFAULT_VALIDATION_FEE.l1 ? l1: DEFAULT_VALIDATION_FEE.l1,
-      l2: l2 >= DEFAULT_VALIDATION_FEE.l2 ? l2: DEFAULT_VALIDATION_FEE.l2,
-    }
+  const l1_data = Math.ceil(Number(BigInt(fees.l1_data_gas_consumed)) * 2.4);
+  const l1 = Math.ceil(Number(BigInt(fees.l1_gas_consumed)) * 2.0);
+  const l2 = Math.ceil(Number(BigInt(fees.l2_gas_consumed)) * 2.4);
+
+  return <GasCost>{
+    l1_data: l1_data >= DEFAULT_VALIDATION_FEE.l1_data ? l1_data : DEFAULT_VALIDATION_FEE.l1_data,
+    l1: l1 >= DEFAULT_VALIDATION_FEE.l1 ? l1 : DEFAULT_VALIDATION_FEE.l1,
+    l2: l2 >= DEFAULT_VALIDATION_FEE.l2 ? l2 : DEFAULT_VALIDATION_FEE.l2,
+  }
 }
 
 /*
