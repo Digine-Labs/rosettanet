@@ -165,7 +165,7 @@ function createTxObject(starknetData: any, tx: any): any {
   return {
     blockHash: padHashTo64(starknetData.block_hash),
     blockNumber: numberToHex(starknetData.block_number),
-    from: getLast160Bits(starknetData.sender_address), // TODO: We cant fetch registry for each tx so this is temp solution here
+    from: getLast160Bits(tx.sender_address), // TODO: We cant fetch registry for each tx so this is temp solution here
     gas: gas,
     gasPrice: "0x8e2a40e26",
     maxPriorityFeePerGas: "0x8e2a40e26",
@@ -173,7 +173,7 @@ function createTxObject(starknetData: any, tx: any): any {
     hash: padHashTo64(tx.transaction_hash),
     input: "0x389dba8c048cafcb6ce0729fb63f303b96ed3908475667a14cd337828323d0c",
     nonce: tx.nonce,
-    to: getLast160Bits(starknetData.sender_address), // TODO: We cant parse starknet calldata now. So we return sender address here.
+    to: getLast160Bits(tx.sender_address), // TODO: We cant parse starknet calldata now. So we return sender address here.
     transactionIndex: "0x0",
     value: "0x0",
     type: "0x2", // All txs returned as eip1559 by default. In further we may match with sn versions.
