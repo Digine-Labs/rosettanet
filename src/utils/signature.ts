@@ -1,7 +1,7 @@
 import { Signature, Transaction } from 'ethers'
 import { RosettanetSignature } from '../types/types'
 import { BnToU256, safeU256ToUint256, Uint256ToU256 } from './converters/integer'
-import { addHexPadding, addHexPrefix } from './padding'
+import { addHexPadding, addHexPrefix, removeHexPrefix } from './padding'
 import { parseRosettanetRawCalldata } from './rosettanet'
 import { getConfigurationProperty } from './configReader'
 
@@ -31,7 +31,7 @@ export function createRosettanetSignature(
 export function getEthersTransactionFromRosettanetCall(signature: string[], calldata: string[]): Transaction {
   const r = addHexPrefix(safeU256ToUint256([signature[0], signature[1]]));
   const s = addHexPrefix(safeU256ToUint256([signature[2], signature[3]]));
-  const v =  Number(BigInt(signature[4]));
+  const v = Number(BigInt(signature[4]));
 
   const nonce = Number(BigInt(calldata[2]))
   const gasLimit = BigInt(calldata[6])
@@ -42,12 +42,12 @@ export function getEthersTransactionFromRosettanetCall(signature: string[], call
   const data = typeof input === 'undefined' ? '0x' : input.rawInput
   const txType = calldata[0] as string
   const chainId = Number(BigInt(getConfigurationProperty('chainId')));
-  if(txType === '0x0') {
+  if (txType === '0x0') {
     const gasPrice = BigInt(calldata[5])
     const signedTx = {
       chainId,
-      signature : {
-        v,r,s
+      signature: {
+        v, r, s
       },
       nonce, gasPrice, gasLimit, value, to,
       type: 0,
@@ -61,8 +61,8 @@ export function getEthersTransactionFromRosettanetCall(signature: string[], call
     const maxFeePerGas = BigInt(calldata[4])
     const signedTx = {
       chainId,
-      signature : {
-        v,r,s
+      signature: {
+        v, r, s
       },
       nonce, to, gasLimit, value,
       type: 2,
@@ -72,4 +72,31 @@ export function getEthersTransactionFromRosettanetCall(signature: string[], call
     const txObject = Transaction.from(signedTx)
     return txObject;
   }
+}
+
+export function getEthersTransactionFromStarknetCall(result: any): Transaction {
+  const r = addHexPrefix(safeU256ToUint256([addHexPrefix(removeHexPrefix(result.signature[0]).slice(0, 32)), addHexPrefix(removeHexPrefix(result.signature[1]).slice(32))]));
+  const s = addHexPrefix(safeU256ToUint256([addHexPrefix(removeHexPrefix(result.signature[0]).slice(0, 32)), addHexPrefix(removeHexPrefix(result.signature[1]).slice(32))]));
+  const v = Number(BigInt(0));
+
+  const nonce = result.nonce
+  const gasLimit = result.resource_bounds.l2_gas.max_amount
+  const to = result.calldata[1].slice(0, 42) // first 42 chars of "to" address
+  const value = "0x0"
+  const data = "0x";
+  const chainId = Number(BigInt(getConfigurationProperty('chainId')));
+  const maxPriorityFeePerGas = BigInt(result.resource_bounds.l2_gas.max_amount)
+  const maxFeePerGas = BigInt(result.resource_bounds.l2_gas.max_price_per_unit)
+  const signedTx = {
+    chainId,
+    signature: {
+      v, r, s
+    },
+    nonce, to, gasLimit, value,
+    type: 2,
+    data,
+    maxFeePerGas, maxPriorityFeePerGas
+  }
+  const txObject = Transaction.from(signedTx)
+  return txObject;
 }
