@@ -70,7 +70,7 @@ export interface EstimateGasParameters {
   gas?: string;
   gasLimit?: bigint;
   gasPrice?: bigint;
-  nonce?: string;
+  nonce?: number | string;
   maxFeePerGas?: bigint;
   maxPriorityFeePerGas?: bigint;
 }
