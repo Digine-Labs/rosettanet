@@ -12,5 +12,13 @@
     ],
     "rules" : {
         "no-console": 2 // We dont want console log
-    }
+    },
+    "overrides": [
+      {
+        "files": ["e2e/**/*.ts"],
+        "rules": {
+          "no-console": "off"
+        }
+      }
+    ]
 }

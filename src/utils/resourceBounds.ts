@@ -51,13 +51,13 @@ export async function resourceBoundsFromSignedTxn(txn: SignedRawTransaction): Pr
 
         let availableGas = txn.gasLimit;
 
-        let l1_data = availableGas > BigInt(gasCost.l1_data) ? BigInt(gasCost.l1_data) : availableGas;
+        const l1_data = availableGas > BigInt(gasCost.l1_data) ? BigInt(gasCost.l1_data) : availableGas;
         availableGas = availableGas - l1_data;
 
-        let l2 = availableGas > BigInt(gasCost.l2) ? BigInt(gasCost.l2) : availableGas;
+        const l2 = availableGas > BigInt(gasCost.l2) ? BigInt(gasCost.l2) : availableGas;
         availableGas = availableGas - l2;
 
-        let l1 = availableGas > BigInt(gasCost.l1) ? BigInt(gasCost.l1) : availableGas;
+        const l1 = availableGas > BigInt(gasCost.l1) ? BigInt(gasCost.l1) : availableGas;
         availableGas = availableGas - l1;
 
         return <ResourceBounds> {

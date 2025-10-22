@@ -4,7 +4,7 @@ import { writeLog } from '../logger'
 import { isRosettaAccountDeployed } from './rosettanet'
 import { getConfigurationProperty } from './configReader'
 import { prepareRosettanetCalldataForEstimateFee } from './transaction'
-import { getAccountNonce, getAccountNonceForEstimateFee } from './starknet'
+import { getAccountNonceForEstimateFee } from './starknet'
 
 interface ActualFeeObject {
   amount: string
@@ -70,7 +70,7 @@ export interface EstimateGasParameters {
   gas?: string;
   gasLimit?: bigint;
   gasPrice?: bigint;
-  nonce?: any;
+  nonce?: string;
   maxFeePerGas?: bigint;
   maxPriorityFeePerGas?: bigint;
 }
@@ -92,7 +92,7 @@ export async function estimateGasCost(parameters: EstimateGasParameters): Promis
   };
 
   const from = parameters.from;
-  
+
   // If from address is not provided, return BASE_FEE
   if (!from) {
     return BASE_FEE;
@@ -100,16 +100,16 @@ export async function estimateGasCost(parameters: EstimateGasParameters): Promis
 
   // Get Starknet account address
   const precalculatedStarknetAddress = await precalculateStarknetAccountAddress(from);
-  if(typeof precalculatedStarknetAddress !== 'string') {
+  if (typeof precalculatedStarknetAddress !== 'string') {
     writeLog(2, 'Starknet rpc error at precalculating from address at estimateGasCost')
     return BASE_FEE;
   }
 
   const isAccountDeployed = await isRosettaAccountDeployed(precalculatedStarknetAddress, getConfigurationProperty('accountClass'));
 
-  if(!isAccountDeployed) {
+  if (!isAccountDeployed) {
     totalFee = sumGas(totalFee, DEPLOYMENT_COST);
-    totalFee = sumGas(totalFee, <GasCost> {l1: 0, l1_data: 2048, l2: 100000000});
+    totalFee = sumGas(totalFee, <GasCost>{ l1: 0, l1_data: 2048, l2: 100000000 });
     return roundUpGasCost(totalFee)
   }
 
@@ -135,7 +135,7 @@ export async function estimateGasCost(parameters: EstimateGasParameters): Promis
     return 0
   })();
 
-  const inferredType: number = (parameters.maxFeePerGas != null || parameters.maxPriorityFeePerGas != null)? 2 : 0;
+  const inferredType: number = (parameters.maxFeePerGas != null || parameters.maxPriorityFeePerGas != null) ? 2 : 0;
 
   const maxFeePerGas: bigint = parseToBigInt(parameters.maxFeePerGas, BigInt(0));
   const maxPriorityFeePerGas: bigint = parseToBigInt(

@@ -1,6 +1,5 @@
 import { StarknetInvokeTransaction } from '../types/transactions.types'
 import {
-  EstimateFeeTransaction,
   PrepareCalldataError,
   SignedRawTransaction,
 } from '../types/types'
@@ -11,7 +10,7 @@ import {
   Uint256ToU256,
 } from './converters/integer'
 import { addHexPrefix } from './padding'
-import { ResourceBounds, resourceBoundsFromSignedTxn } from './resourceBounds'
+import { ResourceBounds } from './resourceBounds'
 
 // Signature will be v,r,s
 // Deprecate this one
@@ -43,12 +42,12 @@ export function prepareStarknetInvokeTransaction(
   return starknetTx
 }
 
-export function prepareRosettanetCalldataForEstimateFee(from: string, to: string, gasLimit: bigint, data: string, value: bigint, nonce: number, maxFeePerGas: bigint, maxPriorityFeePerGas: bigint, gasPrice: bigint , type: number): string[] {
+export function prepareRosettanetCalldataForEstimateFee(from: string, to: string, gasLimit: bigint, data: string, value: bigint, nonce: number, maxFeePerGas: bigint, maxPriorityFeePerGas: bigint, gasPrice: bigint, type: number): string[] {
   const targetFunctionSelector: string | null =
-  getFunctionSelectorFromCalldata(data);
+    getFunctionSelectorFromCalldata(data);
   const calldata = []
-  if(type == 2) {
-    if(targetFunctionSelector == null) {
+  if (type == 2) {
+    if (targetFunctionSelector == null) {
       calldata.push(addHexPrefix(type.toString(16)))
       calldata.push(to)
       calldata.push(addHexPrefix(nonce.toString(16)))

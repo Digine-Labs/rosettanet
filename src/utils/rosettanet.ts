@@ -8,7 +8,7 @@ import {
 } from '../types/types'
 import { getConfigurationProperty } from './configReader'
 import { isRPCResponse, isStarknetRPCError } from '../types/typeGuards'
-import { addHexPrefix, hexPadding } from './padding'
+import { hexPadding } from './padding'
 import { writeLog } from '../logger'
 import { safeU256ToUint256, U256ToUint256HexString } from './converters/integer'
 import { getDeploymentResourceBounds } from './resourceBounds'
@@ -120,7 +120,7 @@ export async function deployRosettanetAccount(
   const rosettanet = getConfigurationProperty('rosettanet')
   const accountClass = getConfigurationProperty('accountClass')
   //const gasPrice = txn.maxFeePerGas == null ? txn.gasPrice : txn.maxFeePerGas
- // const actualGasPrice = gasPrice == null ? '0x0' : gasPrice
+  // const actualGasPrice = gasPrice == null ? '0x0' : gasPrice
   //console.log('MAX FEE: ' + txn.gasLimit.toString(16))
   //console.log('MAX price per unit: ' + actualGasPrice.toString(16))
   //const gasObject = getGasObject(txn)
@@ -225,22 +225,22 @@ export async function getRosettanetAccountNonce(
 
 export function decodeCalldataInput(rawCalldata: string[]): { selector: string, rawInput: string } {
   const calldataLength = Number(BigInt(rawCalldata[9]))
-  if(calldataLength == 0) {
+  if (calldataLength == 0) {
     return {
       selector: '0x', rawInput: '0x'
     }
   }
   const selector = hexPadding(rawCalldata[10], 8)
-  if(calldataLength == 1) {
+  if (calldataLength == 1) {
     return {
-      selector: selector, rawInput:selector
+      selector: selector, rawInput: selector
     }
   }
   let rawInput = `${selector}`
   for (let i = 1; i < calldataLength; i++) {
-    const data = U256ToUint256HexString([rawCalldata[i + 11].replace('0x',''), rawCalldata[i + 10].replace('0x','')]).replace('0x','');
+    const data = U256ToUint256HexString([rawCalldata[i + 11].replace('0x', ''), rawCalldata[i + 10].replace('0x', '')]).replace('0x', '');
     rawInput = rawInput + data
-    i +=1;
+    i += 1;
   }
 
   return {
@@ -250,21 +250,21 @@ export function decodeCalldataInput(rawCalldata: string[]): { selector: string, 
 }
 
 export function parseRosettanetRawCalldata(rawCalldata: string[]): RosettanetRawCalldata | undefined {
-    if(rawCalldata.length >= 10) {
-      const decodedCalldata = decodeCalldataInput(rawCalldata)
-      return {
-        txType: rawCalldata[0],
-        to: rawCalldata[1],
-        nonce: rawCalldata[2],
-        maxPriorityFeePerGas: rawCalldata[3],
-        maxFeePerGas: rawCalldata[4],
-        gasPrice: rawCalldata[5],
-        gasLimit: rawCalldata[6],
-        value: safeU256ToUint256([rawCalldata[7], rawCalldata[8]]),
-        selector: decodedCalldata.selector,
-        rawInput: decodedCalldata.rawInput
-      }
+  if (rawCalldata.length >= 10) {
+    const decodedCalldata = decodeCalldataInput(rawCalldata)
+    return {
+      txType: rawCalldata[0],
+      to: rawCalldata[1],
+      nonce: rawCalldata[2],
+      maxPriorityFeePerGas: rawCalldata[3],
+      maxFeePerGas: rawCalldata[4],
+      gasPrice: rawCalldata[5],
+      gasLimit: rawCalldata[6],
+      value: safeU256ToUint256([rawCalldata[7], rawCalldata[8]]),
+      selector: decodedCalldata.selector,
+      rawInput: decodedCalldata.rawInput
     }
+  }
 
-    return undefined
+  return undefined
 }
