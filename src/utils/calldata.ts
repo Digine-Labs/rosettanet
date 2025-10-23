@@ -1,3 +1,4 @@
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 import { AbiCoder, dataSlice, getBytes, hexlify } from 'ethers'
 import {
   EVMDecodeError,

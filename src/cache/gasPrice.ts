@@ -1,10 +1,10 @@
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+
 import { writeLog } from '../logger'
 import { isStarknetRPCError } from '../types/typeGuards'
 import { RPCResponse, StarknetRPCError } from '../types/types'
 import { callStarknet } from '../utils/callHelper'
 import { GasData, SyncedGas } from '../types/types'
-
-
 
 let syncedGasPrice: SyncedGas
 

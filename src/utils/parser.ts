@@ -1,3 +1,4 @@
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 import { Response, NextFunction } from 'express'
 import { ParsedRequest, RPCError } from '../types/types'
 

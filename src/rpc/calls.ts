@@ -1,3 +1,4 @@
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 import { Router, Response, Request } from 'express'
 import { ResponseHandler, RPCError, RPCResponse } from '../types/types'
 import { chainIdHandler } from './calls/chainId'

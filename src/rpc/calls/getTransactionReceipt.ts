@@ -1,3 +1,5 @@
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+/* eslint-disable no-console */
 import { Transaction } from "ethers";
 import { writeLog } from "../../logger";
 import { isStarknetRPCError } from "../../types/typeGuards";
