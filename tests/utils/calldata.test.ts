@@ -12,8 +12,8 @@ import {
   EVMDecodeResult,
   EVMEncodeError,
   EVMEncodeResult,
+  CairoNamedConvertableType
 } from '../../src/types/types'
-import { CairoNamedConvertableType } from '../../src/utils/starknet'
 import {
   isEVMDecodeResult,
   isEVMEncodeResult,

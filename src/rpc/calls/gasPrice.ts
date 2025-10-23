@@ -1,5 +1,5 @@
-import { getCachedGasPrice, SyncedGas } from '../../cache/gasPrice'
-import { RPCError, RPCRequest, RPCResponse } from '../../types/types'
+import { getCachedGasPrice } from '../../cache/gasPrice'
+import { RPCError, RPCRequest, RPCResponse, SyncedGas } from '../../types/types'
 
 export async function gasPriceHandler(
   request: RPCRequest,

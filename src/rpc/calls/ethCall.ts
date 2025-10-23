@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { writeLog } from '../../logger'
 import {
   isEVMDecodeError,
   isEVMEncodeResult,
-  isRPCError,
   isStarknetContract,
   isStarknetRPCError,
 } from '../../types/typeGuards'
@@ -18,6 +16,10 @@ import {
   StarknetContract,
   StarknetContractReadError,
   StarknetRPCError,
+  EthCallParameters,
+  StarknetCallableMethod,
+  ConvertableType,
+  CairoNamedConvertableType,
 } from '../../types/types'
 import { callStarknet } from '../../utils/callHelper'
 import {
@@ -28,16 +30,14 @@ import {
   handleTokenMetadataException,
 } from '../../utils/calldata'
 import {
-  ConvertableType,
+
   initializeStarknetAbi,
 } from '../../utils/converters/abiFormatter'
 import {
-  findStarknetCallableMethod,
-  StarknetCallableMethod,
+  findStarknetCallableMethod
 } from '../../utils/match'
 import { snKeccak } from '../../utils/sn_keccak'
 import {
-  CairoNamedConvertableType,
   getContractAbiAndMethods,
   getEthereumInputsCairoNamed,
   getEthereumOutputsCairoNamed,
@@ -45,15 +45,7 @@ import {
 import { validateEthAddress } from '../../utils/validations'
 import { getSnAddressFromEthAddress } from '../../utils/wrapper'
 
-export interface EthCallParameters {
-  from?: string
-  to: string
-  gas?: string | number | bigint
-  gasPrice?: string | number | bigint
-  value?: string | number | bigint
-  data?: string
-  input?: string
-}
+
 
 export function isEthCallParameters(
   value: unknown,

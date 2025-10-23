@@ -1,6 +1,4 @@
-/* eslint-disable no-console */
 import { initNode } from '../src/index'
-/* eslint-disable no-console */
 import { promises as fs } from 'fs'
 import path from 'path'
 import { Abi, Account, BigNumberish, RpcProvider, uint256 } from 'starknet'
@@ -31,6 +29,8 @@ export const testConfig = {
     format: 'text',
   },
 }
+
+export type NodeConfig = typeof testConfig
 
 // These values are used in the devnet setup script
 // export const rpcList = ["https://free-rpc.nethermind.io/mainnet-juno/v0_7"]
@@ -89,8 +89,8 @@ export async function updateNodeConfig(config: string) {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function readNodeConfig(): Promise<any> {
+
+export async function readNodeConfig(): Promise<NodeConfig> {
   try {
     const configFilePath = path.resolve(__dirname, '../config.test.json')
 

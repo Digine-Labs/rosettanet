@@ -37,11 +37,11 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "^20.17.24",
     "@types/supertest": "^6.0.2",
-    "@typescript-eslint/eslint-plugin": "^7.0.1",
-    "@typescript-eslint/parser": "^7.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
     "chai": "^5.2.0",
-    "eslint": "^8.56.0",
-    "eslint-config-prettier": "^9.1.0",
+    "eslint": "^9.38.0",
+    "eslint-config-prettier": "^10.1.8",
     "jest": "^29.7.0",
     "mocha": "^11.1.0",
     "nodemon": "^3.0.3",
@@ -52,6 +52,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@starknet-io/types-js": "0.8.4",
     "@types/cors": "^2.8.17",
     "axios": "^1.6.7",
     "bignumber.js": "^9.1.2",

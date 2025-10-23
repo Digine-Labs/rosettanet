@@ -74,6 +74,7 @@ export function getEthersTransactionFromRosettanetCall(signature: string[], call
   }
 }
 
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 export function getEthersTransactionFromStarknetCall(result: any): Transaction {
   const r = addHexPrefix(safeU256ToUint256([addHexPrefix(removeHexPrefix(result.signature[0]).slice(0, 32)), addHexPrefix(removeHexPrefix(result.signature[1]).slice(32))]));
   const s = addHexPrefix(safeU256ToUint256([addHexPrefix(removeHexPrefix(result.signature[0]).slice(0, 32)), addHexPrefix(removeHexPrefix(result.signature[1]).slice(32))]));

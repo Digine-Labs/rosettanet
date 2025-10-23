@@ -1,10 +1,9 @@
 import { callStarknet } from './callHelper'
-import { RPCRequest, RPCResponse, StarknetRPCError } from '../types/types'
+import { RPCRequest, RPCResponse, StarknetRPCError, GasCost } from '../types/types'
 import { getConfigurationProperty } from './configReader'
 import { isStarknetRPCError } from '../types/typeGuards'
 import { writeLog } from '../logger'
 import { addHexPrefix } from './padding'
-import { GasCost } from './gas'
 import { BnToU256 } from './converters/integer'
 
 const SELECTORS = {

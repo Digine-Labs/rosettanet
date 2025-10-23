@@ -1,28 +1,10 @@
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+
 import { writeLog } from '../logger'
 import { isStarknetRPCError } from '../types/typeGuards'
 import { RPCResponse, StarknetRPCError } from '../types/types'
 import { callStarknet } from '../utils/callHelper'
-
-export interface SyncedGas {
-  l1: {
-    fri: string
-    wei: string
-  },
-  l1_data: {
-    fri: string
-    wei: string
-  },
-  l2: {
-    fri: string
-    wei: string
-  }
-}
-
-interface GasData {
-  price_in_fri: string
-  price_in_wei: string
-}
-
+import { GasData, SyncedGas } from '../types/types'
 
 let syncedGasPrice: SyncedGas
 
@@ -88,7 +70,6 @@ async function updateGasPrice() {
     syncedGasPrice = gas;
     writeLog(0, `Gas sync, l1: ${gas.l1.wei} (wei) ${gas.l1.fri} (fri), l1_data: ${gas.l1_data.wei} (wei) ${gas.l1_data.fri} (fri), l2: ${gas.l2.wei} (wei) ${gas.l2.fri} (fri)`)
     return
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     writeLog(2, 'Error at gas sync: ' + e.message)
   }
@@ -100,7 +81,6 @@ export async function initialSyncGasPrice() {
 }
 
 export async function syncGasPrice() {
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     await new Promise<void>(resolve => setTimeout(resolve, 10000)) // Sync new blocks in every 10 seconds
     await updateGasPrice()

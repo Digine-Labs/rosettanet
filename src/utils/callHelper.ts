@@ -1,6 +1,5 @@
 import { getRpc } from './getRpc'
 import {
-  EstimateFeeTransaction,
   NativeBalance,
   RPCError,
   RPCRequest,
@@ -52,23 +51,6 @@ export async function callStarknet(
   }
 }
 
-export async function getStarknetAccountNonce(
-  snAddress: string,
-): Promise<string | StarknetRPCError> {
-  const nonce: RPCResponse | StarknetRPCError = await callStarknet({
-    jsonrpc: '2.0',
-    method: 'starknet_getNonce',
-    params: ['latest', snAddress],
-    id: 1,
-  })
-
-  if (isStarknetRPCError(nonce)) {
-    return nonce
-  }
-
-  return nonce.result
-}
-
 export async function getSTRKBalance(
   snAddress: string,
 ): Promise<NativeBalance | StarknetRPCError> {
@@ -106,46 +88,4 @@ export async function getSTRKBalance(
     starknetFormat: response.result,
     ethereumFormat: addHexPrefix(balance),
   }
-}
-
-export async function callStarknetEstimateFee(
-  sender: string,
-  txn: EstimateFeeTransaction,
-  calldata: string[],
-): Promise<RPCResponse | StarknetRPCError> {
-  const response: RPCResponse | StarknetRPCError = await callStarknet({
-    jsonrpc: '2.0',
-    method: 'starknet_estimateFee',
-    params: {
-      request: [
-        {
-          type: 'INVOKE',
-          version: '0x3',
-          signature: txn.signature,
-          sender_address: sender,
-          calldata: calldata,
-          nonce: txn.nonce,
-          resource_bounds: {
-            l1_gas: {
-              max_amount: txn.maxAmountGas,
-              max_price_per_unit: txn.maxGasPricePerUnit,
-            },
-            l2_gas: {
-              max_amount: '0x0',
-              max_price_per_unit: '0x0',
-            },
-          },
-          tip: '0x0',
-          paymaster_data: [],
-          fee_data_availability_mode: 'L1',
-          nonce_data_availability_mode: 'L1',
-          account_deployment_data: [],
-        },
-      ],
-      block_id: 'latest',
-      simulation_flags: ['SKIP_VALIDATE'],
-    },
-    id: 1,
-  })
-  return response
 }

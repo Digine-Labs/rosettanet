@@ -17,7 +17,7 @@ describe('Server robustness tests', () => {
         },
         { timeout: 2000 },
       )
-    } catch (error) {
+    } catch {
       // Skip all tests in this suite
       fail('server is not working')
     }

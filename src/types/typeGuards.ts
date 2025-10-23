@@ -1,19 +1,16 @@
-import { AccountDeployError, AccountDeployResult } from '../utils/rosettanet'
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 import {
   EVMDecodeError,
   EVMDecodeResult,
   EVMEncodeResult,
   PrepareCalldataError,
-  RawTransaction,
-  RosettanetRawCalldata,
   RosettanetSignature,
   RPCError,
   RPCResponse,
   SignedRawTransaction,
-  SimulateTransaction,
   StarknetContract,
   StarknetRPCError,
-  ValidationError,
+  AccountDeployResult
 } from './types'
 
 export function isRPCError(value: unknown): value is RPCError {
@@ -39,16 +36,6 @@ export function isRPCResponse(value: unknown): value is RPCResponse {
       typeof obj.jsonrpc === 'string' &&
       obj.result != null
     )
-  }
-  return false
-}
-
-export function isAccountDeployError(
-  value: unknown,
-): value is AccountDeployError {
-  if (typeof value === 'object' && value !== null) {
-    const obj = value as AccountDeployError
-    return typeof obj.code === 'number' && typeof obj.message === 'string'
   }
   return false
 }
@@ -129,14 +116,6 @@ export function isSignedRawTransaction(
   return false
 }
 
-export function isValidationError(value: unknown): value is ValidationError {
-  if (typeof value === 'object' && value !== null) {
-    const obj = value as ValidationError
-    return typeof obj.message === 'string'
-  }
-  return false
-}
-
 export function isPrepareCalldataError(
   value: unknown,
 ): value is PrepareCalldataError {
@@ -158,7 +137,6 @@ export function isStarknetContract(value: unknown): value is StarknetContract {
 // Function for checking Starknet RPC error responses
 export function isStarknetRPCError(value: unknown): value is StarknetRPCError {
   if (typeof value === 'object' && value !== null) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const obj = value as any
     // Check both direct error structure and nested error structure
     return (
@@ -169,66 +147,4 @@ export function isStarknetRPCError(value: unknown): value is StarknetRPCError {
     )
   }
   return false
-}
-
-export function isEstimateGasTransaction(
-  value: unknown,
-): value is RawTransaction {
-  if (typeof value === 'object' && value !== null) {
-    const obj = value as RawTransaction
-    return (
-      typeof obj.from === 'string' &&
-      typeof obj.to === 'string' &&
-      typeof obj.gas === 'string' &&
-      typeof obj.gasPrice === 'string'
-    )
-  }
-  return false
-}
-
-export function isSimulateTransaction(
-  value: unknown,
-): value is SimulateTransaction {
-  if (typeof value === 'object' && value !== null) {
-    const obj = value as SimulateTransaction
-    return (
-      (typeof obj.from === 'string' || obj.from == null) &&
-      typeof obj.to === 'string' &&
-      (typeof obj.gas === 'string' || obj.gas == null) &&
-      (typeof obj.gasPrice === 'string' || obj.gasPrice == null) &&
-      (typeof obj.maxPriorityFeePerGas === 'string' ||
-        obj.maxPriorityFeePerGas == null) &&
-      (typeof obj.maxFeePerGas === 'string' || obj.maxFeePerGas == null) &&
-      (typeof obj.value === 'string' || obj.value == null) &&
-      (typeof obj.data === 'string' || obj.data == null) &&
-      (typeof obj.gasLimit === 'string' || obj.gasLimit == null)
-    )
-  }
-  return false
-}
-
-/**
- * Type guard function to check if the provided value is a valid RosettanetRawCalldata object.
- * @param value - The value to check
- * @returns A type predicate indicating if the value is RosettanetRawCalldata
- */
-export function isRosettanetRawCalldata(value: unknown): value is RosettanetRawCalldata {
-  if (!value || typeof value !== 'object') {
-    return false;
-  }
-
-  const obj = value as Record<string, unknown>;
-  
-  // Check that all required properties exist and are strings
-  return (
-    typeof obj.txType === 'string' &&
-    typeof obj.to === 'string' &&
-    typeof obj.nonce === 'string' &&
-    typeof obj.maxPriorityFeePerGas === 'string' &&
-    typeof obj.maxFeePerGas === 'string' &&
-    typeof obj.gasPrice === 'string' &&
-    typeof obj.gasLimit === 'string' &&
-    typeof obj.value === 'string' &&
-    typeof obj.selector === 'string'
-  );
 }

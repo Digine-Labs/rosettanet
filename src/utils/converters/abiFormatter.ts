@@ -1,14 +1,7 @@
 import { Abi } from 'starknet'
+import { ConvertableType } from '../../types/types'
 
-// We will use this interface for both function selector calc and calldata slot calcs
-export interface ConvertableType {
-  size: number // bitsize
-  isDynamicSize: boolean // true if array
-  solidityType: string // uint256, etc. name used on function selector calc
-  isTuple: boolean // true if struct or tuple
-  tupleSizes?: Array<number>
-  formatter?: (value: string) => string | Promise<string>
-}
+
 // TODO: Sizeları starknet sizelarına göre updatele. mesela contract addres 252 gibi ve class hash. Onlar solidityde uint256 olarak girilecek ama size limit belli.
 const starknetElementaryTypes: Array<Array<string | ConvertableType>> = [
   [
@@ -673,11 +666,4 @@ function getStructConvertableTypes(
   ]
 
   return [basic, array, option, span]
-}
-
-export function isSolidityArray(type: string): boolean {
-  if (type.indexOf('[') > -1 || type.indexOf(']') > -1) {
-    return true
-  }
-  return false
 }

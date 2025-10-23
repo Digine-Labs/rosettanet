@@ -1,3 +1,4 @@
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 import { Transaction } from 'ethers'
 import {
   RPCError,
@@ -6,6 +7,9 @@ import {
   SignedRawTransaction,
   StarknetRPCError,
   ValidationError,
+  AccountDeployError,
+  AccountDeployResult,
+  RosettanetAccountResult
 } from '../../types/types'
 import { validateRawTransaction } from '../../utils/validations'
 import {
@@ -15,11 +19,8 @@ import {
   isStarknetRPCError,
 } from '../../types/typeGuards'
 import {
-  AccountDeployError,
-  AccountDeployResult,
   deployRosettanetAccount,
   getRosettaAccountAddress,
-  RosettanetAccountResult,
 } from '../../utils/rosettanet'
 import { callStarknet } from '../../utils/callHelper'
 import {
@@ -117,8 +118,7 @@ export async function sendRawTransactionHandler(
 
 async function broadcastTransaction(
   request: RPCRequest,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  params: any,
+  params: any, // invoke & deploy transaction params
 ): Promise<RPCResponse | RPCError> {
   const response: RPCResponse | StarknetRPCError = await callStarknet(<
     RPCRequest
