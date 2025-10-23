@@ -105,6 +105,19 @@ export async function getTransactionReceiptHandler(request: RPCRequest): Promise
 // Inputs starknet_getTransactionByHash result
 function parseTxDetails(result: TransactionWithHash): { from: string; to: string; gasUsed: string; cumulativeGasUsed: string; type: string; effectiveGasPrice: string } {
   // from address await ile eth adres cekilmeli ama??
+  const accountClass = getConfigurationProperty("accountClass")
+
+  let ethersTx: Transaction | undefined
+
+  const isRosettanetAccount = await isRosettaAccountDeployed(result.sender_address, accountClass)
+
+
+  if (isRosettanetAccount) {
+    ethersTx = getEthersTransactionFromRosettanetCall(result.signature, result.calldata)
+  } else {
+    console.log("123")
+    ethersTx = getEthersTransactionFromStarknetCall(result)
+  }
 
   const signature: string[] = ('signature' in result && result.signature ? result.signature : []) as string[]
   const calldata: string[] = ('calldata' in result && result.calldata ? result.calldata : []) as string[]
@@ -119,14 +132,14 @@ function parseTxDetails(result: TransactionWithHash): { from: string; to: string
     };
   }
 
-  const type = parsedCalldata.txType;
-  const to = parsedCalldata.to;
-  const gasUsed = parsedCalldata.gasLimit;
+  const type = parsedCalldata?.txType ? parsedCalldata.txType : (ethersTx?.type?.toString() ?? '0x0');
+  const to = parsedCalldata?.to ? parsedCalldata.to : (ethersTx?.to ?? '0x0');
+  const gasUsed = parsedCalldata?.gasLimit ? parsedCalldata.gasLimit : (ethersTx?.gasLimit ? '0x' + ethersTx.gasLimit.toString(16) : '0x0');
   const cumulativeGasUsed = sumHexStrings(gasUsed, gasUsed);
-  const from = ethersTx.from ? ethersTx.from : '0x0';
+  const from = ethersTx?.from ?? '0x0'
   // Calculate gas price from calldata
   return {
-    gasUsed, cumulativeGasUsed, from, to, type, effectiveGasPrice: getEffectiveGasPrice(ethersTx)
+    gasUsed, cumulativeGasUsed, from, to, type, effectiveGasPrice: ethersTx ? getEffectiveGasPrice(ethersTx) : '0x0'
   }
 }
 

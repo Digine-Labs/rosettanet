@@ -26,6 +26,8 @@ import {
   decodeEVMCalldataWithAddressConversion,
   encodeStarknetData,
   getFunctionSelectorFromCalldata,
+  requiresTokenMetadataException,
+  handleTokenMetadataException,
 } from '../../utils/calldata'
 import {
 
@@ -119,6 +121,8 @@ export async function ethCallHandler(
       result: '0x',
     }
   }
+
+
   // ETH CALL BAZEN from field bos geliyor.
   // to ise registered degilse result 0x donmeli
   const targetContractAddress: string | StarknetRPCError =
@@ -201,6 +205,34 @@ export async function ethCallHandler(
     },
     'pending', // update to latest
   ]
+
+  // Check if this is a token metadata function that requires special handling
+  if (requiresTokenMetadataException(targetFunctionSelector)) {
+    const snResponse: RPCResponse | StarknetRPCError = await callStarknet({
+      jsonrpc: request.jsonrpc,
+      method: 'starknet_call',
+      params: starknetCallParams,
+      id: request.id,
+    })
+
+    if (isStarknetRPCError(snResponse)) {
+      return <RPCError>{
+        jsonrpc: request.jsonrpc,
+        id: request.id,
+        error: snResponse,
+      }
+    }
+
+    const exceptionResult = handleTokenMetadataException(
+      snResponse.result
+    )
+
+    return {
+      jsonrpc: request.jsonrpc,
+      id: request.id,
+      result: exceptionResult,
+    }
+  }
 
   const snResponse: RPCResponse | StarknetRPCError = await callStarknet({
     jsonrpc: request.jsonrpc,
