@@ -80,7 +80,7 @@ export function safeU256ToUint256(value: Array<string>): string {
       // Validate the final Uint256 value
       validateUint256(BigInt('0x' + result))
       return result
-    } catch (error) {
+    } catch {
       return ZERO_RESULT
     }
   }
@@ -95,7 +95,7 @@ export function safeU256ToUint256(value: Array<string>): string {
     // Validate the final Uint256 value
     validateUint256(BigInt('0x' + result))
     return result
-  } catch (error) {
+  } catch {
     return ZERO_RESULT
   }
 }
