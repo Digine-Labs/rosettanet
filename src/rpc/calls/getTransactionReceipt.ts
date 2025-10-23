@@ -7,9 +7,10 @@ import { RosettanetRawCalldata, RPCError, RPCRequest, RPCResponse, StarknetRPCEr
 import { callStarknet } from "../../utils/callHelper";
 import { sumHexStrings } from "../../utils/converters/integer";
 import { padHashTo64, padTo256Byte } from "../../utils/padding";
-import { parseRosettanetRawCalldata } from "../../utils/rosettanet";
-import { getEthersTransactionFromRosettanetCall } from "../../utils/signature";
+import { parseRosettanetRawCalldata, isRosettaAccountDeployed } from "../../utils/rosettanet";
+import { getEthersTransactionFromRosettanetCall, getEthersTransactionFromStarknetCall } from "../../utils/signature";
 import { TransactionWithHash, TransactionReceipt } from "starknet";
+import { getConfigurationProperty } from "../../utils/configReader";
 
 export async function getTransactionReceiptHandler(request: RPCRequest): Promise<RPCResponse | RPCError> {
   if (!Array.isArray(request.params)) {
@@ -75,7 +76,7 @@ export async function getTransactionReceiptHandler(request: RPCRequest): Promise
   writeLog(0, JSON.stringify(starknetTxDetails.result))
 
   const { blockHash, blockNumber, status } = parseTxReceipt(starknetTxReceipt.result);
-  const { from, to, gasUsed, cumulativeGasUsed, effectiveGasPrice } = parseTxDetails(starknetTxDetails.result);
+  const { from, to, gasUsed, cumulativeGasUsed, effectiveGasPrice } = await parseTxDetails(starknetTxDetails.result);
 
   const txType = getTransactionType(starknetTxDetails.result)
 
@@ -103,25 +104,25 @@ export async function getTransactionReceiptHandler(request: RPCRequest): Promise
 }
 
 // Inputs starknet_getTransactionByHash result
-function parseTxDetails(result: TransactionWithHash): { from: string; to: string; gasUsed: string; cumulativeGasUsed: string; type: string; effectiveGasPrice: string } {
+async function parseTxDetails(result: TransactionWithHash): Promise<{ from: string; to: string; gasUsed: string; cumulativeGasUsed: string; type: string; effectiveGasPrice: string }> {
   // from address await ile eth adres cekilmeli ama??
   const accountClass = getConfigurationProperty("accountClass")
 
   let ethersTx: Transaction | undefined
 
-  const isRosettanetAccount = await isRosettaAccountDeployed(result.sender_address, accountClass)
+  const signature: string[] = ('signature' in result && result.signature ? result.signature : []) as string[]
+  const calldata: string[] = ('calldata' in result && result.calldata ? result.calldata : []) as string[]
+  const senderAddress: string = ('sender_address' in result && result.sender_address ? result.sender_address : '0x0') as string
+
+  const isRosettanetAccount = await isRosettaAccountDeployed(senderAddress, accountClass)
 
 
   if (isRosettanetAccount) {
-    ethersTx = getEthersTransactionFromRosettanetCall(result.signature, result.calldata)
+    ethersTx = getEthersTransactionFromRosettanetCall(signature, calldata)
   } else {
     console.log("123")
     ethersTx = getEthersTransactionFromStarknetCall(result)
   }
-
-  const signature: string[] = ('signature' in result && result.signature ? result.signature : []) as string[]
-  const calldata: string[] = ('calldata' in result && result.calldata ? result.calldata : []) as string[]
-  const ethersTx: Transaction = getEthersTransactionFromRosettanetCall(signature, calldata)
   const parsedCalldata: RosettanetRawCalldata | undefined = parseRosettanetRawCalldata(calldata)
 
   if (typeof parsedCalldata === 'undefined') {

@@ -14,7 +14,7 @@ import {
   Uint256ToU256,
 } from './converters/integer'
 import { getSnAddressWithFallback } from './wrapper'
-import { addHexPrefix } from './padding'
+import { addHexPrefix, removeHexPrefix } from './padding'
 import { isStarknetRPCError } from '../types/typeGuards'
 
 export function getFunctionSelectorFromCalldata(calldata: string | null): string | null {
