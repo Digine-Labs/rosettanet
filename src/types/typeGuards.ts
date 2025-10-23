@@ -43,16 +43,6 @@ export function isRPCResponse(value: unknown): value is RPCResponse {
   return false
 }
 
-export function isAccountDeployError(
-  value: unknown,
-): value is AccountDeployError {
-  if (typeof value === 'object' && value !== null) {
-    const obj = value as AccountDeployError
-    return typeof obj.code === 'number' && typeof obj.message === 'string'
-  }
-  return false
-}
-
 export function isAccountDeployResult(
   value: unknown,
 ): value is AccountDeployResult {
@@ -129,14 +119,6 @@ export function isSignedRawTransaction(
   return false
 }
 
-export function isValidationError(value: unknown): value is ValidationError {
-  if (typeof value === 'object' && value !== null) {
-    const obj = value as ValidationError
-    return typeof obj.message === 'string'
-  }
-  return false
-}
-
 export function isPrepareCalldataError(
   value: unknown,
 ): value is PrepareCalldataError {
@@ -169,66 +151,4 @@ export function isStarknetRPCError(value: unknown): value is StarknetRPCError {
     )
   }
   return false
-}
-
-export function isEstimateGasTransaction(
-  value: unknown,
-): value is RawTransaction {
-  if (typeof value === 'object' && value !== null) {
-    const obj = value as RawTransaction
-    return (
-      typeof obj.from === 'string' &&
-      typeof obj.to === 'string' &&
-      typeof obj.gas === 'string' &&
-      typeof obj.gasPrice === 'string'
-    )
-  }
-  return false
-}
-
-export function isSimulateTransaction(
-  value: unknown,
-): value is SimulateTransaction {
-  if (typeof value === 'object' && value !== null) {
-    const obj = value as SimulateTransaction
-    return (
-      (typeof obj.from === 'string' || obj.from == null) &&
-      typeof obj.to === 'string' &&
-      (typeof obj.gas === 'string' || obj.gas == null) &&
-      (typeof obj.gasPrice === 'string' || obj.gasPrice == null) &&
-      (typeof obj.maxPriorityFeePerGas === 'string' ||
-        obj.maxPriorityFeePerGas == null) &&
-      (typeof obj.maxFeePerGas === 'string' || obj.maxFeePerGas == null) &&
-      (typeof obj.value === 'string' || obj.value == null) &&
-      (typeof obj.data === 'string' || obj.data == null) &&
-      (typeof obj.gasLimit === 'string' || obj.gasLimit == null)
-    )
-  }
-  return false
-}
-
-/**
- * Type guard function to check if the provided value is a valid RosettanetRawCalldata object.
- * @param value - The value to check
- * @returns A type predicate indicating if the value is RosettanetRawCalldata
- */
-export function isRosettanetRawCalldata(value: unknown): value is RosettanetRawCalldata {
-  if (!value || typeof value !== 'object') {
-    return false;
-  }
-
-  const obj = value as Record<string, unknown>;
-  
-  // Check that all required properties exist and are strings
-  return (
-    typeof obj.txType === 'string' &&
-    typeof obj.to === 'string' &&
-    typeof obj.nonce === 'string' &&
-    typeof obj.maxPriorityFeePerGas === 'string' &&
-    typeof obj.maxFeePerGas === 'string' &&
-    typeof obj.gasPrice === 'string' &&
-    typeof obj.gasLimit === 'string' &&
-    typeof obj.value === 'string' &&
-    typeof obj.selector === 'string'
-  );
 }

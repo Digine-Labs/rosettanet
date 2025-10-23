@@ -4,14 +4,6 @@ import * as path from 'path'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let configuration: any
 
-export function getConfiguration(): object | undefined {
-  if (typeof configuration === 'undefined') {
-    throw new Error('Config not initialized')
-  }
-
-  return configuration
-}
-
 export function isConfigurationInitialized(): boolean {
   if (typeof configuration === 'undefined') {
     return false

@@ -35,22 +35,12 @@ export interface ResponseHandler {
   handler(request?: RPCRequest | undefined): Promise<RPCResponse | RPCError>
 }
 
-export interface StarknetType {
-  name: string
-  converter(value: string): string | Array<string> | undefined
-}
-
 export interface StarknetFunctionInput {
   name: string
   type: string
 }
 
 export interface StarknetFunctionOutput {
-  type: string
-}
-
-export interface StarknetTypeMember {
-  name: string
   type: string
 }
 
@@ -61,22 +51,6 @@ export interface StarknetFunction {
   type: string
   state_mutability: string
 }
-
-export interface EthereumSlot {
-  order: number
-  bits: number
-}
-
-export interface EthereumBitSize {
-  slotSize: number
-  bitSize: number
-}
-
-export interface StarknetValue {
-  value: string
-  bitSize: number
-}
-// After refactor types
 
 export interface EVMDecodeResult {
   calldata: Array<string>
@@ -190,4 +164,9 @@ export interface RosettanetRawCalldata {
   value: string
   selector: string
   rawInput: string
+}
+
+export interface RosettanetCompatibleAddress {
+  starknet: string;
+  ethereum: string;
 }

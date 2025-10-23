@@ -207,17 +207,3 @@ export function prepareRosettanetCalldata(
     }
   }
 }
-
-export function prepareSignature(
-  r: string,
-  s: string,
-  v: number,
-  value: bigint,
-): Array<string> {
-  return [
-    ...Uint256ToU256(r.replace('0x', '')).map(rv => addHexPrefix(rv)),
-    ...Uint256ToU256(s.replace('0x', '')).map(sv => addHexPrefix(sv)),
-    v.toString(16),
-    ...BnToU256(value),
-  ]
-}

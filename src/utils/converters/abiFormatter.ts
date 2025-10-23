@@ -674,10 +674,3 @@ function getStructConvertableTypes(
 
   return [basic, array, option, span]
 }
-
-export function isSolidityArray(type: string): boolean {
-  if (type.indexOf('[') > -1 || type.indexOf(']') > -1) {
-    return true
-  }
-  return false
-}

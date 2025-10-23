@@ -65,43 +65,6 @@ export async function getContractAbiAndMethods(
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function getContractsMethods(
-  snAddress: string,
-): Promise<Array<StarknetFunction>> {
-  if (!validateSnAddress(snAddress)) {
-    return []
-  }
-  const rpcUrl: string = getRpc()
-  const provider = new RpcProvider({ nodeUrl: rpcUrl })
-
-  let contractAbi: Abi = []
-  try {
-    const compressedContract = await provider.getClassAt(snAddress)
-    contractAbi = compressedContract.abi
-  } catch (e) {
-    return []
-  }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const directFunctions = contractAbi.filter(
-    item =>
-      item.type === 'function' &&
-      (item.state_mutability === 'external' ||
-        item.state_mutability === 'view'),
-  )
-  const interfaces = contractAbi.filter(item => item.type === 'interface')
-  const callableFunctionsInterface = interfaces.map(item => item.items)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const flattenedCallableFunctionsInterface = callableFunctionsInterface.flat(1)
-
-  const allEntrypoints = [
-    ...flattenedCallableFunctionsInterface,
-    ...directFunctions,
-  ]
-
-  return allEntrypoints
-}
-
 export function getEthereumOutputsCairoNamed(
   snFunction: StarknetFunction,
   map: Map<string, ConvertableType>,
@@ -152,29 +115,6 @@ export function getEthereumInputsCairoNamed(
   return inputs
 }
 
-export function getEthereumInputTypesFromStarknetFunction(
-  snFunction: StarknetFunction,
-  map: Map<string, ConvertableType>,
-): Array<string> {
-  if (!snFunction.inputs || snFunction.inputs.length == 0) {
-    return []
-  }
-
-  const inputs = snFunction.inputs.map(input => {
-    if (map.has(input.type)) {
-      const type = map.get(input.type)
-      if (typeof type === 'undefined') {
-        throw 'Type undefined'
-      }
-      return type.solidityType
-    } else {
-      throw 'Type not found' // Todo return undefined
-    }
-  })
-
-  return inputs
-}
-
 export function generateEthereumFunctionSignatureFromTypeMapping(
   snFunction: StarknetFunction,
   map: Map<string, ConvertableType>,
@@ -206,20 +146,6 @@ function getFunctionInputTypesFromMap(
   return inputTypes.toString()
 }
 
-// Returns contract abi
-export async function getContractsAbi(snAddress: string): Promise<Abi> {
-  const rpcUrl: string = getRpc()
-  const provider = new RpcProvider({ nodeUrl: rpcUrl })
-  let contractAbi: Abi = []
-  try {
-    const compressedContract = await provider.getClassAt(snAddress)
-    contractAbi = compressedContract.abi
-  } catch (e) {
-    return []
-  }
-  return contractAbi
-}
-
 export async function getAccountNonce(snAddress: string): Promise<string> {
   const rpcUrl: string = getRpc()
   const provider = new RpcProvider({ nodeUrl: rpcUrl })
@@ -239,8 +165,8 @@ export async function getAccountNonceForEstimateFee(snAddress: string): Promise<
   const fallbackNonce: string = '0x10240';
   try {
     const nonce = await provider.getNonceForAddress(snAddress)
-    if(BigInt(nonce) == BigInt(0)) {
-      writeLog(0,`Returning fallback nonce. nonce received = 0`);
+    if (BigInt(nonce) == BigInt(0)) {
+      writeLog(0, `Returning fallback nonce. nonce received = 0`);
       return fallbackNonce
     }
     return nonce
