@@ -1,7 +1,6 @@
 import { Response, NextFunction } from 'express'
 import { ParsedRequest, RPCError } from '../types/types'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isValidJsonRpcRequest(body: any): boolean {
   // Check if body exists
   if (!body) return false

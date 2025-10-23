@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Abi, Account, Contract } from "starknet";
 import { ETH_ADDRESS, SN_ADDRESS_TEST_1, STRK_ADDRESS } from "./constants";
 import { getContractAbi, getProvider } from "./utils";

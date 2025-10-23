@@ -59,7 +59,7 @@ function appendLog(
         severity: getSeverityString(severity),
         message: JSON.parse(text),
       })
-    } catch (error) {
+    } catch {
       logMessage = JSON.stringify({
         date: now.toLocaleDateString(),
         time: now.toTimeString().split(' ')[0],

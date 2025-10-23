@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AbiCoder, dataSlice, getBytes, hexlify } from 'ethers'
 import {
   EVMDecodeError,
@@ -6,6 +5,7 @@ import {
   EVMEncodeError,
   EVMEncodeResult,
   StarknetRPCError,
+  CairoNamedConvertableType
 } from '../types/types'
 import {
   BnToU256,
@@ -13,13 +13,10 @@ import {
   Uint256ToU256,
 } from './converters/integer'
 import { getSnAddressWithFallback } from './wrapper'
-import { CairoNamedConvertableType } from './starknet'
-import { addHexPrefix, removeHexZeroes } from './padding'
+import { addHexPrefix } from './padding'
 import { isStarknetRPCError } from '../types/typeGuards'
-import { convertStringIntoChunks } from './felt'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getFunctionSelectorFromCalldata(calldata: any): string | null {
+export function getFunctionSelectorFromCalldata(calldata: string | null): string | null {
   if (typeof calldata !== 'string') {
     return null
   }
@@ -76,7 +73,6 @@ export function convertUint256s(data: Array<string>): Array<string> {
 }
 
 // Tuples also returned like array
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function decodeCalldataWithTypes(
   types: Array<string>,
   data: string,

@@ -1,7 +1,6 @@
 import { promises as fs } from 'fs'
 import * as path from 'path'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let configuration: any
 
 export function isConfigurationInitialized(): boolean {
@@ -11,7 +10,6 @@ export function isConfigurationInitialized(): boolean {
   return true
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getConfigurationProperty(prop: string): any {
   if (!isConfigurationInitialized()) {
     throw new Error('Config not initialized')
@@ -35,7 +33,7 @@ export async function initConfig(configPath: string): Promise<boolean> {
   try {
     await fs.access(configPath, fs.constants.R_OK)
   } catch (error) {
-    throw new Error(`Configuration file is not readable: ${configPath}`)
+    throw new Error(`Configuration file is not readable: ${configPath}, ${error}`)
   }
 
   const rawData = await fs.readFile(configPath, 'utf8')
@@ -44,7 +42,6 @@ export async function initConfig(configPath: string): Promise<boolean> {
   let config
   try {
     config = JSON.parse(rawData)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     throw new Error(`Error parsing JSON configuration file: ${error.message}`)
   }

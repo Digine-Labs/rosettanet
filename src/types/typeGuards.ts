@@ -1,19 +1,15 @@
-import { AccountDeployError, AccountDeployResult } from '../utils/rosettanet'
 import {
   EVMDecodeError,
   EVMDecodeResult,
   EVMEncodeResult,
   PrepareCalldataError,
-  RawTransaction,
-  RosettanetRawCalldata,
   RosettanetSignature,
   RPCError,
   RPCResponse,
   SignedRawTransaction,
-  SimulateTransaction,
   StarknetContract,
   StarknetRPCError,
-  ValidationError,
+  AccountDeployResult
 } from './types'
 
 export function isRPCError(value: unknown): value is RPCError {
@@ -140,7 +136,6 @@ export function isStarknetContract(value: unknown): value is StarknetContract {
 // Function for checking Starknet RPC error responses
 export function isStarknetRPCError(value: unknown): value is StarknetRPCError {
   if (typeof value === 'object' && value !== null) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const obj = value as any
     // Check both direct error structure and nested error structure
     return (

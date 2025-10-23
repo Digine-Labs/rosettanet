@@ -1,22 +1,9 @@
-import { getCachedGasPrice, SyncedGas } from "../cache/gasPrice"
-import { SignedRawTransaction } from "../types/types"
-import { estimateGasCost, GasCost } from "./gas"
+import { getCachedGasPrice } from "../cache/gasPrice"
+import { SignedRawTransaction, ResourceBounds, SyncedGas, GasCost } from "../types/types"
+import { estimateGasCost } from "./gas"
 import { addHexPrefix } from "./padding"
 
-export interface ResourceBounds {
-    l1_gas: {
-        max_amount: string
-        max_price_per_unit: string
-    }
-    l1_data_gas: {
-        max_amount: string
-        max_price_per_unit: string
-    }
-    l2_gas: {
-        max_amount: string
-        max_price_per_unit: string
-    }
-}
+
 // TODO: l1_gas and l1_data_gas fields will be set by rosettanet
 // l1_gas ve l1_data_gasi estimate tx veya cacheden cekerek dolduralim.
 // kontratlarda sadece l2_gas kismi verif edilmeli
@@ -45,22 +32,22 @@ export async function resourceBoundsFromSignedTxn(txn: SignedRawTransaction): Pr
     const gasPrice = txn.maxFeePerGas == null ? txn.gasPrice : txn.maxFeePerGas;
     const actualGasPrice = gasPrice == null ? '0x0' : gasPrice;
 
-    if(BigInt(totalFee) >= txn.gasLimit) {
+    if (BigInt(totalFee) >= txn.gasLimit) {
         // Total fee is more than gas passed. So we should return max possible with priorities.
         // Priority l1_data > l2 > l1
 
         let availableGas = txn.gasLimit;
 
-        let l1_data = availableGas > BigInt(gasCost.l1_data) ? BigInt(gasCost.l1_data) : availableGas;
+        const l1_data = availableGas > BigInt(gasCost.l1_data) ? BigInt(gasCost.l1_data) : availableGas;
         availableGas = availableGas - l1_data;
 
-        let l2 = availableGas > BigInt(gasCost.l2) ? BigInt(gasCost.l2) : availableGas;
+        const l2 = availableGas > BigInt(gasCost.l2) ? BigInt(gasCost.l2) : availableGas;
         availableGas = availableGas - l2;
 
-        let l1 = availableGas > BigInt(gasCost.l1) ? BigInt(gasCost.l1) : availableGas;
+        const l1 = availableGas > BigInt(gasCost.l1) ? BigInt(gasCost.l1) : availableGas;
         availableGas = availableGas - l1;
 
-        return <ResourceBounds> {
+        return <ResourceBounds>{
             l1_gas: {
                 max_amount: addHexPrefix(l1.toString(16)),
                 max_price_per_unit: addHexPrefix(cachedGasPrices.l1.fri)
@@ -76,7 +63,7 @@ export async function resourceBoundsFromSignedTxn(txn: SignedRawTransaction): Pr
         }
     }
 
-    return <ResourceBounds> {
+    return <ResourceBounds>{
         l1_gas: {
             max_amount: addHexPrefix(gasCost.l1.toString(16)),
             max_price_per_unit: addHexPrefix(cachedGasPrices.l1.fri)
@@ -95,7 +82,7 @@ export async function resourceBoundsFromSignedTxn(txn: SignedRawTransaction): Pr
 export function getDeploymentResourceBounds(): ResourceBounds {
     const cachedGasPrices: SyncedGas = getCachedGasPrice();
 
-    return <ResourceBounds> {
+    return <ResourceBounds>{
         l1_gas: {
             max_amount: '0x0',
             max_price_per_unit: addHexPrefix(cachedGasPrices.l1.fri)

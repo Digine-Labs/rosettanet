@@ -1,23 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { RpcProvider, constants, Abi, FunctionAbi } from 'starknet'
-import { snKeccak } from '../../src/utils/sn_keccak'
+import { RpcProvider, Abi } from 'starknet'
 import { validateSnAddress } from './validations'
 import { getRpc } from './getRpc'
 import {
   StarknetFunctionInput,
   StarknetFunction,
-  RPCError,
   StarknetContract,
   StarknetContractReadError,
-  StarknetRPCError,
 } from '../types/types'
-import { ConvertableType } from './converters/abiFormatter'
 import { writeLog } from '../logger'
+import { CairoNamedConvertableType, ConvertableType } from '../types/types'
 
-export interface CairoNamedConvertableType extends ConvertableType {
-  cairoType: string
-}
 
 export async function getContractAbiAndMethods(
   snAddress: string,
@@ -35,14 +27,13 @@ export async function getContractAbiAndMethods(
   try {
     const compressedContract = await provider.getClassAt(snAddress)
     contractAbi = compressedContract.abi
-  } catch (e) {
+  } catch {
     return <StarknetContractReadError>{
       code: -32701,
       message: 'Error at starknet RPC getClassAt method call',
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const directFunctions = contractAbi.filter(
     item =>
       item.type === 'function' &&
@@ -51,7 +42,6 @@ export async function getContractAbiAndMethods(
   )
   const interfaces = contractAbi.filter(item => item.type === 'interface')
   const callableFunctionsInterface = interfaces.map(item => item.items)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const flattenedCallableFunctionsInterface = callableFunctionsInterface.flat(1)
 
   const allEntrypoints = [

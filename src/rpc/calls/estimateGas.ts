@@ -1,32 +1,10 @@
-/* eslint-disable no-console */
-
 import { RPCResponse, RPCRequest, RPCError } from '../../types/types'
 import { estimateGasCost } from '../../utils/gas';
 import { addHexPrefix } from '../../utils/padding';
 
-/*
-{
-    "id": 1,
-    "jsonrpc": "2.0",
-    "result": [
-        {
-            "l1_data_gas_consumed": "0x400",
-            "l1_data_gas_price": "0x545a559",
-            "l1_gas_consumed": "0x0",
-            "l1_gas_price": "0x1ef3fed292f3",
-            "l2_gas_consumed": "0x450c50",
-            "l2_gas_price": "0xb2d05e00",
-            "overall_fee": "0x303ad8121ac400",
-            "unit": "FRI"
-        }
-    ]
-}
-    */
-
-
 export async function estimateGasHandler(request: RPCRequest): Promise<RPCResponse | RPCError> {
   const parameters = request.params[0];
- 
+
   const totalFee = await estimateGasCost({
     from: parameters.from,
     to: parameters.to,
@@ -40,8 +18,7 @@ export async function estimateGasHandler(request: RPCRequest): Promise<RPCRespon
     gas: parameters.gas
   });
 
-  const totalFeeFri = Math.ceil((totalFee.l1 + totalFee.l1_data + totalFee.l2) * 1.5); // Add %130 buffer and round up
-  // Check account is deployed
+  const totalFeeFri = Math.ceil((totalFee.l1 + totalFee.l1_data + totalFee.l2) * 1.5); // Add buffer and round up
   return <RPCResponse>{
     jsonrpc: request.jsonrpc,
     id: request.id,

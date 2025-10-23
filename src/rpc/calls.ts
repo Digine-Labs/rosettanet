@@ -235,7 +235,6 @@ Methods.set('eth_createAccessList', {
   handler: createAccessListHandler,
 })
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function handleRequest(request: any): Promise<RPCResponse | RPCError> {
   try {
     if (request && typeof request === 'object') {
@@ -272,7 +271,7 @@ async function handleRequest(request: any): Promise<RPCResponse | RPCError> {
               return result
             } catch (ex) {
               const errorMessage = ex instanceof Error ? ex.message : String(ex);
-              writeLog(2, JSON.stringify({request, error: errorMessage}))
+              writeLog(2, JSON.stringify({ request, error: errorMessage }))
               return <RPCError>{
                 jsonrpc: '2.0',
                 id: id,

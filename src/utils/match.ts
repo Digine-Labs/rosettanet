@@ -1,16 +1,8 @@
 import { keccak256 } from 'js-sha3'
 import BigNumber from 'bignumber.js'
-import { StarknetFunction } from '../types/types'
+import { StarknetFunction, StarknetCallableMethod, ConvertableType } from '../types/types'
 import { generateEthereumFunctionSignatureFromTypeMapping } from './starknet'
-import { ConvertableType } from './converters/abiFormatter'
 import { addHexPadding } from './padding'
-
-export interface StarknetCallableMethod {
-  ethereumSignature: string
-  snFunction: StarknetFunction
-  name: string
-  ethereumTypedName: string
-}
 
 export function findStarknetCallableMethod(
   ethSelector: string,

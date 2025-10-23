@@ -1,6 +1,5 @@
 import { getRpc } from './getRpc'
 import {
-  EstimateFeeTransaction,
   NativeBalance,
   RPCError,
   RPCRequest,

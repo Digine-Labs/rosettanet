@@ -6,7 +6,6 @@ export async function registerFunction(/* account: Account, fn: string */) {
   // Implementation pending
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function registerContractIfNotRegistered(
   account: Account,
   contractAddress: string,

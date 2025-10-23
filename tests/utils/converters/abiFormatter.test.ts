@@ -1,7 +1,8 @@
 import {
-  ConvertableType,
   initializeStarknetAbi,
 } from '../../../src/utils/converters/abiFormatter'
+import { ConvertableType } from '../../../src/types/types'
+
 const abi = [
   {
     type: 'impl',
@@ -398,7 +399,6 @@ describe('Initialization of abi', () => {
     expect(snAbi.size).toEqual(73)
   })
   it('Returns updated mapping', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const snAbi: Map<string, ConvertableType> = initializeStarknetAbi(abi)
     const customStructs = abi.filter(x => x.type === 'struct')
     const standartTypesLength = 73
